@@ -18,4 +18,6 @@ public interface PersonRepository {
 
   boolean update(Person person);
   
+  boolean delete(Person person);
+  
 }

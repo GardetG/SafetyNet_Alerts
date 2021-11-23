@@ -197,5 +197,35 @@ class PersonServiceTest {
             .isInstanceOf(ConstraintViolationException.class)
             .hasMessageContaining("Firstname is mandatory");
   }
+ 
+  @Test
+  void deletePersonTest() throws Exception {
+    // GIVEN
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(personTest);
+
+    // WHEN
+    personService.delete("firstName", "lastName");
+
+    // THEN
+    verify(personRepository, times(1)).findByName("firstName", "lastName");
+    verify(personRepository, times(1)).delete(personTest);
+  }
+
+  @Test
+  void deleteNotFoundPersonTest() throws Exception {
+    // GIVEN
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(null);
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      personService.delete("firstName", "lastName");
+    })
+
+            // THEN
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("firstName lastName not found");
+    verify(personRepository, times(1)).findByName("firstName", "lastName");
+    verify(personRepository, times(0)).delete(any(Person.class));
+  }
   
 }
