@@ -2,17 +2,21 @@ package com.safetynet.alerts.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.safetynet.alerts.dto.PersonDto;
+import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.PersonService;
+import com.safetynet.alerts.util.JsonParser;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(PersonController.class)
@@ -117,4 +122,57 @@ class PersonControllerTest {
     verify(personService, times(1)).getByName("firstName", "lastName");
   }
 
+  @Test
+  void postPersonTest() throws Exception {
+    // GIVEN
+    when(personService.add(any(PersonDto.class))).thenReturn(personTest);
+
+    // WHEN
+    mockMvc.perform(post("/person")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonParser.asString(personTest)))
+
+            // THEN
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.firstName", is("firstName")))
+            .andExpect(jsonPath("$.lastName", is("lastName")));
+    verify(personService, times(1)).add(personTest);
+  }
+
+  @Test
+  void postAlreadyExistingPersonTest() throws Exception {
+    // GIVEN
+    String error = String.format("%s %s already exists", 
+            personTest.getFirstName(),
+            personTest.getLastName());
+    when(personService.add(any(PersonDto.class))).thenThrow(
+            new ResourceAlreadyExistsException(error));
+
+    // WHEN
+    mockMvc.perform(post("/person")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonParser.asString(personTest)))
+
+            // THEN
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$", is(error)));
+    verify(personService, times(1)).add(personTest);
+  }
+
+  @Test
+  void postInvalidPersonTest() throws Exception {
+    // GIVEN
+    PersonDto invalidPerson = new PersonDto("", "lastName1", "address1", "city1", "0001",
+            "000.000.0001", "email1@mail.fr");
+
+    // WHEN
+    mockMvc.perform(post("/person")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonParser.asString(invalidPerson)))
+
+            // THEN
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")));
+    verify(personService, times(0)).add(any(PersonDto.class));
+  }
 }
