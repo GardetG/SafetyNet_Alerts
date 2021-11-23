@@ -3,6 +3,7 @@ package com.safetynet.alerts.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.safetynet.alerts.model.Person;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,4 +91,81 @@ class PersonRepositoryTest {
     assertThat(actualPerson).isNull();
   }
 
+  @Test
+  void addPersonTest() {
+    // GIVEN
+    personRepository.setPersonsList(new ArrayList<Person>(List.of(personTest)));
+
+    // WHEN
+    boolean isSuccess = personRepository.add(personTest2);
+
+    // THEN
+    assertThat(isSuccess).isTrue();
+    assertThat(personRepository.findAll()).hasSize(2)
+            .containsExactly(personTest, personTest2);
+  }
+
+  @Test
+  void updatePersonTest() {
+    // GIVEN
+    personRepository.setPersonsList(new ArrayList<Person>(List.of(personTest, personTest2)));
+    Person personTestUpdated = new Person("firstName", "lastName", "update", "update", "00003",
+            "000.000.0003", "update@email.fr");
+
+    // WHEN
+    boolean isSuccess = personRepository.update(personTestUpdated);
+
+    // THEN
+    assertThat(isSuccess).isTrue();
+    assertThat(personRepository.findAll()).hasSize(2)
+            .doesNotContain(personTest)
+            .containsExactly(personTestUpdated, personTest2);
+  }
+
+  @Test
+  void updateNotFoundPersonTest() {
+    // GIVEN
+    personRepository.setPersonsList(new ArrayList<Person>(List.of(personTest2)));
+    Person personTestUpdated = new Person("firstName", "lastName", "update", "update", "00003",
+            "000.000.0003", "update@email.fr");
+
+    // WHEN
+    boolean isSuccess = personRepository.update(personTestUpdated);
+
+    // THEN
+    assertThat(isSuccess).isFalse();
+    assertThat(personRepository.findAll()).hasSize(1)
+            .doesNotContain(personTestUpdated)
+            .containsExactly(personTest2);
+  }
+
+  @Test
+  void deletePersonTest() {
+    // GIVEN
+    personRepository.setPersonsList(new ArrayList<Person>(List.of(personTest, personTest2)));
+
+    // WHEN
+    boolean isSuccess = personRepository.delete(personTest);
+
+    // THEN
+    assertThat(isSuccess).isTrue();
+    assertThat(personRepository.findAll()).hasSize(1)
+            .doesNotContain(personTest)
+            .containsExactly(personTest2);
+  }
+
+  @Test
+  void deleteNotFoundPersonTest() {
+    // GIVEN
+    personRepository.setPersonsList(new ArrayList<Person>(List.of(personTest2)));
+
+    // WHEN
+    boolean isSuccess = personRepository.delete(personTest);
+
+    // THEN
+    assertThat(isSuccess).isFalse();
+    assertThat(personRepository.findAll()).hasSize(1)
+            .containsExactly(personTest2);
+  }
+  
 }
