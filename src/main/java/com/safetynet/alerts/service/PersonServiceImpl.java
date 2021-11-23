@@ -19,14 +19,17 @@ public class PersonServiceImpl implements PersonService {
   
   @Override
   public List<Person> getAll() {
-    // TODO Auto-generated method stub
-    return null;
+    return personRepository.findAll();
   }
 
   @Override
   public Person getByName(String firstName, String lastName) throws ResourceNotFoundException {
-    // TODO Auto-generated method stub
-    return null;
+    Person person = personRepository.findByName(firstName, lastName);
+    if (person == null) {
+      String error = String.format("%s %s not found", firstName, lastName);
+      throw new ResourceNotFoundException(error);
+    }
+    return person;
   }
 
   @Override
