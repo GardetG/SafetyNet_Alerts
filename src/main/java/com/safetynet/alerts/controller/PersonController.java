@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -42,6 +43,7 @@ public class PersonController {
     
     LOGGER.info("Request: Get all persons");
     List<PersonDto> allPersons = personService.getAll();
+    
     LOGGER.info("Response: List of all persons sent");
     return ResponseEntity.ok(allPersons);
     
@@ -65,6 +67,7 @@ public class PersonController {
     
     LOGGER.info("Request: Get persons with parameters: {}, {}", firstName, lastName);
     PersonDto person = personService.getByName(firstName, lastName);
+    
     LOGGER.info("Response: person sent");
     return ResponseEntity.ok(person);
     
@@ -89,6 +92,25 @@ public class PersonController {
             + createdPerson.getLastName());
     LOGGER.info("Response: person created");
     return ResponseEntity.created(uri).body(createdPerson);
+  }
+  
+  /**
+   * Handle HTTP PUT request on a person resource.
+   * 
+
+   * @param person to update
+   * @return HTTP 200 Response with the person updated
+   * @throws ResourceNotFoundException when the person to update is not found
+   */
+  @PutMapping("/person")
+  public ResponseEntity<PersonDto> putPerson(@Valid @RequestBody PersonDto person) 
+          throws ResourceNotFoundException {
+
+    LOGGER.info("Resquest: Update person");
+    PersonDto updatedPerson = personService.update(person);
+    
+    LOGGER.info("Response: Person updated");
+    return ResponseEntity.ok(updatedPerson);
   }
   
 }
