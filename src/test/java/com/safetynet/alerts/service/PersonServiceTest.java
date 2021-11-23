@@ -2,18 +2,19 @@ package com.safetynet.alerts.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.PersonRepository;
-
 import java.util.Collections;
 import java.util.List;
-
+import javax.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,4 +96,106 @@ class PersonServiceTest {
             .hasMessageContaining("firstName lastName not found");
   }
 
+  @Test
+  void addPersonTest() throws Exception {
+    // GIVEN
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(null)
+            .thenReturn(personTest);
+    when(personRepository.add(any(Person.class))).thenReturn(true);
+
+    // WHEN
+    Person actualperson = personService.add(personTest);
+
+    // THEN
+    assertThat(actualperson).isEqualTo(personTest);
+    verify(personRepository, times(2)).findByName("firstName", "lastName");
+    verify(personRepository, times(1)).add(personTest);
+  }
+
+  @Test
+  void addAlreadyExistingPersonTest() throws Exception {
+    // GIVEN
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(personTest);
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      personService.add(personTest);
+    })
+
+            // THEN
+            .isInstanceOf(ResourceAlreadyExistsException.class)
+            .hasMessageContaining("firstName lastName already exists");
+    verify(personRepository, times(1)).findByName("firstName", "lastName");
+    verify(personRepository, times(0)).add(any(Person.class));
+  }
+
+  @Test
+  void addInvalidPersonTest() throws Exception {
+    // GIVEN
+    Person invalidPerson = new Person("", "lastName1", "address1", "city1", "0001",
+            "000.000.0001", "email1@mail.fr");
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      personService.add(invalidPerson);
+    })
+
+            // THEN
+            .isInstanceOf(ConstraintViolationException.class)
+            .hasMessageContaining("Firstname is mandatory");
+  }
+
+  @Test
+  void updatePersonTest() throws Exception {
+    // GIVEN
+    Person updatedPerson = new Person("firstName", "lastName", "updated", "updated", "00001",
+            "000.000.0001", "updated@mail.fr");
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(personTest)
+            .thenReturn(updatedPerson);
+    when(personRepository.update(any(Person.class))).thenReturn(true);
+
+    // WHEN
+    Person actualperson = personService.update(updatedPerson);
+
+    // THEN
+    assertThat(actualperson).isEqualTo(updatedPerson);
+    verify(personRepository, times(2)).findByName("firstName", "lastName");
+    verify(personRepository, times(1)).update(updatedPerson);
+  }
+
+  @Test
+  void updateNotFoundPersonTest() throws Exception {
+    // GIVEN
+    Person updatedPerson = new Person("firstName", "lastName", "updated", "updated", "00001",
+            "000.000.0001", "updated@mail.fr");
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(null);
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      personService.update(updatedPerson);
+    })
+
+            // THEN
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("firstName lastName not found");
+    verify(personRepository, times(1)).findByName("firstName", "lastName");
+    verify(personRepository, times(0)).update(any(Person.class));
+  }
+
+  @Test
+  void updateInvalidPersonTest() throws Exception {
+    // GIVEN
+    Person invalidPerson = new Person("", "lastName1", "address1", "city1", "0001",
+            "000.000.0001", "email1@mail.fr");
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      personService.update(invalidPerson);
+    })
+
+            // THEN
+            .isInstanceOf(ConstraintViolationException.class)
+            .hasMessageContaining("Firstname is mandatory");
+  }
+  
 }

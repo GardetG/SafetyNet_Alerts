@@ -14,4 +14,8 @@ public interface PersonRepository {
 
   Person findByName(String firstName, String lastName);
   
+  boolean add(Person person);
+
+  boolean update(Person person);
+  
 }
