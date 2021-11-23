@@ -20,23 +20,35 @@ public class PersonServiceImpl implements PersonService {
   @Autowired
   PersonRepository personRepository;
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public List<Person> getAll() {
     return personRepository.findAll();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Person getByName(String firstName, String lastName) throws ResourceNotFoundException {
+    
     Person person = personRepository.findByName(firstName, lastName);
     if (person == null) {
       String error = String.format("%s %s not found", firstName, lastName);
       throw new ResourceNotFoundException(error);
     }
     return person;
+    
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Person add(@Valid Person person) throws ResourceAlreadyExistsException {
+    
     Person existingPerson = personRepository.findByName(person.getFirstName(),
             person.getLastName());
 
@@ -48,10 +60,15 @@ public class PersonServiceImpl implements PersonService {
 
     personRepository.add(person);
     return personRepository.findByName(person.getFirstName(), person.getLastName());
+    
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Person update(@Valid Person person) throws ResourceNotFoundException {
+    
     Person existingPerson = personRepository.findByName(person.getFirstName(),
             person.getLastName());
     if (existingPerson == null) {
@@ -61,12 +78,23 @@ public class PersonServiceImpl implements PersonService {
 
     personRepository.update(person);
     return personRepository.findByName(person.getFirstName(), person.getLastName());
+    
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(String firstName, String lastName) throws ResourceNotFoundException {
-    // TODO Auto-generated method stub
+    
+    Person existingPerson = personRepository.findByName(firstName, lastName);
+    if (existingPerson == null) {
+      String error = String.format("%s %s not found", firstName, lastName);
+      throw new ResourceNotFoundException(error);
+    }
 
+    personRepository.delete(existingPerson);
+    
   }
 
 }

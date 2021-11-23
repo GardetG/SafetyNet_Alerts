@@ -122,6 +122,7 @@ public class PersonController {
 
    * @param firstName of person to delete
    * @param lastName of person to delete
+   * @return HTTP 204
    * @throws ResourceNotFoundException when the person to delete is not found
    */
   @DeleteMapping("/person")
