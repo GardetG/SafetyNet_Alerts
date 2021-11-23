@@ -1,5 +1,6 @@
 package com.safetynet.alerts.controller;
 
+import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class GlobalControllerExceptionHandler {
     LOGGER.error("Can't process input : invalid parameter {}", errors);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
   }
-  
+
   /**
    * Handle MethodArgumentNotValidException thrown when trying to deserialize an
    * invalid object.
@@ -66,17 +67,32 @@ public class GlobalControllerExceptionHandler {
   }
 
   /**
-   * Handle ResourceNotFoundException thrown when the looked for resource can't
-   * be found.
+   * Handle ResourceNotFoundException thrown when the looked for resource can't be
+   * found.
    * 
 
    * @param ex instance of the exception
-   * @return HTTP 400 response with informations on invalid parameters
+   * @return HTTP 404 response with informations on resource
    */
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<String> handleNotFoundExceptions(ResourceNotFoundException ex) {
-    String error =  ex.getMessage();
+    String error = ex.getMessage();
     LOGGER.error("Can't find the resource : {}", error);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+  }
+
+  /**
+   * Handle ResourceNotFoundException thrown when the resource to create already
+   * exists.
+   * 
+
+   * @param ex instance of the exception
+   * @return HTTP 409 response with informations on resource
+   */
+  @ExceptionHandler(ResourceAlreadyExistsException.class)
+  public ResponseEntity<String> handleAlreadyExistsExceptions(ResourceAlreadyExistsException ex) {
+    String error = ex.getMessage();
+    LOGGER.error("Can't find the resource : {}", error);
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
   }
 }
