@@ -4,6 +4,7 @@ import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.Person;
 import java.util.List;
+import javax.validation.Valid;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,9 +17,9 @@ public interface PersonService {
 
   Person getByName(String firstName, String lastName) throws ResourceNotFoundException;
   
-  Person add(Person person) throws ResourceAlreadyExistsException;
+  Person add(@Valid Person person) throws ResourceAlreadyExistsException;
 
-  Person update(Person person) throws ResourceNotFoundException;
+  Person update(@Valid Person person) throws ResourceNotFoundException;
 
   void delete(String firstName, String lastName) throws ResourceNotFoundException;
 
