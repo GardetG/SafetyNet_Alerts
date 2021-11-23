@@ -20,10 +20,8 @@ import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.PersonService;
 import com.safetynet.alerts.util.JsonParser;
-
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -268,14 +266,13 @@ class PersonControllerTest {
   @Test
   void deletePersonWithInvalidArgumentsTest() throws Exception {
     // GIVEN
-    when(personService.getByName(anyString(), anyString())).thenReturn(personTest);
 
     // WHEN
-    mockMvc.perform(get("/person?firstName= &lastName=LastName"))
+    mockMvc.perform(delete("/person?firstName= &lastName=LastName"))
 
             // THEN
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$[0]", is("Firstname is mandatory")));
-    verify(personService, times(0)).getByName(anyString(), anyString());
+    verify(personService, times(0)).delete(anyString(), anyString());
   }
 }

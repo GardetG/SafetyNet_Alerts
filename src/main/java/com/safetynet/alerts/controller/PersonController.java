@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -106,11 +107,33 @@ public class PersonController {
   public ResponseEntity<PersonDto> putPerson(@Valid @RequestBody PersonDto person) 
           throws ResourceNotFoundException {
 
-    LOGGER.info("Resquest: Update person");
+    LOGGER.info("Request: Update person {} {}", person.getFirstName(), person.getLastName());
     PersonDto updatedPerson = personService.update(person);
     
     LOGGER.info("Response: Person updated");
     return ResponseEntity.ok(updatedPerson);
+  }
+  
+  /**
+   * Handle HTTP DELETE request on a person resource.
+   * 
+
+   * @param firstName of person to delete
+   * @param lastName of person to delete
+   * @throws ResourceNotFoundException when the person to delete is not found
+   */
+  @DeleteMapping("/person")
+  public ResponseEntity<Void> deletePerson(
+          @RequestParam @NotBlank(message = "Firstname is mandatory") String firstName,
+          @RequestParam @NotBlank(message = "LastName is mandatory") String lastName)
+          throws ResourceNotFoundException {
+
+    LOGGER.info("Request: Delete persons with parameters: " + firstName + ", " + lastName);
+    personService.delete(firstName, lastName);
+    
+    LOGGER.info("Response: Person deleted");
+    return ResponseEntity.noContent().build();
+
   }
   
 }
