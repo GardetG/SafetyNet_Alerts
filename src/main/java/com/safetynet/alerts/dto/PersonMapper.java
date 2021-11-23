@@ -1,6 +1,5 @@
-package com.safetynet.alerts.controller;
+package com.safetynet.alerts.dto;
 
-import com.safetynet.alerts.dto.PersonDto;
 import com.safetynet.alerts.model.Person;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +9,11 @@ import java.util.stream.Collectors;
  */
 public class PersonMapper {
 
+  private PersonMapper() {
+    throw new IllegalStateException("Utility class");
+  }
+  
+  
   /**
    * Map Person into PersonDto.
    * 
@@ -41,9 +45,8 @@ public class PersonMapper {
    */
   public static List<PersonDto> toDto(List<Person> persons) {
     return persons.stream()
-            .map(person -> {
-              return toDto(person);
-            }).collect(Collectors.toList());
+            .map(PersonMapper::toDto)
+            .collect(Collectors.toList());
   }
   
   /**
