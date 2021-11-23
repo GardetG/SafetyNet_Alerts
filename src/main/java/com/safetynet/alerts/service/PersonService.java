@@ -18,4 +18,6 @@ public interface PersonService {
   
   PersonDto add(PersonDto person) throws ResourceAlreadyExistsException;
 
+  PersonDto update(PersonDto person) throws ResourceNotFoundException;
+
 }

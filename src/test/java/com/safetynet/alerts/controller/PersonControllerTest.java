@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -111,14 +112,14 @@ class PersonControllerTest {
   void getPersonWhenNotFoundTest() throws Exception {
     // GIVEN
     when(personService.getByName(anyString(), anyString())).thenThrow(
-            new ResourceNotFoundException("Firstname LastName is not found"));
+            new ResourceNotFoundException("firstname lastName not found"));
 
     // WHEN
     mockMvc.perform(get("/persons/person?firstName=firstName&lastName=lastName"))
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("Firstname LastName is not found")));
+            .andExpect(jsonPath("$", is("firstname lastName not found")));
     verify(personService, times(1)).getByName("firstName", "lastName");
   }
 
@@ -174,5 +175,58 @@ class PersonControllerTest {
             .andExpect(status().isUnprocessableEntity())
             .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")));
     verify(personService, times(0)).add(any(PersonDto.class));
+  }
+  
+  @Test
+  void putPersonTest() throws Exception {
+    // GIVEN
+    when(personService.update(any(PersonDto.class))).thenReturn(personTest);
+
+    // WHEN
+    mockMvc.perform(put("/person")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonParser.asString(personTest)))
+
+            // THEN
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.firstName", is("firstName")))
+            .andExpect(jsonPath("$.lastName", is("lastName")));
+    verify(personService, times(1)).update(personTest);
+  }
+
+  @Test
+  void putNotFoundPersonTest() throws Exception {
+    // GIVEN
+    String error = String.format("%s %s not found", 
+            personTest.getFirstName(),
+            personTest.getLastName());
+    when(personService.update(any(PersonDto.class))).thenThrow(
+            new ResourceNotFoundException(error));
+
+    // WHEN
+    mockMvc.perform(put("/person")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonParser.asString(personTest)))
+
+            // THEN
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$", is("firstName lastName not found")));
+    verify(personService, times(1)).update(personTest);
+  }
+
+  @Test
+  void putInvalidPersonTest() throws Exception {
+    // GIVEN
+    PersonDto invalidPerson = new PersonDto("", "lastName1", "address1", "city1", "0001",
+            "000.000.0001", "email1@mail.fr");
+
+    // WHEN
+    mockMvc.perform(put("/person")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonParser.asString(invalidPerson)))
+
+            // THEN
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")));
   }
 }
