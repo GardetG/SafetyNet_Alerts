@@ -20,4 +20,6 @@ public interface PersonService {
 
   PersonDto update(PersonDto person) throws ResourceNotFoundException;
 
+  void delete(String firstName, String lastName) throws ResourceNotFoundException;
+
 }

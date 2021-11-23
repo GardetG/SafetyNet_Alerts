@@ -4,9 +4,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -18,8 +20,10 @@ import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.PersonService;
 import com.safetynet.alerts.util.JsonParser;
+
 import java.util.Collections;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -228,5 +232,50 @@ class PersonControllerTest {
             // THEN
             .andExpect(status().isUnprocessableEntity())
             .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")));
+  }
+  
+  @Test
+  void deletePersonTest() throws Exception {
+    // GIVEN
+
+    // WHEN
+    mockMvc.perform(delete("/person?firstName=firstName&lastName=lastName"))
+
+            // THEN
+            .andExpect(status().isNoContent());
+    verify(personService, times(1)).delete("firstName", "lastName");
+  }
+
+  @Test
+  void deleteNotFoundPersonTest() throws Exception {
+    // GIVEN
+    String error = String.format("%s %s not found", 
+            personTest.getFirstName(),
+            personTest.getLastName());
+    doThrow(new ResourceNotFoundException(error)).when(personService)
+            .delete(anyString(), anyString());
+
+
+    // WHEN
+    mockMvc.perform(delete("/person?firstName=firstName&lastName=lastName"))
+
+            // THEN
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$", is("firstName lastName not found")));
+    verify(personService, times(1)).delete("firstName", "lastName");
+  }
+  
+  @Test
+  void deletePersonWithInvalidArgumentsTest() throws Exception {
+    // GIVEN
+    when(personService.getByName(anyString(), anyString())).thenReturn(personTest);
+
+    // WHEN
+    mockMvc.perform(get("/person?firstName= &lastName=LastName"))
+
+            // THEN
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")));
+    verify(personService, times(0)).getByName(anyString(), anyString());
   }
 }
