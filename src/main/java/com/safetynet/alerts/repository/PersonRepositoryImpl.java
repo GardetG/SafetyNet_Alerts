@@ -38,8 +38,7 @@ public class PersonRepositoryImpl implements PersonRepository {
    */
   @Override
   public boolean add(Person person) {
-    // TODO Auto-generated method stub
-    return false;
+    return personsList.add(person);
   }
 
   /**
@@ -47,8 +46,18 @@ public class PersonRepositoryImpl implements PersonRepository {
    */
   @Override
   public boolean update(Person person) {
-    // TODO Auto-generated method stub
-    return false;
+    Person existingPerson = personsList.stream()
+            .filter(personElemnt -> (personElemnt.getFirstName().equals(person.getFirstName())
+                    && (personElemnt.getLastName().equals(person.getLastName()))))
+            .findFirst().orElse(null);
+    
+    if (existingPerson == null) {
+      return false;
+    }
+    
+    int index = personsList.indexOf(existingPerson);
+    personsList.set(index, person);
+    return true;
   }
 
   /**
@@ -56,8 +65,7 @@ public class PersonRepositoryImpl implements PersonRepository {
    */
   @Override
   public boolean delete(Person person) {
-    // TODO Auto-generated method stub
-    return false;
+    return personsList.remove(person);
   }
 
 }
