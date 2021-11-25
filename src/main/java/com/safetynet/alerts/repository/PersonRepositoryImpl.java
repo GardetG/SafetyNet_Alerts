@@ -2,16 +2,14 @@ package com.safetynet.alerts.repository;
 
 import com.safetynet.alerts.model.Person;
 import java.util.List;
-import lombok.Setter;
 import org.springframework.stereotype.Repository;
 
 /**
  * Repository Class implementation for Person.
  */
 @Repository
-public class PersonRepositoryImpl implements PersonRepository {
+public class PersonRepositoryImpl implements LoadableRepository<Person>, PersonRepository {
 
-  @Setter
   private List<Person> personsList;
 
   /**
@@ -66,6 +64,14 @@ public class PersonRepositoryImpl implements PersonRepository {
   @Override
   public boolean delete(Person person) {
     return personsList.remove(person);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void setupRepository(List<Person> resourcesList) {
+    personsList = resourcesList;
   }
 
 }

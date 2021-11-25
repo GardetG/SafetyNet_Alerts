@@ -10,7 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("UnitTests")
 @SpringBootTest
 class PersonRepositoryTest {
 
@@ -32,7 +34,7 @@ class PersonRepositoryTest {
   @Test
   void findAllPersonTest() {
     // GIVEN
-    personRepository.setPersonsList(List.of(personTest, personTest2));
+    personRepository.setupRepository(List.of(personTest, personTest2));
 
     // WHEN
     List<Person> actualList = personRepository.findAll();
@@ -46,7 +48,7 @@ class PersonRepositoryTest {
   @Test
   void findAllPersonWhenNoPersonFoundTest() {
     // GIVEN
-    personRepository.setPersonsList(Collections.emptyList());
+    personRepository.setupRepository(Collections.emptyList());
 
     // WHEN
     List<Person> actualList = personRepository.findAll();
@@ -58,7 +60,7 @@ class PersonRepositoryTest {
   @Test
   void findPersonByNameTest() {
     // GIVEN
-    personRepository.setPersonsList(List.of(personTest, personTest2));
+    personRepository.setupRepository(List.of(personTest, personTest2));
 
     // WHEN
     Person actualPerson = personRepository.findByName("firstName", "lastName");
@@ -70,7 +72,7 @@ class PersonRepositoryTest {
   @Test
   void findPersonWhenFirstnameNotFoundTest() {
     // GIVEN
-    personRepository.setPersonsList(List.of(personTest, personTest2));
+    personRepository.setupRepository(List.of(personTest, personTest2));
 
     // WHEN
     Person actualPerson = personRepository.findByName("Name3", "lastName");
@@ -82,7 +84,7 @@ class PersonRepositoryTest {
   @Test
   void findPersonWhenLastnameNotFoundTest() {
     // GIVEN
-    personRepository.setPersonsList(List.of(personTest, personTest2));
+    personRepository.setupRepository(List.of(personTest, personTest2));
 
     // WHEN
     Person actualPerson = personRepository.findByName("firstName", "Name3");
@@ -94,7 +96,7 @@ class PersonRepositoryTest {
   @Test
   void addPersonTest() {
     // GIVEN
-    personRepository.setPersonsList(new ArrayList<Person>(List.of(personTest)));
+    personRepository.setupRepository(new ArrayList<Person>(List.of(personTest)));
 
     // WHEN
     boolean isSuccess = personRepository.add(personTest2);
@@ -108,7 +110,7 @@ class PersonRepositoryTest {
   @Test
   void updatePersonTest() {
     // GIVEN
-    personRepository.setPersonsList(new ArrayList<Person>(List.of(personTest, personTest2)));
+    personRepository.setupRepository(new ArrayList<Person>(List.of(personTest, personTest2)));
     Person personTestUpdated = new Person("firstName", "lastName", "update", "update", "00003",
             "000.000.0003", "update@email.fr");
 
@@ -125,7 +127,7 @@ class PersonRepositoryTest {
   @Test
   void updateNotFoundPersonTest() {
     // GIVEN
-    personRepository.setPersonsList(new ArrayList<Person>(List.of(personTest2)));
+    personRepository.setupRepository(new ArrayList<Person>(List.of(personTest2)));
     Person personTestUpdated = new Person("firstName", "lastName", "update", "update", "00003",
             "000.000.0003", "update@email.fr");
 
@@ -142,7 +144,7 @@ class PersonRepositoryTest {
   @Test
   void deletePersonTest() {
     // GIVEN
-    personRepository.setPersonsList(new ArrayList<Person>(List.of(personTest, personTest2)));
+    personRepository.setupRepository(new ArrayList<Person>(List.of(personTest, personTest2)));
 
     // WHEN
     boolean isSuccess = personRepository.delete(personTest);
@@ -157,7 +159,7 @@ class PersonRepositoryTest {
   @Test
   void deleteNotFoundPersonTest() {
     // GIVEN
-    personRepository.setPersonsList(new ArrayList<Person>(List.of(personTest2)));
+    personRepository.setupRepository(new ArrayList<Person>(List.of(personTest2)));
 
     // WHEN
     boolean isSuccess = personRepository.delete(personTest);
