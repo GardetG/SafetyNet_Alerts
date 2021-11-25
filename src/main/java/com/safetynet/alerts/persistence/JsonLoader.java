@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.safetynet.alerts.configuration.JsonUrlProperty;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.LoadableRepository;
 import java.io.IOException;
@@ -24,6 +25,9 @@ import org.springframework.stereotype.Component;
 public class JsonLoader implements CommandLineRunner {
 
   @Autowired
+  private JsonUrlProperty property;
+  
+  @Autowired
   LoadableRepository<Person> personRepository;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JsonLoader.class);
@@ -31,7 +35,7 @@ public class JsonLoader implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
 
-    String url = "/data.json";
+    String url = property.getJsonUrl();
 
     LOGGER.info("Attempt to load : {}", url);
     try (InputStream inputStream = JsonLoader.class.getResourceAsStream(url)) {
