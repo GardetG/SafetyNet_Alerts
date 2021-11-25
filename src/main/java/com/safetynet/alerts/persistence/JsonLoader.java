@@ -22,11 +22,11 @@ import org.springframework.stereotype.Component;
  */
 @Profile("!UnitTests")
 @Component
-public class JsonLoader implements CommandLineRunner {
+public class JsonLoader implements DataLoader, CommandLineRunner {
 
   @Autowired
   private JsonUrlProperty property;
-  
+
   @Autowired
   LoadableRepository<Person> personRepository;
 
@@ -35,22 +35,25 @@ public class JsonLoader implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
 
-    String url = property.getJsonUrl();
+    load(property.getJsonUrl());
 
+  }
+
+  @Override
+  public void load(String url) {
     LOGGER.info("Attempt to load : {}", url);
     try (InputStream inputStream = JsonLoader.class.getResourceAsStream(url)) {
 
       ObjectMapper mapper = new ObjectMapper();
       JsonNode sourceNode = mapper.readTree(inputStream);
 
-      
-      personRepository.setupRepository(loadRessources(sourceNode, "persons",
-              new TypeReference<List<Person>>() {}));
+      personRepository.setupRepository(
+              loadRessources(sourceNode, "persons", new TypeReference<List<Person>>() {
+              }));
 
     } catch (IOException e) {
       LOGGER.error("Error while loading : {}", url);
     }
-
   }
 
   private <T> List<T> loadRessources(JsonNode node, String key, TypeReference<List<T>> type) {
@@ -60,5 +63,5 @@ public class JsonLoader implements CommandLineRunner {
     LOGGER.info("{} loaded", key);
     return ressourcesList;
   }
-  
+
 }
