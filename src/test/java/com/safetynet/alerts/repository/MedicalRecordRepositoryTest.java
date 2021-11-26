@@ -3,8 +3,6 @@ package com.safetynet.alerts.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.safetynet.alerts.model.MedicalRecord;
-import com.safetynet.alerts.model.MedicalRecord;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;

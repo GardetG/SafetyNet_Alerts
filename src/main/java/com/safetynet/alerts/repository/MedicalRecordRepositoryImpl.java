@@ -1,8 +1,7 @@
 package com.safetynet.alerts.repository;
 
 import com.safetynet.alerts.model.MedicalRecord;
-import com.safetynet.alerts.model.MedicalRecord;
-
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public class MedicalRecordRepositoryImpl
         implements LoadableRepository<MedicalRecord>, MedicalRecordRepository {
 
-  private List<MedicalRecord> medicalRecordsList;
+  private List<MedicalRecord> medicalRecordsList = new ArrayList<>();
 
   /**
    * {@inheritDoc}
