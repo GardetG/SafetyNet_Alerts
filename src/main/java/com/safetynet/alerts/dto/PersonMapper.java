@@ -22,9 +22,6 @@ public class PersonMapper {
    * @return DTO associated
    */
   public static PersonDto toDto(Person person) {
-    if (person == null) {
-      return null;
-    }
     PersonDto personDto = new PersonDto();
     personDto.setFirstName(person.getFirstName());
     personDto.setLastName(person.getLastName());
@@ -57,9 +54,6 @@ public class PersonMapper {
    * @return Person associated
    */
   public static Person toModel(PersonDto personDto) {
-    if (personDto == null) {
-      return null;
-    }
     Person person = new Person();
     person.setFirstName(personDto.getFirstName());
     person.setLastName(personDto.getLastName());

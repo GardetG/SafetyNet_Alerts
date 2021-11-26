@@ -8,4 +8,8 @@
 
 == Persons Management
 
-include::Person.adoc[]
+include::person.adoc[]
+
+== Medical Records Management
+
+include::medicalrecord.adoc[]

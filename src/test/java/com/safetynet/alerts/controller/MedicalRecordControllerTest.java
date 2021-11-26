@@ -23,12 +23,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.safetynet.alerts.dto.PersonDto;
+import com.safetynet.alerts.dto.MedicalRecordDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
-import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.service.PersonService;
+import com.safetynet.alerts.model.MedicalRecord;
+import com.safetynet.alerts.service.MedicalRecordService;
 import com.safetynet.alerts.util.JsonParser;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,134 +41,138 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(PersonController.class)
+@WebMvcTest(MedicalRecordController.class)
 @AutoConfigureRestDocs
-class PersonControllerTest {
+class MedicalRecordControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
 
   @MockBean
-  private PersonService personService;
+  private MedicalRecordService medicalRecordService;
 
-  private Person personTest;
-  private Person personTest2;
+  private MedicalRecord medicalRecordTest;
+  private MedicalRecord medicalRecordTest2;
 
   @BeforeEach
   void setUp() throws Exception {
-    personTest = new Person("firstName", "lastName", "address", "city", "0001", "000.000.0001",
-            "email@mail.fr");
-    personTest2 = new Person("firstName2", "lastName2", "address2", "city2", "0002",
-            "000.000.0002", "email2@mail.fr");
+    medicalRecordTest = new MedicalRecord("firstName", "lastName", LocalDate.ofYearDay(1980, 1),
+            List.of("med1", "med2"), Collections.emptyList());
+    medicalRecordTest2 = new MedicalRecord("firstName2", "lastName2", LocalDate.ofYearDay(2000, 1),
+            Collections.emptyList(), List.of("allg1"));
   }
 
   @Test
-  void getAllPersonsTest() throws Exception {
+  void getAllMedicalRecordsTest() throws Exception {
     // GIVEN
-    when(personService.getAll()).thenReturn(List.of(personTest, personTest2));
+    when(medicalRecordService.getAll()).thenReturn(List.of(medicalRecordTest, medicalRecordTest2));
 
     // WHEN
-    mockMvc.perform(get("/persons"))
+    mockMvc.perform(get("/medicalRecords"))
 
             // THEN
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].firstName", is("firstName")))
             .andExpect(jsonPath("$[1].firstName", is("firstName2")))
-            .andDo(document("getAllPerson",
+            .andDo(document("getAllMedicalRecord",
                     preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())));
-    verify(personService, times(1)).getAll();
+    verify(medicalRecordService, times(1)).getAll();
   }
 
   @Test
-  void getAllPersonsWhenNotFoundTest() throws Exception {
+  void getAllMedicalRecordsWhenNotFoundTest() throws Exception {
     // GIVEN
-    when(personService.getAll()).thenReturn(Collections.emptyList());
+    when(medicalRecordService.getAll()).thenReturn(Collections.emptyList());
 
     // WHEN
-    mockMvc.perform(get("/persons"))
+    mockMvc.perform(get("/medicalRecords"))
 
             // THEN
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(0)));
-    verify(personService, times(1)).getAll();
+    verify(medicalRecordService, times(1)).getAll();
   }
    
   @Test
-  void getPersonTest() throws Exception {
+  void getMedicalRecordTest() throws Exception {
     // GIVEN
-    when(personService.getByName(anyString(), anyString())).thenReturn(personTest);
+    when(medicalRecordService.getByName(anyString(), anyString())).thenReturn(medicalRecordTest);
 
     // WHEN
-    mockMvc.perform(get("/persons/person?firstName=firstName&lastName=lastName"))
+    mockMvc.perform(get("/medicalRecords/medicalRecord?firstName=firstName&lastName=lastName"))
 
             // THEN
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.firstName", is("firstName")))
-            .andDo(document("getPerson",
+            .andDo(document("getMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
                     requestParameters(
                             parameterWithName("firstName").description(
-                    "Firstname of the person to retrieve. This parameter *must not be blank*.")
+                    "Firstname of the medical record to retrieve. "
+                    + "This parameter *must not be blank*.")
                             .optional(),
                             parameterWithName("lastName").description(
-                    "LastName of the person to retrieve. This parameter *must not be blank*.")
+                    "LastName of the medical record to retrieve. "
+                    + "This parameter *must not be blank*.")
                             .optional()
                         )));
-    verify(personService, times(1)).getByName("firstName", "lastName");
+    verify(medicalRecordService, times(1)).getByName("firstName", "lastName");
   }
   
   @Test
-  void getPersonWithInvalidArgumentsTest() throws Exception {
+  void getMedicalRecordWithInvalidArgumentsTest() throws Exception {
     // GIVEN
-    when(personService.getByName(anyString(), anyString())).thenReturn(personTest);
+    when(medicalRecordService.getByName(anyString(), anyString())).thenReturn(medicalRecordTest);
 
     // WHEN
-    mockMvc.perform(get("/persons/person?firstName= &lastName=LastName"))
+    mockMvc.perform(get("/medicalRecords/medicalRecord?firstName= &lastName=LastName"))
 
             // THEN
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$[0]", is("Firstname is mandatory")))
-            .andDo(document("getInvalidPerson",
+            .andDo(document("getInvalidMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(personService, times(0)).getByName(anyString(), anyString());
+    verify(medicalRecordService, times(0)).getByName(anyString(), anyString());
   }
 
   @Test
-  void getPersonWhenNotFoundTest() throws Exception {
+  void getMedicalRecordWhenNotFoundTest() throws Exception {
     // GIVEN
-    when(personService.getByName(anyString(), anyString())).thenThrow(
-            new ResourceNotFoundException("firstname lastName not found"));
+    when(medicalRecordService.getByName(anyString(), anyString())).thenThrow(
+            new ResourceNotFoundException("Medical record of firstname lastName not found"));
 
     // WHEN
-    mockMvc.perform(get("/persons/person?firstName=firstName&lastName=lastName"))
+    mockMvc.perform(get("/medicalRecords/medicalRecord?firstName=firstName&lastName=lastName"))
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("firstname lastName not found")))
-            .andDo(document("getNotFoundPerson",
+            .andExpect(jsonPath("$", is("Medical record of firstname lastName not found")))
+            .andDo(document("getNotFoundMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(personService, times(1)).getByName("firstName", "lastName");
+    verify(medicalRecordService, times(1)).getByName("firstName", "lastName");
   }
+  
 
   @Test
-  void postPersonTest() throws Exception {
+  void postMedicalRecordTest() throws Exception {
     // GIVEN
-    when(personService.add(any(Person.class))).thenReturn(personTest);
+    when(medicalRecordService.add(any(MedicalRecord.class))).thenReturn(medicalRecordTest);
 
     // WHEN
-    mockMvc.perform(post("/person")
+    mockMvc.perform(post("/medicalRecord")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(personTest)))
+            .content(JsonParser.asString(medicalRecordTest)))
 
             // THEN
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.firstName", is("firstName")))
             .andExpect(jsonPath("$.lastName", is("lastName")))
-            .andDo(document("postPerson",
+            .andExpect(jsonPath("$.birthdate", is("01/01/1980")))
+            .andDo(document("postMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
                     requestFields(
@@ -177,77 +182,75 @@ class PersonControllerTest {
                         fieldWithPath("lastName")
                             .description("The last name of the person. "
                                     + "This parameter *must not be blank*."),
-                        fieldWithPath("address")
-                            .description("The address of the person."),
-                        fieldWithPath("city")
-                            .description("The city of the person."),
-                        fieldWithPath("zip")
-                            .description("The ZIP code."),
-                        fieldWithPath("phone")
-                            .description("The phone number of the person."),
-                        fieldWithPath("email")
-                            .description("The email of the person."))));
-    verify(personService, times(1)).add(personTest);
+                        fieldWithPath("birthdate")
+                            .description("The birthdate of the person."),
+                        fieldWithPath("medications")
+                            .description("The list of all medications and their dosage taken"
+                                    + " by this person."),
+                        fieldWithPath("allergies")
+                            .description("The list of all allergies of this person."))));
+    verify(medicalRecordService, times(1)).add(medicalRecordTest);
   }
 
   @Test
-  void postAlreadyExistingPersonTest() throws Exception {
+  void postAlreadyExistingMedicalRecordTest() throws Exception {
     // GIVEN
-    String error = String.format("%s %s already exists", 
-            personTest.getFirstName(),
-            personTest.getLastName());
-    when(personService.add(any(Person.class))).thenThrow(
+    String error = String.format("Medical record of %s %s already exists", 
+            medicalRecordTest.getFirstName(),
+            medicalRecordTest.getLastName());
+    when(medicalRecordService.add(any(MedicalRecord.class))).thenThrow(
             new ResourceAlreadyExistsException(error));
 
     // WHEN
-    mockMvc.perform(post("/person")
+    mockMvc.perform(post("/medicalRecord")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(personTest)))
+            .content(JsonParser.asString(medicalRecordTest)))
 
             // THEN
             .andExpect(status().isConflict())
             .andExpect(jsonPath("$", is(error)))
-            .andDo(document("postConflictPerson",
+            .andDo(document("postConflictMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(personService, times(1)).add(personTest);
+    verify(medicalRecordService, times(1)).add(medicalRecordTest);
   }
 
   @Test
-  void postInvalidPersonTest() throws Exception {
+  void postInvalidMedicalRecordTest() throws Exception {
     // GIVEN
-    PersonDto invalidPerson = new PersonDto("", "lastName1", "address1", "city1", "0001",
-            "000.000.0001", "email1@mail.fr");
+    MedicalRecordDto invalidMedicalRecord = new MedicalRecordDto("", "lastName1", 
+            LocalDate.ofYearDay(1980, 1), Collections.emptyList(), Collections.emptyList());
 
     // WHEN
-    mockMvc.perform(post("/person")
+    mockMvc.perform(post("/medicalRecord")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(invalidPerson)))
+            .content(JsonParser.asString(invalidMedicalRecord)))
 
             // THEN
             .andExpect(status().isUnprocessableEntity())
             .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")))
-            .andDo(document("postInvalidPerson",
+            .andDo(document("postInvalidMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(personService, times(0)).add(any(Person.class));
+    verify(medicalRecordService, times(0)).add(any(MedicalRecord.class));
   }
   
   @Test
-  void putPersonTest() throws Exception {
+  void putMedicalRecordTest() throws Exception {
     // GIVEN
-    when(personService.update(any(Person.class))).thenReturn(personTest);
+    when(medicalRecordService.update(any(MedicalRecord.class))).thenReturn(medicalRecordTest);
 
     // WHEN
-    mockMvc.perform(put("/person")
+    mockMvc.perform(put("/medicalRecord")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(personTest)))
+            .content(JsonParser.asString(medicalRecordTest)))
 
             // THEN
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.firstName", is("firstName")))
             .andExpect(jsonPath("$.lastName", is("lastName")))
-            .andDo(document("putPerson",
+            .andExpect(jsonPath("$.birthdate", is("01/01/1980")))
+            .andDo(document("putMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
                     requestFields(
@@ -257,119 +260,118 @@ class PersonControllerTest {
                         fieldWithPath("lastName")
                             .description("The last name of the person. "
                                     + "This parameter *must not be blank*."),
-                        fieldWithPath("address")
-                            .description("The address of the person."),
-                        fieldWithPath("city")
-                            .description("The city of the person."),
-                        fieldWithPath("zip")
-                            .description("The ZIP code."),
-                        fieldWithPath("phone")
-                            .description("The phone number of the person."),
-                        fieldWithPath("email")
-                            .description("The email of the person."))));
-    verify(personService, times(1)).update(personTest);
+                        fieldWithPath("birthdate")
+                            .description("The birthdate of the medicalRecord."),
+                        fieldWithPath("medications")
+                            .description("The list of all medications and their dosage taken"
+                                    + " by this person."),
+                        fieldWithPath("allergies")
+                            .description("The list of all allergies of this person."))));
+    verify(medicalRecordService, times(1)).update(medicalRecordTest);
   }
 
   @Test
-  void putNotFoundPersonTest() throws Exception {
+  void putNotFoundMedicalRecordTest() throws Exception {
     // GIVEN
-    String error = String.format("%s %s not found", 
-            personTest.getFirstName(),
-            personTest.getLastName());
-    when(personService.update(any(Person.class))).thenThrow(
+    String error = String.format("Medical record of %s %s not found", 
+            medicalRecordTest.getFirstName(),
+            medicalRecordTest.getLastName());
+    when(medicalRecordService.update(any(MedicalRecord.class))).thenThrow(
             new ResourceNotFoundException(error));
 
     // WHEN
-    mockMvc.perform(put("/person")
+    mockMvc.perform(put("/medicalRecord")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(personTest)))
+            .content(JsonParser.asString(medicalRecordTest)))
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("firstName lastName not found")))
-            .andDo(document("putNotFoundPerson",
+            .andExpect(jsonPath("$", is("Medical record of firstName lastName not found")))
+            .andDo(document("putNotFoundMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(personService, times(1)).update(personTest);
+    verify(medicalRecordService, times(1)).update(medicalRecordTest);
   }
 
   @Test
-  void putInvalidPersonTest() throws Exception {
+  void putInvalidMedicalRecordTest() throws Exception {
     // GIVEN
-    PersonDto invalidPerson = new PersonDto("", "lastName1", "address1", "city1", "0001",
-            "000.000.0001", "email1@mail.fr");
+    MedicalRecordDto invalidMedicalRecord = new MedicalRecordDto("", "lastName1", 
+            LocalDate.ofYearDay(1980, 1), Collections.emptyList(), Collections.emptyList());
 
     // WHEN
-    mockMvc.perform(put("/person")
+    mockMvc.perform(put("/medicalRecord")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(invalidPerson)))
+            .content(JsonParser.asString(invalidMedicalRecord)))
 
             // THEN
             .andExpect(status().isUnprocessableEntity())
             .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")))
-            .andDo(document("putInvalidPerson",
+            .andDo(document("putInvalidMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
   }
   
   @Test
-  void deletePersonTest() throws Exception {
+  void deleteMedicalRecordTest() throws Exception {
     // GIVEN
 
     // WHEN
-    mockMvc.perform(delete("/person?firstName=firstName&lastName=lastName"))
+    mockMvc.perform(delete("/medicalRecord?firstName=firstName&lastName=lastName"))
 
             // THEN
             .andExpect(status().isNoContent())
-            .andDo(document("deletePerson",
+            .andDo(document("deleteMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
                     requestParameters(
                             parameterWithName("firstName").description(
-                    "Firstname of the person to delete. This parameter *must not be blank*.")
+                    "Firstname of the medical record to delete. "
+                    + "This parameter *must not be blank*.")
                             .optional(),
                             parameterWithName("lastName").description(
-                    "LastName of the person to delete. This parameter *must not be blank*.")
+                    "LastName of the medical record to delete. "
+                    + "This parameter *must not be blank*.")
                             .optional()
                         )));
-    verify(personService, times(1)).delete("firstName", "lastName");
+    verify(medicalRecordService, times(1)).delete("firstName", "lastName");
   }
 
   @Test
-  void deleteNotFoundPersonTest() throws Exception {
+  void deleteNotFoundMedicalRecordTest() throws Exception {
     // GIVEN
-    String error = String.format("%s %s not found", 
-            personTest.getFirstName(),
-            personTest.getLastName());
-    doThrow(new ResourceNotFoundException(error)).when(personService)
+    String error = String.format("Medical record of %s %s not found", 
+            medicalRecordTest.getFirstName(),
+            medicalRecordTest.getLastName());
+    doThrow(new ResourceNotFoundException(error)).when(medicalRecordService)
             .delete(anyString(), anyString());
 
 
     // WHEN
-    mockMvc.perform(delete("/person?firstName=firstName&lastName=lastName"))
+    mockMvc.perform(delete("/medicalRecord?firstName=firstName&lastName=lastName"))
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("firstName lastName not found")))
-            .andDo(document("deleteNotFoundPerson",
+            .andExpect(jsonPath("$", is("Medical record of firstName lastName not found")))
+            .andDo(document("deleteNotFoundMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(personService, times(1)).delete("firstName", "lastName");
+    verify(medicalRecordService, times(1)).delete("firstName", "lastName");
   }
   
   @Test
-  void deletePersonWithInvalidArgumentsTest() throws Exception {
+  void deleteMedicalRecordWithInvalidArgumentsTest() throws Exception {
     // GIVEN
 
     // WHEN
-    mockMvc.perform(delete("/person?firstName= &lastName=LastName"))
+    mockMvc.perform(delete("/medicalRecord?firstName= &lastName=LastName"))
 
             // THEN
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$[0]", is("Firstname is mandatory")))
-            .andDo(document("deleteInvalidPerson",
+            .andDo(document("deleteInvalidMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(personService, times(0)).delete(anyString(), anyString());
+    verify(medicalRecordService, times(0)).delete(anyString(), anyString());
   }
 }

@@ -19,7 +19,7 @@ public interface PersonRepository {
   List<Person> findAll();
 
   /**
-   * Find a Person in the by its name.
+   * Find a Person by its name.
    * 
 
    * @param firstName of the Person

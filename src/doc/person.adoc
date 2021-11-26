@@ -106,6 +106,7 @@ When making a call with invalid person, this response can be expected:
 
 include::{snippets}/putInvalidPerson/http-response.adoc[]
 
+
 === Delete person
 
 ==== Resquest

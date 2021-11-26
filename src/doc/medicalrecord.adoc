@@ -1,0 +1,138 @@
+=== Get all medical records
+
+==== Resquest
+
+===== Request
+include::{snippets}/getAllMedicalRecord/http-request.adoc[]
+
+===== cURL
+include::{snippets}/getAllMedicalRecord/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/getAllMedicalRecord/http-response.adoc[]
+
+
+=== Get medical record
+
+==== Request
+
+===== Request
+include::{snippets}/getMedicalRecord/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/getMedicalRecord/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/getMedicalRecord/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/getMedicalRecord/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When the medical record of this person can't be found, this response can be expected:
+
+include::{snippets}/getNotFoundMedicalRecord/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid parameters, this response can be expected:
+
+include::{snippets}/getInvalidMedicalRecord/http-response.adoc[]
+
+
+=== Post medical record
+
+==== Resquest
+
+===== Request
+include::{snippets}/postMedicalRecord/http-request.adoc[]
+
+====== Request fields
+include::{snippets}/postMedicalRecord/request-fields.adoc[]
+
+===== cURL
+include::{snippets}/postMedicalRecord/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/postMedicalRecord/http-response.adoc[]
+
+==== Error Response
+
+===== Already Exists
+When the medical record of this person already exists, this response can be expected:
+
+include::{snippets}/postConflictMedicalRecord/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid person, this response can be expected:
+
+include::{snippets}/postInvalidMedicalRecord/http-response.adoc[]
+
+
+=== Put medical record
+
+==== Resquest
+
+===== Request
+include::{snippets}/putMedicalRecord/http-request.adoc[]
+
+====== Request fields
+include::{snippets}/putMedicalRecord/request-fields.adoc[]
+
+===== cURL
+include::{snippets}/putMedicalRecord/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/putMedicalRecord/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When the medical record to update can't be found, this response can be expected:
+
+include::{snippets}/putNotFoundMedicalRecord/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid person, this response can be expected:
+
+include::{snippets}/putInvalidMedicalRecord/http-response.adoc[]
+
+
+=== Delete medical record
+
+==== Resquest
+
+===== Request
+include::{snippets}/deleteMedicalRecord/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/deleteMedicalRecord/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/deleteMedicalRecord/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/deleteMedicalRecord/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When the medical record to delete can't be found, this response can be expected:
+
+include::{snippets}/deleteNotFoundMedicalRecord/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid parameters, this response can be expected:
+
+include::{snippets}/deleteInvalidMedicalRecord/http-response.adoc[]

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.safetynet.alerts.configuration.JsonUrlProperty;
+import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.LoadableRepository;
 import java.io.IOException;
@@ -29,6 +30,9 @@ public class JsonLoader implements DataLoader, CommandLineRunner {
 
   @Autowired
   LoadableRepository<Person> personRepository;
+  
+  @Autowired
+  LoadableRepository<MedicalRecord> medicalRecordRepository;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JsonLoader.class);
 
@@ -48,8 +52,9 @@ public class JsonLoader implements DataLoader, CommandLineRunner {
       JsonNode sourceNode = mapper.readTree(inputStream);
 
       personRepository.setupRepository(
-              loadRessources(sourceNode, "persons", new TypeReference<List<Person>>() {
-              }));
+              loadRessources(sourceNode, "persons", new TypeReference<List<Person>>() {}));
+      medicalRecordRepository.setupRepository(
+              loadRessources(sourceNode, "medicalrecords", new TypeReference<List<MedicalRecord>>() {}));
 
     } catch (IOException e) {
       LOGGER.error("Error while loading : {}", url);
