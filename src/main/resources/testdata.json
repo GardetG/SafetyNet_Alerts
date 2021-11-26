@@ -1,0 +1,16 @@
+{
+    "persons": [
+        { "firstName":"firstNameA", "lastName":"lastNameA", "address":"1 Test St", "city":"Test", "zip":"00001", "phone":"000-000-0001", "email":"test1@email.com" },
+        { "firstName":"firstNameB", "lastName":"lastNameA", "address":"1 Test St", "city":"Test", "zip":"00001", "phone":"000-000-0002", "email":"test1@email.com" },
+        { "firstName":"firstNameC", "lastName":"lastNameB", "address":"2 Test St", "city":"Test", "zip":"00001", "phone":"000-000-0003", "email":"test2@email.com" }
+	], 
+    "firestations": [
+		{ "address":"1 Test St", "station":"1" },
+        { "address":"2 Test St", "station":"2" }
+	],
+    "medicalrecords": [
+        { "firstName":"firstNameA", "lastName":"lastNameA", "birthdate":"01/01/1980", "medications":["aznol:350mg", "hydrapermazol:100mg"], "allergies":["nillacilan"] },
+        { "firstName":"firstNameB", "lastName":"lastNameA", "birthdate":"01/01/2010", "medications":["pharmacol:5000mg", "terazine:10mg", "noznazol:250mg"], "allergies":[] },
+        { "firstName":"firstNameC", "lastName":"lastNameB", "birthdate":"01/01/1985", "medications":[], "allergies":["peanut"] }
+	] 
+}
