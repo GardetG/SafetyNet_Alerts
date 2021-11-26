@@ -18,14 +18,15 @@ public class MedicalRecordRepositoryImpl
    */
   @Override
   public List<MedicalRecord> findAll() {
-    // TODO Auto-generated method stub
-    return null;
+    return medicalRecordsList;
   }
 
   @Override
   public MedicalRecord findByName(String firstName, String lastName) {
-    // TODO Auto-generated method stub
-    return null;
+    return medicalRecordsList.stream()
+            .filter(medicalRecord -> (medicalRecord.getFirstName().equals(firstName)
+            && (medicalRecord.getLastName().equals(lastName))))
+            .findFirst().orElse(null);
   }
 
   @Override
