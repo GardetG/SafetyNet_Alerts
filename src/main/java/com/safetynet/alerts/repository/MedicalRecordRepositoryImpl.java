@@ -67,8 +67,7 @@ public class MedicalRecordRepositoryImpl
    */
   @Override
   public boolean delete(MedicalRecord medicalRecord) {
-    // TODO Auto-generated method stub
-    return false;
+    return medicalRecordsList.remove(medicalRecord);
   }
 
   /**
