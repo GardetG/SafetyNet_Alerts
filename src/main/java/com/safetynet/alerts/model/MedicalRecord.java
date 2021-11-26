@@ -2,6 +2,7 @@ package com.safetynet.alerts.model;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,5 +27,30 @@ public class MedicalRecord {
   private LocalDate birthdate;
   private List<String> medications;
   private List<String> allergies;
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(allergies, birthdate, firstName, lastName, medications);
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    MedicalRecord other = (MedicalRecord) obj;
+    return Objects.equals(allergies, other.allergies) && Objects.equals(birthdate, other.birthdate)
+            && Objects.equals(firstName, other.firstName)
+            && Objects.equals(lastName, other.lastName)
+            && Objects.equals(medications, other.medications);
+  }
+  
+  
   
 }

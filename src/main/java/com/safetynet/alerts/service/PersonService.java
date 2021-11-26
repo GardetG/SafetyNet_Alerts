@@ -28,12 +28,12 @@ public interface PersonService {
    * @param firstName of the Person
    * @param lastName of the Person
    * @return Person
-   * @throws ResourceNotFoundException when the Person doesn't exist
+   * @throws ResourceNotFoundException when the Person doesn't exists
    */
   Person getByName(String firstName, String lastName) throws ResourceNotFoundException;
   
   /**
-   * Add a Person if it doesn't already exist.
+   * Add a Person if it doesn't already exists.
    * 
 
    * @param person to add
@@ -43,12 +43,12 @@ public interface PersonService {
   Person add(@Valid Person person) throws ResourceAlreadyExistsException;
 
   /**
-   * Update a Person if it already exist.
+   * Update a Person if it already exists.
    * 
 
    * @param person to update
    * @return Person updated
-   * @throws ResourceNotFoundException when the Person doesn't exist
+   * @throws ResourceNotFoundException when the Person doesn't exists
    */
   Person update(@Valid Person person) throws ResourceNotFoundException;
 
@@ -58,7 +58,7 @@ public interface PersonService {
 
    * @param firstName of the Person to delete
    * @param lastName of the Person to delete
-   * @throws ResourceNotFoundException when the Person doesn't exist
+   * @throws ResourceNotFoundException when the Person doesn't exists
    */
   void delete(String firstName, String lastName) throws ResourceNotFoundException;
 
