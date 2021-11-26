@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.safetynet.alerts.model.MedicalRecord;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -92,4 +93,56 @@ class MedicalRecordRepositoryTest {
     assertThat(actualMedicalRecord).isNull();
   }
 
+
+  @Test
+  void addMedicalRecordTest() {
+    // GIVEN
+    medicalRecordRepository.setupRepository(new ArrayList<MedicalRecord>(
+            List.of(medicalRecordTest)));
+
+    // WHEN
+    boolean isSuccess = medicalRecordRepository.add(medicalRecordTest2);
+
+    // THEN
+    assertThat(isSuccess).isTrue();
+    assertThat(medicalRecordRepository.findAll()).hasSize(2)
+            .containsExactly(medicalRecordTest, medicalRecordTest2);
+  }
+
+  @Test
+  void updateMedicalRecordTest() {
+    // GIVEN
+    medicalRecordRepository.setupRepository(new ArrayList<MedicalRecord>(
+            List.of(medicalRecordTest, medicalRecordTest2)));
+    MedicalRecord updatedMedicalRecord = new MedicalRecord("firstName", "lastName", 
+            LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
+
+    // WHEN
+    boolean isSuccess = medicalRecordRepository.update(updatedMedicalRecord);
+
+    // THEN
+    assertThat(isSuccess).isTrue();
+    assertThat(medicalRecordRepository.findAll()).hasSize(2)
+            .doesNotContain(medicalRecordTest)
+            .containsExactly(updatedMedicalRecord, medicalRecordTest2);
+  }
+
+  @Test
+  void updateNotFoundMedicalRecordTest() {
+    // GIVEN
+    medicalRecordRepository.setupRepository(new ArrayList<MedicalRecord>(
+            List.of(medicalRecordTest2)));
+    MedicalRecord updatedMedicalRecord = new MedicalRecord("firstName", "lastName", 
+            LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
+
+    // WHEN
+    boolean isSuccess = medicalRecordRepository.update(updatedMedicalRecord);
+
+    // THEN
+    assertThat(isSuccess).isFalse();
+    assertThat(medicalRecordRepository.findAll()).hasSize(1)
+            .doesNotContain(updatedMedicalRecord)
+            .containsExactly(medicalRecordTest2);
+  }
+  
 }
