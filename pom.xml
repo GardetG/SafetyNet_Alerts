@@ -67,6 +67,8 @@
 							<goal>process-asciidoc</goal>
 						</goals>
 						<configuration>
+						     <sourceDirectory>src/doc</sourceDirectory>
+						     <outputDirectory>${project.build.directory}/API_doc</outputDirectory>
 							<backend>html</backend>
 							<doctype>book</doctype>
 						</configuration>

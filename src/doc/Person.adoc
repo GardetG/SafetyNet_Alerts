@@ -1,0 +1,137 @@
+=== Get all persons
+
+==== Resquest
+
+===== Request
+include::{snippets}/getAllPerson/http-request.adoc[]
+
+===== cURL
+include::{snippets}/getAllPerson/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/getAllPerson/http-response.adoc[]
+
+
+=== Get person
+
+==== Request
+
+===== Request
+include::{snippets}/getPerson/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/getPerson/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/getPerson/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/getPerson/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When the person can't be found, this response can be expected:
+
+include::{snippets}/getNotFoundPerson/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid parameters, this response can be expected:
+
+include::{snippets}/getInvalidPerson/http-response.adoc[]
+
+
+=== Post person
+
+==== Resquest
+
+===== Request
+include::{snippets}/postPerson/http-request.adoc[]
+
+====== Request fields
+include::{snippets}/postPerson/request-fields.adoc[]
+
+===== cURL
+include::{snippets}/postPerson/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/postPerson/http-response.adoc[]
+
+==== Error Response
+
+===== Already Exists
+When the person already exists, this response can be expected:
+
+include::{snippets}/postConflictPerson/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid person, this response can be expected:
+
+include::{snippets}/postInvalidPerson/http-response.adoc[]
+
+
+=== Put person
+
+==== Resquest
+
+===== Request
+include::{snippets}/putPerson/http-request.adoc[]
+
+====== Request fields
+include::{snippets}/putPerson/request-fields.adoc[]
+
+===== cURL
+include::{snippets}/putPerson/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/putPerson/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When the person to update can't be found, this response can be expected:
+
+include::{snippets}/putNotFoundPerson/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid person, this response can be expected:
+
+include::{snippets}/putInvalidPerson/http-response.adoc[]
+
+=== Delete person
+
+==== Resquest
+
+===== Request
+include::{snippets}/deletePerson/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/deletePerson/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/deletePerson/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/deletePerson/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When the person to delete can't be found, this response can be expected:
+
+include::{snippets}/deleteNotFoundPerson/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid parameters, this response can be expected:
+
+include::{snippets}/deleteInvalidPerson/http-response.adoc[]

@@ -8,6 +8,14 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -21,8 +29,10 @@ import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.service.PersonService;
 import com.safetynet.alerts.util.JsonParser;
+
 import java.util.Collections;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +75,9 @@ class PersonControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].firstName", is("firstName")))
-            .andExpect(jsonPath("$[1].firstName", is("firstName2")));
+            .andExpect(jsonPath("$[1].firstName", is("firstName2")))
+            .andDo(document("getAllPerson",
+                    preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint())));
     verify(personService, times(1)).getAll();
   }
 
@@ -93,7 +105,18 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.firstName", is("firstName")));
+            .andExpect(jsonPath("$.firstName", is("firstName")))
+            .andDo(document("getPerson",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestParameters(
+                            parameterWithName("firstName").description(
+                    "Firstname of the person to retrieve. This parameter *must not be blank*.")
+                            .optional(),
+                            parameterWithName("lastName").description(
+                    "LastName of the person to retrieve. This parameter *must not be blank*.")
+                            .optional()
+                        )));
     verify(personService, times(1)).getByName("firstName", "lastName");
   }
   
@@ -107,7 +130,10 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")));
+            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")))
+            .andDo(document("getInvalidPerson",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
     verify(personService, times(0)).getByName(anyString(), anyString());
   }
 
@@ -122,7 +148,10 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("firstname lastName not found")));
+            .andExpect(jsonPath("$", is("firstname lastName not found")))
+            .andDo(document("getNotFoundPerson",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
     verify(personService, times(1)).getByName("firstName", "lastName");
   }
 
@@ -139,7 +168,27 @@ class PersonControllerTest {
             // THEN
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.firstName", is("firstName")))
-            .andExpect(jsonPath("$.lastName", is("lastName")));
+            .andExpect(jsonPath("$.lastName", is("lastName")))
+            .andDo(document("postPerson",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("firstName")
+                            .description("The first name of the person."
+                                    + " This parameter *must not be blank*."),
+                        fieldWithPath("lastName")
+                            .description("The last name of the person. "
+                                    + "This parameter *must not be blank*."),
+                        fieldWithPath("address")
+                            .description("The address of the person."),
+                        fieldWithPath("city")
+                            .description("The city of the person."),
+                        fieldWithPath("zip")
+                            .description("The ZIP code."),
+                        fieldWithPath("phone")
+                            .description("The phone number of the person."),
+                        fieldWithPath("email")
+                            .description("The email of the person."))));
     verify(personService, times(1)).add(personTest);
   }
 
@@ -159,7 +208,10 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isConflict())
-            .andExpect(jsonPath("$", is(error)));
+            .andExpect(jsonPath("$", is(error)))
+            .andDo(document("postConflictPerson",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
     verify(personService, times(1)).add(personTest);
   }
 
@@ -176,7 +228,10 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isUnprocessableEntity())
-            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")));
+            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")))
+            .andDo(document("postInvalidPerson",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
     verify(personService, times(0)).add(any(Person.class));
   }
   
@@ -193,7 +248,27 @@ class PersonControllerTest {
             // THEN
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.firstName", is("firstName")))
-            .andExpect(jsonPath("$.lastName", is("lastName")));
+            .andExpect(jsonPath("$.lastName", is("lastName")))
+            .andDo(document("putPerson",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("firstName")
+                            .description("The first name of the person."
+                                    + " This parameter *must not be blank*."),
+                        fieldWithPath("lastName")
+                            .description("The last name of the person. "
+                                    + "This parameter *must not be blank*."),
+                        fieldWithPath("address")
+                            .description("The address of the person."),
+                        fieldWithPath("city")
+                            .description("The city of the person."),
+                        fieldWithPath("zip")
+                            .description("The ZIP code."),
+                        fieldWithPath("phone")
+                            .description("The phone number of the person."),
+                        fieldWithPath("email")
+                            .description("The email of the person."))));
     verify(personService, times(1)).update(personTest);
   }
 
@@ -213,7 +288,10 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("firstName lastName not found")));
+            .andExpect(jsonPath("$", is("firstName lastName not found")))
+            .andDo(document("putNotFoundPerson",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
     verify(personService, times(1)).update(personTest);
   }
 
@@ -230,7 +308,10 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isUnprocessableEntity())
-            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")));
+            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")))
+            .andDo(document("putInvalidPerson",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
   }
   
   @Test
@@ -241,7 +322,18 @@ class PersonControllerTest {
     mockMvc.perform(delete("/person?firstName=firstName&lastName=lastName"))
 
             // THEN
-            .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent())
+            .andDo(document("deletePerson",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestParameters(
+                            parameterWithName("firstName").description(
+                    "Firstname of the person to delete. This parameter *must not be blank*.")
+                            .optional(),
+                            parameterWithName("lastName").description(
+                    "LastName of the person to delete. This parameter *must not be blank*.")
+                            .optional()
+                        )));
     verify(personService, times(1)).delete("firstName", "lastName");
   }
 
@@ -260,7 +352,10 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("firstName lastName not found")));
+            .andExpect(jsonPath("$", is("firstName lastName not found")))
+            .andDo(document("deleteNotFoundPerson",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
     verify(personService, times(1)).delete("firstName", "lastName");
   }
   
@@ -273,7 +368,10 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")));
+            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")))
+            .andDo(document("deleteInvalidPerson",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
     verify(personService, times(0)).delete(anyString(), anyString());
   }
 }
