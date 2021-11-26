@@ -30,7 +30,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(MedicalRecordControllerTest.class)
+@WebMvcTest(MedicalRecordController.class)
 @AutoConfigureRestDocs
 class MedicalRecordControllerTest {
 
@@ -138,7 +138,7 @@ class MedicalRecordControllerTest {
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("firstname lastName not found")))
+            .andExpect(jsonPath("$", is("Medical record of firstname lastName not found")))
             .andDo(document("getNotFoundMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
