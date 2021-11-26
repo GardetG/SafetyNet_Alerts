@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -15,6 +16,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -175,18 +177,18 @@ class MedicalRecordControllerTest {
                     preprocessResponse(prettyPrint()),
                     requestFields(
                         fieldWithPath("firstName")
-                            .description("The first name of the person."
+                            .description("The first name of the medicalRecord."
                                     + " This parameter *must not be blank*."),
                         fieldWithPath("lastName")
-                            .description("The last name of the person. "
+                            .description("The last name of the medicalRecord. "
                                     + "This parameter *must not be blank*."),
                         fieldWithPath("birthdate")
-                            .description("The birthdate of the person."),
+                            .description("The birthdate of the medicalRecord."),
                         fieldWithPath("medications")
                             .description("The list of all medications and their dosage taken"
-                                    + " by this person."),
+                                    + " by this medicalRecord."),
                         fieldWithPath("allergies")
-                            .description("The list of all allergies of this person."))));
+                            .description("The list of all allergies of this medicalRecord."))));
     verify(medicalRecordService, times(1)).add(medicalRecordTest);
   }
 
@@ -253,18 +255,18 @@ class MedicalRecordControllerTest {
                     preprocessResponse(prettyPrint()),
                     requestFields(
                         fieldWithPath("firstName")
-                            .description("The first name of the person."
+                            .description("The first name of the medicalRecord."
                                     + " This parameter *must not be blank*."),
                         fieldWithPath("lastName")
-                            .description("The last name of the person. "
+                            .description("The last name of the medicalRecord. "
                                     + "This parameter *must not be blank*."),
                         fieldWithPath("birthdate")
-                            .description("The birthdate of the person."),
+                            .description("The birthdate of the medicalRecord."),
                         fieldWithPath("medications")
                             .description("The list of all medications and their dosage taken"
-                                    + " by this person."),
+                                    + " by this medicalRecord."),
                         fieldWithPath("allergies")
-                            .description("The list of all allergies of this person."))));
+                            .description("The list of all allergies of this medicalRecord."))));
     verify(medicalRecordService, times(1)).update(medicalRecordTest);
   }
 
@@ -308,5 +310,68 @@ class MedicalRecordControllerTest {
             .andDo(document("putInvalidMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
+  }
+  
+  @Test
+  void deleteMedicalRecordTest() throws Exception {
+    // GIVEN
+
+    // WHEN
+    mockMvc.perform(delete("/medicalRecord?firstName=firstName&lastName=lastName"))
+
+            // THEN
+            .andExpect(status().isNoContent())
+            .andDo(document("deleteMedicalRecord",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestParameters(
+                            parameterWithName("firstName").description(
+                    "Firstname of the medical record to delete. "
+                    + "This parameter *must not be blank*.")
+                            .optional(),
+                            parameterWithName("lastName").description(
+                    "LastName of the medical record to delete. "
+                    + "This parameter *must not be blank*.")
+                            .optional()
+                        )));
+    verify(medicalRecordService, times(1)).delete("firstName", "lastName");
+  }
+
+  @Test
+  void deleteNotFoundMedicalRecordTest() throws Exception {
+    // GIVEN
+    String error = String.format("Medical record of %s %s not found", 
+            medicalRecordTest.getFirstName(),
+            medicalRecordTest.getLastName());
+    doThrow(new ResourceNotFoundException(error)).when(medicalRecordService)
+            .delete(anyString(), anyString());
+
+
+    // WHEN
+    mockMvc.perform(delete("/medicalRecord?firstName=firstName&lastName=lastName"))
+
+            // THEN
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$", is("Medical record of firstName lastName not found")))
+            .andDo(document("deleteNotFoundMedicalRecord",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(medicalRecordService, times(1)).delete("firstName", "lastName");
+  }
+  
+  @Test
+  void deleteMedicalRecordWithInvalidArgumentsTest() throws Exception {
+    // GIVEN
+
+    // WHEN
+    mockMvc.perform(delete("/medicalRecord?firstName= &lastName=LastName"))
+
+            // THEN
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")))
+            .andDo(document("deleteInvalidMedicalRecord",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(medicalRecordService, times(0)).delete(anyString(), anyString());
   }
 }

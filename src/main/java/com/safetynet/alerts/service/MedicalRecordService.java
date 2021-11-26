@@ -51,4 +51,15 @@ public interface MedicalRecordService {
    * @throws ResourceNotFoundException when the MedicalRecord doesn't exists
    */
   MedicalRecord update(@Valid MedicalRecord medicalRecord) throws ResourceNotFoundException;
+  
+  /**
+   * Delete a MedicalRecord by its name.
+   * 
+
+   * @param firstName of the MedicalRecord to delete
+   * @param lastName of the MedicalRecord to delete
+   * @throws ResourceNotFoundException when the MedicalRecord doesn't exists
+   */
+  void delete(String firstName, String lastName) throws ResourceNotFoundException;
+  
 }
