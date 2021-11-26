@@ -177,18 +177,18 @@ class MedicalRecordControllerTest {
                     preprocessResponse(prettyPrint()),
                     requestFields(
                         fieldWithPath("firstName")
-                            .description("The first name of the medicalRecord."
+                            .description("The first name of the person."
                                     + " This parameter *must not be blank*."),
                         fieldWithPath("lastName")
-                            .description("The last name of the medicalRecord. "
+                            .description("The last name of the person. "
                                     + "This parameter *must not be blank*."),
                         fieldWithPath("birthdate")
-                            .description("The birthdate of the medicalRecord."),
+                            .description("The birthdate of the person."),
                         fieldWithPath("medications")
                             .description("The list of all medications and their dosage taken"
-                                    + " by this medicalRecord."),
+                                    + " by this person."),
                         fieldWithPath("allergies")
-                            .description("The list of all allergies of this medicalRecord."))));
+                            .description("The list of all allergies of this person."))));
     verify(medicalRecordService, times(1)).add(medicalRecordTest);
   }
 
@@ -255,18 +255,18 @@ class MedicalRecordControllerTest {
                     preprocessResponse(prettyPrint()),
                     requestFields(
                         fieldWithPath("firstName")
-                            .description("The first name of the medicalRecord."
+                            .description("The first name of the person."
                                     + " This parameter *must not be blank*."),
                         fieldWithPath("lastName")
-                            .description("The last name of the medicalRecord. "
+                            .description("The last name of the person. "
                                     + "This parameter *must not be blank*."),
                         fieldWithPath("birthdate")
                             .description("The birthdate of the medicalRecord."),
                         fieldWithPath("medications")
                             .description("The list of all medications and their dosage taken"
-                                    + " by this medicalRecord."),
+                                    + " by this person."),
                         fieldWithPath("allergies")
-                            .description("The list of all allergies of this medicalRecord."))));
+                            .description("The list of all allergies of this person."))));
     verify(medicalRecordService, times(1)).update(medicalRecordTest);
   }
 

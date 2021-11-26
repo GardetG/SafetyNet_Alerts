@@ -21,9 +21,6 @@ public class MedicalRecordMapper {
    * @return DTO associated
    */
   public static MedicalRecordDto toDto(MedicalRecord medicalRecord) {
-    if (medicalRecord == null) {
-      return null;
-    }
     MedicalRecordDto medicalRecordDto = new MedicalRecordDto();
     medicalRecordDto.setFirstName(medicalRecord.getFirstName());
     medicalRecordDto.setLastName(medicalRecord.getLastName());
@@ -54,9 +51,6 @@ public class MedicalRecordMapper {
    * @return MedicalRecord associated
    */
   public static MedicalRecord toModel(MedicalRecordDto medicalRecordDto) {
-    if (medicalRecordDto == null) {
-      return null;
-    }
     MedicalRecord medicalRecord = new MedicalRecord();
     medicalRecord.setFirstName(medicalRecordDto.getFirstName());
     medicalRecord.setLastName(medicalRecordDto.getLastName());
