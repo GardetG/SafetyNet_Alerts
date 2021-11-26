@@ -169,6 +169,7 @@ class MedicalRecordControllerTest {
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.firstName", is("firstName")))
             .andExpect(jsonPath("$.lastName", is("lastName")))
+            .andExpect(jsonPath("$.birthdate", is("01/01/1980")))
             .andDo(document("postMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
@@ -246,6 +247,7 @@ class MedicalRecordControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.firstName", is("firstName")))
             .andExpect(jsonPath("$.lastName", is("lastName")))
+            .andExpect(jsonPath("$.birthdate", is("01/01/1980")))
             .andDo(document("putMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
