@@ -46,4 +46,13 @@ public interface MedicalRecordRepository {
    */
   boolean update(MedicalRecord medicalRecord);
   
+  /**
+   * Delete a MedicalRecord in the repository.
+   * 
+
+   * @param medicalRecord to delete
+   * @return True if operation succeed
+   */
+  boolean delete(MedicalRecord medicalRecord);
+  
 }

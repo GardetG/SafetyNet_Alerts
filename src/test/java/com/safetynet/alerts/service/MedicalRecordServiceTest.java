@@ -203,4 +203,35 @@ class MedicalRecordServiceTest {
             .hasMessageContaining("Firstname is mandatory");
   }
  
+  @Test
+  void deleteMedicalRecordTest() throws Exception {
+    // GIVEN
+    when(medicalRecordRepository.findByName(anyString(), anyString()))
+            .thenReturn(medicalRecordTest);
+
+    // WHEN
+    medicalRecordService.delete("firstName", "lastName");
+
+    // THEN
+    verify(medicalRecordRepository, times(1)).findByName("firstName", "lastName");
+    verify(medicalRecordRepository, times(1)).delete(medicalRecordTest);
+  }
+
+  @Test
+  void deleteNotFoundMedicalRecordTest() throws Exception {
+    // GIVEN
+    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(null);
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      medicalRecordService.delete("firstName", "lastName");
+    })
+
+            // THEN
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("Medical record of firstName lastName not found");
+    verify(medicalRecordRepository, times(1)).findByName("firstName", "lastName");
+    verify(medicalRecordRepository, times(0)).delete(any(MedicalRecord.class));
+  }
+  
 }
