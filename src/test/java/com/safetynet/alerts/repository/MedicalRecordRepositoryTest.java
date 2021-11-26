@@ -3,6 +3,8 @@ package com.safetynet.alerts.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.safetynet.alerts.model.MedicalRecord;
+import com.safetynet.alerts.model.MedicalRecord;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -144,5 +146,37 @@ class MedicalRecordRepositoryTest {
             .doesNotContain(updatedMedicalRecord)
             .containsExactly(medicalRecordTest2);
   }
+  
+  @Test
+  void deleteMedicalRecordTest() {
+    // GIVEN
+    medicalRecordRepository.setupRepository(new ArrayList<MedicalRecord>(
+            List.of(medicalRecordTest, medicalRecordTest2)));
+
+    // WHEN
+    boolean isSuccess = medicalRecordRepository.delete(medicalRecordTest);
+
+    // THEN
+    assertThat(isSuccess).isTrue();
+    assertThat(medicalRecordRepository.findAll()).hasSize(1)
+            .doesNotContain(medicalRecordTest)
+            .containsExactly(medicalRecordTest2);
+  }
+
+  @Test
+  void deleteNotFoundMedicalRecordTest() {
+    // GIVEN
+    medicalRecordRepository.setupRepository(new ArrayList<MedicalRecord>(
+            List.of(medicalRecordTest2)));
+
+    // WHEN
+    boolean isSuccess = medicalRecordRepository.delete(medicalRecordTest);
+
+    // THEN
+    assertThat(isSuccess).isFalse();
+    assertThat(medicalRecordRepository.findAll()).hasSize(1)
+            .containsExactly(medicalRecordTest2);
+  }
+  
   
 }
