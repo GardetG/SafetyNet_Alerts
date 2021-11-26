@@ -3,6 +3,7 @@ package com.safetynet.alerts.service;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.MedicalRecord;
+import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.repository.MedicalRecordRepository;
 import java.util.List;
 import javax.validation.Valid;
@@ -25,8 +26,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
    */
   @Override
   public List<MedicalRecord> getAll() {
-    // TODO Auto-generated method stub
-    return null;
+    return medicalRecordRepository.findAll();
   }
 
   /**
@@ -35,8 +35,14 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   @Override
   public MedicalRecord getByName(String firstName, String lastName)
           throws ResourceNotFoundException {
-    // TODO Auto-generated method stub
-    return null;
+    
+    MedicalRecord medicalRecord = medicalRecordRepository.findByName(firstName, lastName);
+    if (medicalRecord == null) {
+      String error = String.format("Medical record of %s %s not found", firstName, lastName);
+      throw new ResourceNotFoundException(error);
+    }
+    return medicalRecord;
+    
   }
 
   /**
