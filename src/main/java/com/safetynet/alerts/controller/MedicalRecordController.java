@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -103,13 +104,13 @@ public class MedicalRecordController {
   }
 
   /**
-   * Handle HTTP PUT request on a medicalRecord resource.
+   * Handle HTTP PUT request on a medical record resource.
    * 
 
    * @param medicalRecord to update
-   * @return HTTP 200 Response with the medicalRecord updated
-   * @throws ResourceNotFoundException when the medicalRecord to update is not
-   *                                   found
+   * @return HTTP 200 Response with the medical record updated
+   * @throws ResourceNotFoundException when the medical record to update is not
+   * found
    */
   @PutMapping("/medicalRecord")
   public ResponseEntity<MedicalRecordDto> putMedicalRecord(
@@ -123,4 +124,28 @@ public class MedicalRecordController {
     LOGGER.info("Response: Medical record updated");
     return ResponseEntity.ok(updatedMedicalRecord);
   }
+  
+  /**
+   * Handle HTTP DELETE request on a medical record resource.
+   * 
+
+   * @param firstName of medical record to delete
+   * @param lastName of medical record to delete
+   * @return HTTP 204
+   * @throws ResourceNotFoundException when the medical record to delete is not found
+   */
+  @DeleteMapping("/medicalRecord")
+  public ResponseEntity<Void> deleteMedicalRecord(
+          @RequestParam @NotBlank(message = "Firstname is mandatory") String firstName,
+          @RequestParam @NotBlank(message = "LastName is mandatory") String lastName)
+          throws ResourceNotFoundException {
+
+    LOGGER.info("Request: Delete medical records with parameters: {}, {}", firstName, lastName);
+    medicalRecordService.delete(firstName, lastName);
+    
+    LOGGER.info("Response: Medical record deleted");
+    return ResponseEntity.noContent().build();
+
+  }
+  
 }
