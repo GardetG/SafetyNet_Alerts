@@ -3,7 +3,6 @@ package com.safetynet.alerts.service;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.MedicalRecord;
-import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.repository.MedicalRecordRepository;
 import java.util.List;
 import javax.validation.Valid;
@@ -49,10 +48,22 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
    * {@inheritDoc}
    */
   @Override
-  public MedicalRecord add(@Valid MedicalRecord medicalRecord)
+  public MedicalRecord add(@Valid MedicalRecord medicalRecord) 
           throws ResourceAlreadyExistsException {
-    // TODO Auto-generated method stub
-    return null;
+  
+    MedicalRecord existingMedicalRecord = medicalRecordRepository
+          .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
+
+    if (existingMedicalRecord != null) {
+      String error = String.format("Medical record of %s %s already exists", 
+              medicalRecord.getFirstName(), medicalRecord.getLastName());
+      throw new ResourceAlreadyExistsException(error);
+    }
+
+    medicalRecordRepository.add(medicalRecord);
+    return medicalRecordRepository
+            .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
+  
   }
 
   /**
@@ -60,8 +71,20 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
    */
   @Override
   public MedicalRecord update(@Valid MedicalRecord medicalRecord) throws ResourceNotFoundException {
-    // TODO Auto-generated method stub
-    return null;
+    
+    MedicalRecord existingMedicalRecord = medicalRecordRepository
+            .findByName(medicalRecord.getFirstName(),
+            medicalRecord.getLastName());
+    if (existingMedicalRecord == null) {
+      String error = String.format("Medical record of %s %s not found", 
+              medicalRecord.getFirstName(), medicalRecord.getLastName());
+      throw new ResourceNotFoundException(error);
+    }
+
+    medicalRecordRepository.update(medicalRecord);
+    return medicalRecordRepository
+            .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
+    
   }
 
   /**
