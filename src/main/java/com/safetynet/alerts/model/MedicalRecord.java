@@ -1,5 +1,7 @@
 package com.safetynet.alerts.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +26,7 @@ public class MedicalRecord {
   private String firstName;
   @NotBlank(message = "Lastname is mandatory")
   private String lastName;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
   private LocalDate birthdate;
   private List<String> medications;
   private List<String> allergies;
