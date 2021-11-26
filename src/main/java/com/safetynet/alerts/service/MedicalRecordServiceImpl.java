@@ -3,6 +3,7 @@ package com.safetynet.alerts.service;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.MedicalRecord;
+import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.repository.MedicalRecordRepository;
 import java.util.List;
 import javax.validation.Valid;
@@ -92,7 +93,14 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
    */
   @Override
   public void delete(String firstName, String lastName) throws ResourceNotFoundException {
-    // TODO Auto-generated method stub
+    
+    MedicalRecord existingMedicalRecord = medicalRecordRepository.findByName(firstName, lastName);
+    if (existingMedicalRecord == null) {
+      String error = String.format("Medical record of %s %s not found", firstName, lastName);
+      throw new ResourceNotFoundException(error);
+    }
+
+    medicalRecordRepository.delete(existingMedicalRecord);
     
   }
 
