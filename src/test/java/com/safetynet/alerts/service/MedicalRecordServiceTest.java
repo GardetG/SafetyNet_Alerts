@@ -2,19 +2,20 @@ package com.safetynet.alerts.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.repository.MedicalRecordRepository;
-
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-
+import javax.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +75,7 @@ class MedicalRecordServiceTest {
   void getMedicalRecordByNameTest() throws Exception {
     // GIVEN
     when(medicalRecordRepository.findByName(anyString(), anyString()))
-        .thenReturn(medicalRecordTest);
+            .thenReturn(medicalRecordTest);
 
     // WHEN
     MedicalRecord actualmedicalRecord = medicalRecordService.getByName("firstName", "lastName");
@@ -99,4 +100,107 @@ class MedicalRecordServiceTest {
             .hasMessageContaining("Medical record of firstName lastName not found");
   }
 
+  @Test
+  void addMedicalRecordTest() throws Exception {
+    // GIVEN
+    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(null)
+            .thenReturn(medicalRecordTest);
+    when(medicalRecordRepository.add(any(MedicalRecord.class))).thenReturn(true);
+
+    // WHEN
+    MedicalRecord actualmedicalRecord = medicalRecordService.add(medicalRecordTest);
+
+    // THEN
+    assertThat(actualmedicalRecord).isEqualTo(medicalRecordTest);
+    verify(medicalRecordRepository, times(2)).findByName("firstName", "lastName");
+    verify(medicalRecordRepository, times(1)).add(medicalRecordTest);
+  }
+
+  @Test
+  void addAlreadyExistingMedicalRecordTest() throws Exception {
+    // GIVEN
+    when(medicalRecordRepository.findByName(anyString(), anyString()))
+            .thenReturn(medicalRecordTest);
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      medicalRecordService.add(medicalRecordTest);
+    })
+
+            // THEN
+            .isInstanceOf(ResourceAlreadyExistsException.class)
+            .hasMessageContaining("Medical record of firstName lastName already exists");
+    verify(medicalRecordRepository, times(1)).findByName("firstName", "lastName");
+    verify(medicalRecordRepository, times(0)).add(any(MedicalRecord.class));
+  }
+
+  @Test
+  void addInvalidMedicalRecordTest() throws Exception {
+    // GIVEN
+    MedicalRecord invalidMedicalRecord = new MedicalRecord("", "lastName1", 
+            LocalDate.ofYearDay(1980, 1), Collections.emptyList(), Collections.emptyList());
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      medicalRecordService.add(invalidMedicalRecord);
+    })
+
+            // THEN
+            .isInstanceOf(ConstraintViolationException.class)
+            .hasMessageContaining("Firstname is mandatory");
+  }
+
+  @Test
+  void updateMedicalRecordTest() throws Exception {
+    // GIVEN
+    MedicalRecord updatedMedicalRecord = new MedicalRecord("firstName", "lastName", 
+            LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
+    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(medicalRecordTest)
+            .thenReturn(updatedMedicalRecord);
+    when(medicalRecordRepository.update(any(MedicalRecord.class))).thenReturn(true);
+
+    // WHEN
+    MedicalRecord actualmedicalRecord = medicalRecordService.update(updatedMedicalRecord);
+
+    // THEN
+    assertThat(actualmedicalRecord).isEqualTo(updatedMedicalRecord);
+    verify(medicalRecordRepository, times(2)).findByName("firstName", "lastName");
+    verify(medicalRecordRepository, times(1)).update(updatedMedicalRecord);
+  }
+
+  @Test
+  void updateNotFoundMedicalRecordTest() throws Exception {
+    // GIVEN
+    MedicalRecord updatedMedicalRecord = new MedicalRecord("firstName", "lastName", 
+            LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
+    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(null);
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      medicalRecordService.update(updatedMedicalRecord);
+    })
+
+            // THEN
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("Medical record of firstName lastName not found");
+    verify(medicalRecordRepository, times(1)).findByName("firstName", "lastName");
+    verify(medicalRecordRepository, times(0)).update(any(MedicalRecord.class));
+  }
+
+  @Test
+  void updateInvalidMedicalRecordTest() throws Exception {
+    // GIVEN
+    MedicalRecord invalidMedicalRecord = new MedicalRecord("", "lastName1", 
+            LocalDate.ofYearDay(1980, 1), Collections.emptyList(), Collections.emptyList());
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      medicalRecordService.update(invalidMedicalRecord);
+    })
+
+            // THEN
+            .isInstanceOf(ConstraintViolationException.class)
+            .hasMessageContaining("Firstname is mandatory");
+  }
+ 
 }

@@ -110,7 +110,7 @@ public class MedicalRecordController {
    * @param medicalRecord to update
    * @return HTTP 200 Response with the medical record updated
    * @throws ResourceNotFoundException when the medical record to update is not
-   * found
+   *                            found
    */
   @PutMapping("/medicalRecord")
   public ResponseEntity<MedicalRecordDto> putMedicalRecord(

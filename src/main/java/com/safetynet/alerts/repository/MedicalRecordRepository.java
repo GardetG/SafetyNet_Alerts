@@ -28,4 +28,22 @@ public interface MedicalRecordRepository {
    */
   MedicalRecord findByName(String firstName, String lastName);
   
+  /**
+   * Add a MedicalRecord to the repository.
+   * 
+
+   * @param medicalRecord to add
+   * @return True is operation succeed
+   */
+  boolean add(MedicalRecord medicalRecord);
+
+  /**
+   * Update a MedicalRecord in the repository.
+   * 
+
+   * @param medicalRecord to update
+   * @return True if operation succeed
+   */
+  boolean update(MedicalRecord medicalRecord);
+  
 }
