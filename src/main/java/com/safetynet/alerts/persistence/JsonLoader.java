@@ -52,9 +52,11 @@ public class JsonLoader implements DataLoader, CommandLineRunner {
       JsonNode sourceNode = mapper.readTree(inputStream);
 
       personRepository.setupRepository(
-              loadRessources(sourceNode, "persons", new TypeReference<List<Person>>() {}));
+              loadRessources(sourceNode, "persons", 
+                      new TypeReference<List<Person>>() {}));
       medicalRecordRepository.setupRepository(
-              loadRessources(sourceNode, "medicalrecords", new TypeReference<List<MedicalRecord>>() {}));
+              loadRessources(sourceNode, "medicalrecords", 
+                      new TypeReference<List<MedicalRecord>>() {}));
 
     } catch (IOException e) {
       LOGGER.error("Error while loading : {}", url);
