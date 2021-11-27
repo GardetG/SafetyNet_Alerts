@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.safetynet.alerts.configuration.JsonUrlProperty;
+import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.LoadableRepository;
@@ -33,6 +34,9 @@ public class JsonLoader implements DataLoader, CommandLineRunner {
   
   @Autowired
   LoadableRepository<MedicalRecord> medicalRecordRepository;
+  
+  @Autowired
+  LoadableRepository<FireStation> fireStationRepository;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JsonLoader.class);
 
@@ -52,9 +56,14 @@ public class JsonLoader implements DataLoader, CommandLineRunner {
       JsonNode sourceNode = mapper.readTree(inputStream);
 
       personRepository.setupRepository(
-              loadRessources(sourceNode, "persons", new TypeReference<List<Person>>() {}));
+              loadRessources(sourceNode, "persons", 
+                      new TypeReference<List<Person>>() {}));
       medicalRecordRepository.setupRepository(
-              loadRessources(sourceNode, "medicalrecords", new TypeReference<List<MedicalRecord>>() {}));
+              loadRessources(sourceNode, "medicalrecords", 
+                      new TypeReference<List<MedicalRecord>>() {}));
+      fireStationRepository.setupRepository(
+              loadRessources(sourceNode, "firestations", 
+                      new TypeReference<List<FireStation>>() {}));
 
     } catch (IOException e) {
       LOGGER.error("Error while loading : {}", url);

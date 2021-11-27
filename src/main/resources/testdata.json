@@ -6,7 +6,8 @@
 	], 
     "firestations": [
 		{ "address":"1 Test St", "station":"1" },
-        { "address":"2 Test St", "station":"2" }
+        { "address":"2 Test St", "station":"2" },
+        { "address":"3 Test St", "station":"2" }
 	],
     "medicalrecords": [
         { "firstName":"firstNameA", "lastName":"lastNameA", "birthdate":"01/01/1980", "medications":["aznol:350mg", "hydrapermazol:100mg"], "allergies":["nillacilan"] },
