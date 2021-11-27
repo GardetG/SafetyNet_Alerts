@@ -54,4 +54,13 @@ public interface FireStationRepository {
    */
   boolean update(FireStation fireStation);
   
+  /**
+   * Delete a FireStation mapping in the repository.
+   * 
+
+   * @param fireStation mapping to delete
+   * @return True if operation succeed
+   */
+  boolean delete(FireStation fireStation);
+  
 }

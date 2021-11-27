@@ -228,4 +228,66 @@ class FireStationServiceTest {
             .hasMessageContaining("Address is mandatory");
   }
   
+  
+  @Test
+  void deleteFireStationByStationTest() throws Exception {
+    // GIVEN
+    List<FireStation> fireStationList = List.of(fireStationTest, fireStationTest2);
+    when(fireStationRepository.findByStation(anyInt())).thenReturn(fireStationList);
+
+    // WHEN
+    fireStationService.deleteByStation(1);
+
+    // THEN
+    verify(fireStationRepository, times(1)).findByStation(1);
+    verify(fireStationRepository, times(1)).delete(fireStationTest);
+    verify(fireStationRepository, times(1)).delete(fireStationTest2);
+  }
+
+  @Test
+  void deleteByStationNotFoundFireStationTest() throws Exception {
+    // GIVEN
+    when(fireStationRepository.findByStation(anyInt())).thenReturn(Collections.emptyList());
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      fireStationService.deleteByStation(9);
+    })
+
+            // THEN
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("Station 9 mapping not found");
+    verify(fireStationRepository, times(1)).findByStation(9);
+    verify(fireStationRepository, times(0)).delete(any(FireStation.class));
+  }
+  
+  @Test
+  void deleteFireStationByAddressTest() throws Exception {
+    // GIVEN
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(fireStationTest);
+
+    // WHEN
+    fireStationService.deleteByAddress("address");
+
+    // THEN
+    verify(fireStationRepository, times(1)).findByAddress("address");
+    verify(fireStationRepository, times(1)).delete(fireStationTest);
+  }
+
+  @Test
+  void deleteByAddressNotFoundFireStationTest() throws Exception {
+    // GIVEN
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(null);
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      fireStationService.deleteByAddress("address9");
+    })
+
+            // THEN
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("address9 mapping not found");
+    verify(fireStationRepository, times(1)).findByAddress("address9");
+    verify(fireStationRepository, times(0)).delete(any(FireStation.class));
+  }
 }
