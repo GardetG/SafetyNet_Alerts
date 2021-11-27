@@ -2,7 +2,7 @@
     "persons": [
         { "firstName":"firstNameA", "lastName":"lastNameA", "address":"1 Test St", "city":"Test", "zip":"00001", "phone":"000-000-0001", "email":"test1@email.com" },
         { "firstName":"firstNameB", "lastName":"lastNameA", "address":"1 Test St", "city":"Test", "zip":"00001", "phone":"000-000-0002", "email":"test1@email.com" },
-        { "firstName":"firstNameC", "lastName":"lastNameB", "address":"2 Test St", "city":"Test", "zip":"00001", "phone":"000-000-0003", "email":"test2@email.com" }
+        { "firstName":"firstNameC", "lastName":"lastNameB", "address":"2 Test St", "city":"Test2", "zip":"00001", "phone":"000-000-0003", "email":"test2@email.com" }
 	], 
     "firestations": [
 		{ "address":"1 Test St", "station":"1" },

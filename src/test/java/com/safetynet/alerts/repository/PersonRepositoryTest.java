@@ -6,6 +6,7 @@ import com.safetynet.alerts.model.Person;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,15 +59,39 @@ class PersonRepositoryTest {
   }
 
   @Test
+  void findPersonByCityTest() {
+    // GIVEN
+    personRepository.setupRepository(List.of(personTest, personTest2));
+
+    // WHEN
+    List<Person> actualList = personRepository.findByCity("city");
+
+    // THEN
+    assertThat(actualList).isEqualTo(List.of(personTest));
+  }
+
+  @Test
+  void findPersonByCityNotFoundTest() {
+    // GIVEN
+    personRepository.setupRepository(List.of(personTest, personTest2));
+
+    // WHEN
+    List<Person> actualList = personRepository.findByCity("city9");
+
+    // THEN
+    assertThat(actualList).isEmpty();
+  }
+  
+  @Test
   void findPersonByNameTest() {
     // GIVEN
     personRepository.setupRepository(List.of(personTest, personTest2));
 
     // WHEN
-    Person actualPerson = personRepository.findByName("firstName", "lastName");
+    Optional<Person> actualPerson = personRepository.findByName("firstName", "lastName");
 
     // THEN
-    assertThat(actualPerson).isEqualTo(personTest);
+    assertThat(actualPerson.get()).isEqualTo(personTest);
   }
 
   @Test
@@ -75,10 +100,10 @@ class PersonRepositoryTest {
     personRepository.setupRepository(List.of(personTest, personTest2));
 
     // WHEN
-    Person actualPerson = personRepository.findByName("Name3", "lastName");
+    Optional<Person> actualPerson = personRepository.findByName("Name3", "lastName");
 
     // THEN
-    assertThat(actualPerson).isNull();
+    assertThat(actualPerson.isEmpty()).isTrue();
   }
 
   @Test
@@ -87,10 +112,10 @@ class PersonRepositoryTest {
     personRepository.setupRepository(List.of(personTest, personTest2));
 
     // WHEN
-    Person actualPerson = personRepository.findByName("firstName", "Name3");
+    Optional<Person> actualPerson = personRepository.findByName("firstName", "Name3");
 
     // THEN
-    assertThat(actualPerson).isNull();
+    assertThat(actualPerson.isEmpty()).isTrue();
   }
 
   @Test

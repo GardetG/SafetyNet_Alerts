@@ -5,6 +5,7 @@ import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.PersonRepository;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,12 +35,12 @@ public class PersonServiceImpl implements PersonService {
   @Override
   public Person getByName(String firstName, String lastName) throws ResourceNotFoundException {
     
-    Person person = personRepository.findByName(firstName, lastName);
-    if (person == null) {
+    Optional<Person> person = personRepository.findByName(firstName, lastName);
+    if (person.isEmpty()) {
       String error = String.format("%s %s not found", firstName, lastName);
       throw new ResourceNotFoundException(error);
     }
-    return person;
+    return person.get();
     
   }
 
@@ -49,17 +50,17 @@ public class PersonServiceImpl implements PersonService {
   @Override
   public Person add(@Valid Person person) throws ResourceAlreadyExistsException {
     
-    Person existingPerson = personRepository.findByName(person.getFirstName(),
+    Optional<Person> existingPerson = personRepository.findByName(person.getFirstName(),
             person.getLastName());
 
-    if (existingPerson != null) {
+    if (existingPerson.isPresent()) {
       String error = String.format("%s %s already exists", person.getFirstName(),
               person.getLastName());
       throw new ResourceAlreadyExistsException(error);
     }
 
     personRepository.add(person);
-    return personRepository.findByName(person.getFirstName(), person.getLastName());
+    return personRepository.findByName(person.getFirstName(), person.getLastName()).get();
     
   }
 
@@ -69,15 +70,15 @@ public class PersonServiceImpl implements PersonService {
   @Override
   public Person update(@Valid Person person) throws ResourceNotFoundException {
     
-    Person existingPerson = personRepository.findByName(person.getFirstName(),
+    Optional<Person> existingPerson = personRepository.findByName(person.getFirstName(),
             person.getLastName());
-    if (existingPerson == null) {
+    if (existingPerson.isEmpty()) {
       String error = String.format("%s %s not found", person.getFirstName(), person.getLastName());
       throw new ResourceNotFoundException(error);
     }
 
     personRepository.update(person);
-    return personRepository.findByName(person.getFirstName(), person.getLastName());
+    return personRepository.findByName(person.getFirstName(), person.getLastName()).get();
     
   }
 
@@ -87,13 +88,13 @@ public class PersonServiceImpl implements PersonService {
   @Override
   public void delete(String firstName, String lastName) throws ResourceNotFoundException {
     
-    Person existingPerson = personRepository.findByName(firstName, lastName);
-    if (existingPerson == null) {
+    Optional<Person> existingPerson = personRepository.findByName(firstName, lastName);
+    if (existingPerson.isEmpty()) {
       String error = String.format("%s %s not found", firstName, lastName);
       throw new ResourceNotFoundException(error);
     }
 
-    personRepository.delete(existingPerson);
+    personRepository.delete(existingPerson.get());
     
   }
 

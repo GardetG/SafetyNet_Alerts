@@ -2,6 +2,7 @@ package com.safetynet.alerts.repository;
 
 import com.safetynet.alerts.model.Person;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,6 +20,15 @@ public interface PersonRepository {
   List<Person> findAll();
 
   /**
+   * Find all Person from a city.
+   * 
+
+   * @param city of Person
+   * @return List of all Person from the city
+   */
+  List<Person> findByCity(String city);
+  
+  /**
    * Find a Person by its name.
    * 
 
@@ -26,7 +36,7 @@ public interface PersonRepository {
    * @param lastName of the Person
    * @return Person
    */
-  Person findByName(String firstName, String lastName);
+  Optional<Person> findByName(String firstName, String lastName);
   
   /**
    * Add a Person to the repository.

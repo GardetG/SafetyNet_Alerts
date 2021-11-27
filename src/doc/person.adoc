@@ -39,11 +39,6 @@ When the person can't be found, this response can be expected:
 
 include::{snippets}/getNotFoundPerson/http-response.adoc[]
 
-===== Invalid Parameter
-When making a call with invalid parameters, this response can be expected:
-
-include::{snippets}/getInvalidPerson/http-response.adoc[]
-
 
 === Post person
 
@@ -69,11 +64,6 @@ include::{snippets}/postPerson/http-response.adoc[]
 When the person already exists, this response can be expected:
 
 include::{snippets}/postConflictPerson/http-response.adoc[]
-
-===== Invalid Parameter
-When making a call with invalid person, this response can be expected:
-
-include::{snippets}/postInvalidPerson/http-response.adoc[]
 
 
 === Put person
@@ -101,11 +91,6 @@ When the person to update can't be found, this response can be expected:
 
 include::{snippets}/putNotFoundPerson/http-response.adoc[]
 
-===== Invalid Parameter
-When making a call with invalid person, this response can be expected:
-
-include::{snippets}/putInvalidPerson/http-response.adoc[]
-
 
 === Delete person
 
@@ -131,8 +116,3 @@ include::{snippets}/deletePerson/http-response.adoc[]
 When the person to delete can't be found, this response can be expected:
 
 include::{snippets}/deleteNotFoundPerson/http-response.adoc[]
-
-===== Invalid Parameter
-When making a call with invalid parameters, this response can be expected:
-
-include::{snippets}/deleteInvalidPerson/http-response.adoc[]

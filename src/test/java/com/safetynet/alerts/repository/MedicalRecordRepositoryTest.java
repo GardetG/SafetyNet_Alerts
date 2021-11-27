@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,10 +64,11 @@ class MedicalRecordRepositoryTest {
     medicalRecordRepository.setupRepository(List.of(medicalRecordTest, medicalRecordTest2));
 
     // WHEN
-    MedicalRecord actualMedicalRecord = medicalRecordRepository.findByName("firstName", "lastName");
+    Optional<MedicalRecord> actualMedicalRecord = medicalRecordRepository
+            .findByName("firstName", "lastName");
 
     // THEN
-    assertThat(actualMedicalRecord).isEqualTo(medicalRecordTest);
+    assertThat(actualMedicalRecord.get()).isEqualTo(medicalRecordTest);
   }
 
   @Test
@@ -75,10 +77,11 @@ class MedicalRecordRepositoryTest {
     medicalRecordRepository.setupRepository(List.of(medicalRecordTest, medicalRecordTest2));
 
     // WHEN
-    MedicalRecord actualMedicalRecord = medicalRecordRepository.findByName("Name3", "lastName");
+    Optional<MedicalRecord> actualMedicalRecord = medicalRecordRepository
+            .findByName("Name3", "lastName");
 
     // THEN
-    assertThat(actualMedicalRecord).isNull();
+    assertThat(actualMedicalRecord.isEmpty()).isTrue();
   }
 
   @Test
@@ -87,10 +90,11 @@ class MedicalRecordRepositoryTest {
     medicalRecordRepository.setupRepository(List.of(medicalRecordTest, medicalRecordTest2));
 
     // WHEN
-    MedicalRecord actualMedicalRecord = medicalRecordRepository.findByName("firstName", "Name3");
+    Optional<MedicalRecord> actualMedicalRecord = medicalRecordRepository
+            .findByName("firstName", "Name3");
 
     // THEN
-    assertThat(actualMedicalRecord).isNull();
+    assertThat(actualMedicalRecord.isEmpty()).isTrue();
   }
 
 

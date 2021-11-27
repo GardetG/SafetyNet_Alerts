@@ -128,10 +128,7 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")))
-            .andDo(document("getInvalidPerson",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")));
     verify(personService, times(0)).getByName(anyString(), anyString());
   }
 
@@ -180,7 +177,8 @@ class PersonControllerTest {
                         fieldWithPath("address")
                             .description("The address of the person."),
                         fieldWithPath("city")
-                            .description("The city of the person."),
+                            .description("The city of the person."
+                                    + "This parameter *must no be blank*."),
                         fieldWithPath("zip")
                             .description("The ZIP code."),
                         fieldWithPath("phone")
@@ -216,7 +214,7 @@ class PersonControllerTest {
   @Test
   void postInvalidPersonTest() throws Exception {
     // GIVEN
-    PersonDto invalidPerson = new PersonDto("", "lastName1", "address1", "city1", "0001",
+    PersonDto invalidPerson = new PersonDto("", "", "address1", "", "0001",
             "000.000.0001", "email1@mail.fr");
 
     // WHEN
@@ -226,10 +224,7 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isUnprocessableEntity())
-            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")))
-            .andDo(document("postInvalidPerson",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")));
     verify(personService, times(0)).add(any(Person.class));
   }
   
@@ -306,10 +301,7 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isUnprocessableEntity())
-            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")))
-            .andDo(document("putInvalidPerson",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")));
   }
   
   @Test
@@ -366,10 +358,7 @@ class PersonControllerTest {
 
             // THEN
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")))
-            .andDo(document("deleteInvalidPerson",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")));
     verify(personService, times(0)).delete(anyString(), anyString());
   }
 }

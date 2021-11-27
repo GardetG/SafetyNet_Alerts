@@ -1,0 +1,24 @@
+=== Community Emails
+
+==== Resquest
+
+===== Request
+include::{snippets}/GetCommunityEmail/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/GetCommunityEmail/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/GetCommunityEmail/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/GetCommunityEmail/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When no residents for the city can be found, this response can be expected:
+
+include::{snippets}/GetCommunityEmailNotFound/http-response.adoc[]

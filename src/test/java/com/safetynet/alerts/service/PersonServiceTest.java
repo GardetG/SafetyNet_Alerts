@@ -14,6 +14,7 @@ import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.PersonRepository;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,7 +74,7 @@ class PersonServiceTest {
   @Test
   void getPersonByNameTest() throws Exception {
     // GIVEN
-    when(personRepository.findByName(anyString(), anyString())).thenReturn(personTest);
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.of(personTest));
 
     // WHEN
     Person actualperson = personService.getByName("firstName", "lastName");
@@ -86,7 +87,7 @@ class PersonServiceTest {
   @Test
   void getPersonByNameWhenNotFoundTest() throws Exception {
     // GIVEN
-    when(personRepository.findByName(anyString(), anyString())).thenReturn(null);
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty());
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -101,8 +102,8 @@ class PersonServiceTest {
   @Test
   void addPersonTest() throws Exception {
     // GIVEN
-    when(personRepository.findByName(anyString(), anyString())).thenReturn(null)
-            .thenReturn(personTest);
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty())
+            .thenReturn(Optional.of(personTest));
     when(personRepository.add(any(Person.class))).thenReturn(true);
 
     // WHEN
@@ -117,7 +118,7 @@ class PersonServiceTest {
   @Test
   void addAlreadyExistingPersonTest() throws Exception {
     // GIVEN
-    when(personRepository.findByName(anyString(), anyString())).thenReturn(personTest);
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.of(personTest));
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -152,8 +153,8 @@ class PersonServiceTest {
     // GIVEN
     Person updatedPerson = new Person("firstName", "lastName", "updated", "updated", "00001",
             "000.000.0001", "updated@mail.fr");
-    when(personRepository.findByName(anyString(), anyString())).thenReturn(personTest)
-            .thenReturn(updatedPerson);
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.of(personTest))
+            .thenReturn(Optional.of(updatedPerson));
     when(personRepository.update(any(Person.class))).thenReturn(true);
 
     // WHEN
@@ -170,7 +171,7 @@ class PersonServiceTest {
     // GIVEN
     Person updatedPerson = new Person("firstName", "lastName", "updated", "updated", "00001",
             "000.000.0001", "updated@mail.fr");
-    when(personRepository.findByName(anyString(), anyString())).thenReturn(null);
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty());
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -203,7 +204,7 @@ class PersonServiceTest {
   @Test
   void deletePersonTest() throws Exception {
     // GIVEN
-    when(personRepository.findByName(anyString(), anyString())).thenReturn(personTest);
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.of(personTest));
 
     // WHEN
     personService.delete("firstName", "lastName");
@@ -216,7 +217,7 @@ class PersonServiceTest {
   @Test
   void deleteNotFoundPersonTest() throws Exception {
     // GIVEN
-    when(personRepository.findByName(anyString(), anyString())).thenReturn(null);
+    when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty());
 
     // WHEN
     assertThatThrownBy(() -> {

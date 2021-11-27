@@ -6,6 +6,10 @@
 
 = SafetyNet API
 
+== Alerts API
+
+include::Alerts.adoc[]
+
 == Persons Management
 
 include::person.adoc[]

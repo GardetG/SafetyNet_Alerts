@@ -39,11 +39,6 @@ When the medical record of this person can't be found, this response can be expe
 
 include::{snippets}/getNotFoundFireStationById/http-response.adoc[]
 
-===== Invalid Parameter
-When making a call with invalid parameters, this response can be expected:
-
-include::{snippets}/getInvalidFireStationById/http-response.adoc[]
-
 
 === Get fireStation by Address
 
@@ -70,10 +65,6 @@ When the medical record of this person can't be found, this response can be expe
 
 include::{snippets}/getNotFoundFireStationByAddress/http-response.adoc[]
 
-===== Invalid Parameter
-When making a call with invalid parameters, this response can be expected:
-
-include::{snippets}/getInvalidFireStationByAddress/http-response.adoc[]
 
 === Post fireStation
 
@@ -99,11 +90,6 @@ include::{snippets}/postFireStation/http-response.adoc[]
 When the medical record of this person already exists, this response can be expected:
 
 include::{snippets}/postConflictFireStation/http-response.adoc[]
-
-===== Invalid Parameter
-When making a call with invalid person, this response can be expected:
-
-include::{snippets}/postInvalidFireStation/http-response.adoc[]
 
 
 === Put fireStation
@@ -131,11 +117,6 @@ When the medical record to update can't be found, this response can be expected:
 
 include::{snippets}/putNotFoundFireStation/http-response.adoc[]
 
-===== Invalid Parameter
-When making a call with invalid person, this response can be expected:
-
-include::{snippets}/putInvalidFireStation/http-response.adoc[]
-
 
 === Delete fireStation by Station Id
 
@@ -162,11 +143,6 @@ When the medical record to delete can't be found, this response can be expected:
 
 include::{snippets}/deleteNotFoundFireStationById/http-response.adoc[]
 
-===== Invalid Parameter
-When making a call with invalid parameters, this response can be expected:
-
-include::{snippets}/deleteInvalidFireStationById/http-response.adoc[]
-
 
 === Delete fireStation by Address
 
@@ -192,8 +168,3 @@ include::{snippets}/deleteFireStationByAddress/http-response.adoc[]
 When the medical record to delete can't be found, this response can be expected:
 
 include::{snippets}/deleteNotFoundFireStationByAddress/http-response.adoc[]
-
-===== Invalid Parameter
-When making a call with invalid parameters, this response can be expected:
-
-include::{snippets}/deleteInvalidFireStationByAddress/http-response.adoc[]
