@@ -102,7 +102,16 @@ public class FireStationServiceImpl implements FireStationService {
    */
   @Override
   public void deleteByStation(int station) throws ResourceNotFoundException {
-    // TODO Auto-generated method stub
+    
+    List<FireStation> existingFireStationList = fireStationRepository.findByStation(station);
+    if (existingFireStationList.isEmpty()) {
+      String error = String.format("Station %s mapping not found", station);
+      throw new ResourceNotFoundException(error);
+    }
+    
+    existingFireStationList.forEach(fireStation -> {
+      fireStationRepository.delete(fireStation);
+    });
 
   }
 
@@ -111,8 +120,14 @@ public class FireStationServiceImpl implements FireStationService {
    */
   @Override
   public void deleteByAddress(String address) throws ResourceNotFoundException {
-    // TODO Auto-generated method stub
+    
+    FireStation existingFireStation = fireStationRepository.findByAddress(address);
+    if (existingFireStation == null) {
+      String error = String.format("%s mapping not found", address);
+      throw new ResourceNotFoundException(error);
+    }
 
+    fireStationRepository.delete(existingFireStation);
   }
 
 }
