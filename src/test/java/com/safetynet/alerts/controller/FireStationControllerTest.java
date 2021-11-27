@@ -2,6 +2,7 @@ package com.safetynet.alerts.controller;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
@@ -11,15 +12,22 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.safetynet.alerts.dto.FireStationDto;
+import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.service.FireStationService;
+import com.safetynet.alerts.util.JsonParser;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 
@@ -204,6 +213,142 @@ class FireStationControllerTest {
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(fireStationService, times(1)).getByAddress("address9");
+  }
+  
+  @Test
+  void postFireStationTest() throws Exception {
+    // GIVEN
+    when(fireStationService.add(any(FireStation.class))).thenReturn(fireStationTest);
+
+    // WHEN
+    mockMvc.perform(post("/fireStation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonParser.asString(fireStationTest)))
+
+            // THEN
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.address", is("address")))
+            .andExpect(jsonPath("$.station", is(1)))
+            .andDo(document("postFireStation",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                        fieldWithPath("address")
+                            .description("The address of the mapping."
+                                    + " This parameter *must not be blank*."),
+                        fieldWithPath("station")
+                            .description("The fireStation of the mapping. "
+                                    + "This parameter *must be greater than 0*."))));
+    verify(fireStationService, times(1)).add(fireStationTest);
+  }
+
+  @Test
+  void postAlreadyExistingFireStationTest() throws Exception {
+    // GIVEN
+    String error = String.format("%s mapping for station %s already exists", 
+            fireStationTest.getAddress(),
+            fireStationTest.getStation());
+    when(fireStationService.add(any(FireStation.class))).thenThrow(
+            new ResourceAlreadyExistsException(error));
+
+    // WHEN
+    mockMvc.perform(post("/fireStation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonParser.asString(fireStationTest)))
+
+            // THEN
+            .andExpect(status().isConflict())
+            .andExpect(jsonPath("$", is(error)))
+            .andDo(document("postConflictFireStation",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(fireStationService, times(1)).add(fireStationTest);
+  }
+
+  @Test
+  void postInvalidFireStationTest() throws Exception {
+    // GIVEN
+    FireStationDto invalidFireStation = new FireStationDto(1, "");
+
+    // WHEN
+    mockMvc.perform(post("/fireStation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonParser.asString(invalidFireStation)))
+
+            // THEN
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.address", is("Address is mandatory")))
+            .andDo(document("postInvalidFireStation",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(fireStationService, times(0)).add(any(FireStation.class));
+  }
+  
+  @Test
+  void putFireStationTest() throws Exception {
+    // GIVEN
+    when(fireStationService.update(any(FireStation.class))).thenReturn(fireStationTest);
+
+    // WHEN
+    mockMvc.perform(put("/fireStation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonParser.asString(fireStationTest)))
+
+            // THEN
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.address", is("address")))
+            .andExpect(jsonPath("$.station", is(1)))
+            .andDo(document("putFireStation",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestFields(
+                            fieldWithPath("address")
+                                .description("The address of the mapping."
+                                        + " This parameter *must not be blank*."),
+                            fieldWithPath("station")
+                                .description("The fireStation of the mapping. "
+                                        + "This parameter *must be greater than 0*."))));
+    verify(fireStationService, times(1)).update(fireStationTest);
+  }
+
+  @Test
+  void putNotFoundFireStationTest() throws Exception {
+    // GIVEN
+    String error = String.format("%s mapping not found", 
+            fireStationTest.getAddress());
+    when(fireStationService.update(any(FireStation.class))).thenThrow(
+            new ResourceNotFoundException(error));
+
+    // WHEN
+    mockMvc.perform(put("/fireStation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonParser.asString(fireStationTest)))
+
+            // THEN
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$", is("address mapping not found")))
+            .andDo(document("putNotFoundFireStation",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(fireStationService, times(1)).update(fireStationTest);
+  }
+
+  @Test
+  void putInvalidFireStationTest() throws Exception {
+    // GIVEN
+    FireStationDto invalidFireStation = new FireStationDto(1, "");
+
+    // WHEN
+    mockMvc.perform(put("/fireStation")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(JsonParser.asString(invalidFireStation)))
+
+            // THEN
+            .andExpect(status().isUnprocessableEntity())
+            .andExpect(jsonPath("$.address", is("Address is mandatory")))
+            .andDo(document("putInvalidFireStation",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
   }
   
 }
