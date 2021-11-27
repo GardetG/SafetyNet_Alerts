@@ -59,6 +59,30 @@ class PersonRepositoryTest {
   }
 
   @Test
+  void findPersonByCityTest() {
+    // GIVEN
+    personRepository.setupRepository(List.of(personTest, personTest2));
+
+    // WHEN
+    List<Person> actualList = personRepository.findByCity("city");
+
+    // THEN
+    assertThat(actualList).isEqualTo(List.of(personTest));
+  }
+
+  @Test
+  void findPersonByCityNotFoundTest() {
+    // GIVEN
+    personRepository.setupRepository(List.of(personTest, personTest2));
+
+    // WHEN
+    List<Person> actualList = personRepository.findByCity("city9");
+
+    // THEN
+    assertThat(actualList).isEmpty();
+  }
+  
+  @Test
   void findPersonByNameTest() {
     // GIVEN
     personRepository.setupRepository(List.of(personTest, personTest2));
