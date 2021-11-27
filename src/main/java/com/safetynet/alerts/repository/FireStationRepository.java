@@ -2,6 +2,7 @@ package com.safetynet.alerts.repository;
 
 import com.safetynet.alerts.model.FireStation;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -34,7 +35,7 @@ public interface FireStationRepository {
    * @param address of the mapping
    * @return FireStation mapping
    */
-  FireStation findByAddress(String address);
+  Optional<FireStation> findByAddress(String address);
   
   /**
    * Add a FireStation mapping to the repository.

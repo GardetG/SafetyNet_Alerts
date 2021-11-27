@@ -2,6 +2,7 @@ package com.safetynet.alerts.repository;
 
 import com.safetynet.alerts.model.MedicalRecord;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -26,7 +27,7 @@ public interface MedicalRecordRepository {
    * @param lastName of the MedicalRecord
    * @return MedicalRecord
    */
-  MedicalRecord findByName(String firstName, String lastName);
+  Optional<MedicalRecord> findByName(String firstName, String lastName);
   
   /**
    * Add a MedicalRecord to the repository.

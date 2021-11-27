@@ -6,6 +6,7 @@ import com.safetynet.alerts.model.FireStation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,10 +93,10 @@ class FireStationRepositoryTest {
             fireStationTest, fireStationTest2, fireStationTest3));
 
     // WHEN
-    FireStation actualFireStation = fireStationRepository.findByAddress("address");
+    Optional<FireStation> actualFireStation = fireStationRepository.findByAddress("address");
 
     // THEN
-    assertThat(actualFireStation).isEqualTo(fireStationTest);
+    assertThat(actualFireStation.get()).isEqualTo(fireStationTest);
   }
 
   @Test
@@ -105,10 +106,10 @@ class FireStationRepositoryTest {
             fireStationTest, fireStationTest2, fireStationTest3));
 
     // WHEN
-    FireStation actualFireStation = fireStationRepository.findByAddress("address9");
+    Optional<FireStation> actualFireStation = fireStationRepository.findByAddress("address9");
 
     // THEN
-    assertThat(actualFireStation).isNull();
+    assertThat(actualFireStation.isEmpty()).isTrue();
   }
 
 

@@ -5,6 +5,7 @@ import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.repository.FireStationRepository;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,13 +51,13 @@ public class FireStationServiceImpl implements FireStationService {
   @Override
   public FireStation getByAddress(String address) throws ResourceNotFoundException {
     
-    FireStation fireStation = fireStationRepository.findByAddress(address);
-    if (fireStation == null) {
+    Optional<FireStation> fireStation = fireStationRepository.findByAddress(address);
+    if (fireStation.isEmpty()) {
       String error = String.format("%s mapping not found", address);
       throw new ResourceNotFoundException(error);
     }
     
-    return fireStation;
+    return fireStation.get();
     
   }
 
@@ -66,9 +67,10 @@ public class FireStationServiceImpl implements FireStationService {
   @Override
   public FireStation add(@Valid FireStation fireStation) throws ResourceAlreadyExistsException {
     
-    FireStation existingFireStation = fireStationRepository.findByAddress(fireStation.getAddress());
+    Optional<FireStation> existingFireStation = fireStationRepository
+            .findByAddress(fireStation.getAddress());
 
-    if (existingFireStation != null) {
+    if (existingFireStation.isPresent()) {
       String error = String.format("%s mapping for station %s already exists", 
               fireStation.getAddress(),
               fireStation.getStation());
@@ -76,7 +78,7 @@ public class FireStationServiceImpl implements FireStationService {
     }
 
     fireStationRepository.add(fireStation);
-    return fireStationRepository.findByAddress(fireStation.getAddress());
+    return fireStationRepository.findByAddress(fireStation.getAddress()).get();
     
   }
 
@@ -86,14 +88,15 @@ public class FireStationServiceImpl implements FireStationService {
   @Override
   public FireStation update(@Valid FireStation fireStation) throws ResourceNotFoundException {
     
-    FireStation existingFireStation = fireStationRepository.findByAddress(fireStation.getAddress());
-    if (existingFireStation == null) {
+    Optional<FireStation> existingFireStation = fireStationRepository
+            .findByAddress(fireStation.getAddress());
+    if (existingFireStation.isEmpty()) {
       String error = String.format("%s mapping not found", fireStation.getAddress());
       throw new ResourceNotFoundException(error);
     }
 
     fireStationRepository.update(fireStation);
-    return fireStationRepository.findByAddress(fireStation.getAddress());
+    return fireStationRepository.findByAddress(fireStation.getAddress()).get();
     
   }
 
@@ -121,13 +124,13 @@ public class FireStationServiceImpl implements FireStationService {
   @Override
   public void deleteByAddress(String address) throws ResourceNotFoundException {
     
-    FireStation existingFireStation = fireStationRepository.findByAddress(address);
-    if (existingFireStation == null) {
+    Optional<FireStation> existingFireStation = fireStationRepository.findByAddress(address);
+    if (existingFireStation.isEmpty()) {
       String error = String.format("%s mapping not found", address);
       throw new ResourceNotFoundException(error);
     }
 
-    fireStationRepository.delete(existingFireStation);
+    fireStationRepository.delete(existingFireStation.get());
   }
 
 }

@@ -3,6 +3,7 @@ package com.safetynet.alerts.repository;
 import com.safetynet.alerts.model.Person;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -25,11 +26,11 @@ public class PersonRepositoryImpl implements LoadableRepository<Person>, PersonR
    * {@inheritDoc}
    */
   @Override
-  public Person findByName(String firstName, String lastName) {
+  public Optional<Person> findByName(String firstName, String lastName) {
     return personsList.stream()
             .filter(person -> (person.getFirstName().equals(firstName)
             && (person.getLastName().equals(lastName))))
-            .findFirst().orElse(null);
+            .findFirst();
   }
 
   /**

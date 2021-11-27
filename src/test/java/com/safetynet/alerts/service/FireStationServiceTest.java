@@ -15,6 +15,7 @@ import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.repository.FireStationRepository;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-
 
 @ActiveProfiles("UnitTests")
 @SpringBootTest
@@ -105,7 +105,8 @@ class FireStationServiceTest {
   @Test
   void getFireStationByAddressTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(fireStationTest);
+    when(fireStationRepository.findByAddress(anyString()))
+            .thenReturn(Optional.of(fireStationTest));
 
     // WHEN
     FireStation actualFireStation = fireStationService.getByAddress("address");
@@ -118,7 +119,7 @@ class FireStationServiceTest {
   @Test
   void getFireStationByAddressWhenNotFoundTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(null);
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -133,8 +134,8 @@ class FireStationServiceTest {
   @Test
   void addFireStationTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(null)
-            .thenReturn(fireStationTest);
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.empty())
+            .thenReturn(Optional.of(fireStationTest));
     when(fireStationRepository.add(any(FireStation.class))).thenReturn(true);
 
     // WHEN
@@ -149,7 +150,7 @@ class FireStationServiceTest {
   @Test
   void addAlreadyExistingFireStationTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(fireStationTest);
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.of(fireStationTest));
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -182,8 +183,8 @@ class FireStationServiceTest {
   void updateFireStationTest() throws Exception {
     // GIVEN
     FireStation updatedFireStation = new FireStation(9, "address");
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(fireStationTest)
-            .thenReturn(updatedFireStation);
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.of(fireStationTest))
+            .thenReturn(Optional.of(updatedFireStation));
     when(fireStationRepository.update(any(FireStation.class))).thenReturn(true);
 
     // WHEN
@@ -199,7 +200,7 @@ class FireStationServiceTest {
   void updateNotFoundFireStationTest() throws Exception {
     // GIVEN
     FireStation updatedFireStation = new FireStation(9, "address9");
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(null);
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -264,7 +265,7 @@ class FireStationServiceTest {
   @Test
   void deleteFireStationByAddressTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(fireStationTest);
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.of(fireStationTest));
 
     // WHEN
     fireStationService.deleteByAddress("address");
@@ -277,7 +278,7 @@ class FireStationServiceTest {
   @Test
   void deleteByAddressNotFoundFireStationTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(null);
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 
     // WHEN
     assertThatThrownBy(() -> {

@@ -5,6 +5,7 @@ import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.repository.MedicalRecordRepository;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,12 +36,12 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   public MedicalRecord getByName(String firstName, String lastName)
           throws ResourceNotFoundException {
     
-    MedicalRecord medicalRecord = medicalRecordRepository.findByName(firstName, lastName);
-    if (medicalRecord == null) {
+    Optional<MedicalRecord> medicalRecord = medicalRecordRepository.findByName(firstName, lastName);
+    if (medicalRecord.isEmpty()) {
       String error = String.format("Medical record of %s %s not found", firstName, lastName);
       throw new ResourceNotFoundException(error);
     }
-    return medicalRecord;
+    return medicalRecord.get();
     
   }
 
@@ -51,10 +52,10 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   public MedicalRecord add(@Valid MedicalRecord medicalRecord) 
           throws ResourceAlreadyExistsException {
   
-    MedicalRecord existingMedicalRecord = medicalRecordRepository
+    Optional<MedicalRecord> existingMedicalRecord = medicalRecordRepository
           .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
 
-    if (existingMedicalRecord != null) {
+    if (existingMedicalRecord.isPresent()) {
       String error = String.format("Medical record of %s %s already exists", 
               medicalRecord.getFirstName(), medicalRecord.getLastName());
       throw new ResourceAlreadyExistsException(error);
@@ -62,7 +63,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
     medicalRecordRepository.add(medicalRecord);
     return medicalRecordRepository
-            .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
+            .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName()).get();
   
   }
 
@@ -72,10 +73,9 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   @Override
   public MedicalRecord update(@Valid MedicalRecord medicalRecord) throws ResourceNotFoundException {
     
-    MedicalRecord existingMedicalRecord = medicalRecordRepository
-            .findByName(medicalRecord.getFirstName(),
-            medicalRecord.getLastName());
-    if (existingMedicalRecord == null) {
+    Optional<MedicalRecord> existingMedicalRecord = medicalRecordRepository
+            .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
+    if (existingMedicalRecord.isEmpty()) {
       String error = String.format("Medical record of %s %s not found", 
               medicalRecord.getFirstName(), medicalRecord.getLastName());
       throw new ResourceNotFoundException(error);
@@ -83,7 +83,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
     medicalRecordRepository.update(medicalRecord);
     return medicalRecordRepository
-            .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
+            .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName()).get();
     
   }
 
@@ -93,13 +93,14 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   @Override
   public void delete(String firstName, String lastName) throws ResourceNotFoundException {
     
-    MedicalRecord existingMedicalRecord = medicalRecordRepository.findByName(firstName, lastName);
-    if (existingMedicalRecord == null) {
+    Optional<MedicalRecord> existingMedicalRecord = medicalRecordRepository
+            .findByName(firstName, lastName);
+    if (existingMedicalRecord.isEmpty()) {
       String error = String.format("Medical record of %s %s not found", firstName, lastName);
       throw new ResourceNotFoundException(error);
     }
 
-    medicalRecordRepository.delete(existingMedicalRecord);
+    medicalRecordRepository.delete(existingMedicalRecord.get());
     
   }
 

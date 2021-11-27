@@ -15,6 +15,7 @@ import com.safetynet.alerts.repository.MedicalRecordRepository;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ class MedicalRecordServiceTest {
   void getMedicalRecordByNameTest() throws Exception {
     // GIVEN
     when(medicalRecordRepository.findByName(anyString(), anyString()))
-            .thenReturn(medicalRecordTest);
+            .thenReturn(Optional.of(medicalRecordTest));
 
     // WHEN
     MedicalRecord actualmedicalRecord = medicalRecordService.getByName("firstName", "lastName");
@@ -88,7 +89,7 @@ class MedicalRecordServiceTest {
   @Test
   void getMedicalRecordByNameWhenNotFoundTest() throws Exception {
     // GIVEN
-    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(null);
+    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty());
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -103,8 +104,8 @@ class MedicalRecordServiceTest {
   @Test
   void addMedicalRecordTest() throws Exception {
     // GIVEN
-    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(null)
-            .thenReturn(medicalRecordTest);
+    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty())
+            .thenReturn(Optional.of(medicalRecordTest));
     when(medicalRecordRepository.add(any(MedicalRecord.class))).thenReturn(true);
 
     // WHEN
@@ -120,7 +121,7 @@ class MedicalRecordServiceTest {
   void addAlreadyExistingMedicalRecordTest() throws Exception {
     // GIVEN
     when(medicalRecordRepository.findByName(anyString(), anyString()))
-            .thenReturn(medicalRecordTest);
+            .thenReturn(Optional.of(medicalRecordTest));
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -155,8 +156,9 @@ class MedicalRecordServiceTest {
     // GIVEN
     MedicalRecord updatedMedicalRecord = new MedicalRecord("firstName", "lastName", 
             LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
-    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(medicalRecordTest)
-            .thenReturn(updatedMedicalRecord);
+    when(medicalRecordRepository.findByName(anyString(), anyString()))
+            .thenReturn(Optional.of(medicalRecordTest))
+            .thenReturn(Optional.of(updatedMedicalRecord));
     when(medicalRecordRepository.update(any(MedicalRecord.class))).thenReturn(true);
 
     // WHEN
@@ -173,7 +175,7 @@ class MedicalRecordServiceTest {
     // GIVEN
     MedicalRecord updatedMedicalRecord = new MedicalRecord("firstName", "lastName", 
             LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
-    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(null);
+    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty());
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -207,7 +209,7 @@ class MedicalRecordServiceTest {
   void deleteMedicalRecordTest() throws Exception {
     // GIVEN
     when(medicalRecordRepository.findByName(anyString(), anyString()))
-            .thenReturn(medicalRecordTest);
+            .thenReturn(Optional.of(medicalRecordTest));
 
     // WHEN
     medicalRecordService.delete("firstName", "lastName");
@@ -220,7 +222,7 @@ class MedicalRecordServiceTest {
   @Test
   void deleteNotFoundMedicalRecordTest() throws Exception {
     // GIVEN
-    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(null);
+    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty());
 
     // WHEN
     assertThatThrownBy(() -> {

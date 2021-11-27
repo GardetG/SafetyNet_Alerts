@@ -2,6 +2,7 @@ package com.safetynet.alerts.repository;
 
 import com.safetynet.alerts.model.Person;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -26,7 +27,7 @@ public interface PersonRepository {
    * @param lastName of the Person
    * @return Person
    */
-  Person findByName(String firstName, String lastName);
+  Optional<Person> findByName(String firstName, String lastName);
   
   /**
    * Add a Person to the repository.

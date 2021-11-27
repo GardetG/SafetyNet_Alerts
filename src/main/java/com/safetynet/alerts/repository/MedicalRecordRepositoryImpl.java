@@ -3,6 +3,7 @@ package com.safetynet.alerts.repository;
 import com.safetynet.alerts.model.MedicalRecord;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -26,11 +27,11 @@ public class MedicalRecordRepositoryImpl
    * {@inheritDoc}
    */
   @Override
-  public MedicalRecord findByName(String firstName, String lastName) {
+  public Optional<MedicalRecord> findByName(String firstName, String lastName) {
     return medicalRecordsList.stream()
             .filter(medicalRecord -> (medicalRecord.getFirstName().equals(firstName)
             && (medicalRecord.getLastName().equals(lastName))))
-            .findFirst().orElse(null);
+            .findFirst();
   }
 
   /**
