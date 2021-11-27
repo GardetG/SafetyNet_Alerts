@@ -1,8 +1,6 @@
 package com.safetynet.alerts.repository;
 
 import com.safetynet.alerts.model.FireStation;
-import com.safetynet.alerts.model.Person;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

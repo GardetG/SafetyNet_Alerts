@@ -3,8 +3,6 @@ package com.safetynet.alerts.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.safetynet.alerts.model.FireStation;
-import com.safetynet.alerts.model.FireStation;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

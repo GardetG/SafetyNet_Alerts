@@ -6,6 +6,7 @@ import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.FireStationService;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -117,7 +118,9 @@ public class FireStationController {
     FireStationDto createdFireStation = FireStationMapper.toDto(
             fireStationService.add(FireStationMapper.toModel(fireStation)));
 
-    URI uri = URI.create("/fireStations/fireStation?address=" + createdFireStation.getAddress());
+    String address = URLEncoder.encode(createdFireStation.getAddress(), 
+            java.nio.charset.StandardCharsets.UTF_8);
+    URI uri = URI.create("/fireStations/fireStation?address=" + address);
     LOGGER.info("Response: fireStation mapping created");
     return ResponseEntity.created(uri).body(createdFireStation);
   }
