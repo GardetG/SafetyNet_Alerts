@@ -60,5 +60,23 @@ public interface FireStationService {
    * @throws ResourceNotFoundException when the FireStation mapping doesn't exists
    */
   FireStation update(@Valid FireStation fireStation) throws ResourceNotFoundException;
+
+  /**
+   * Delete all FireStation mapping for station.
+   * 
+
+   * @param station id of mapping to delete
+   * @throws ResourceNotFoundException when mapping for this FireStation are not found
+   */
+  void deleteByStation(int station) throws ResourceNotFoundException;
+
+  /**
+   * Delete FireStation mapping for an address.
+   * 
+
+   * @param address of the mapping to delete
+   * @throws ResourceNotFoundException when mapping for this address is not found
+   */
+  void deleteByAddress(String address) throws ResourceNotFoundException;
   
 }

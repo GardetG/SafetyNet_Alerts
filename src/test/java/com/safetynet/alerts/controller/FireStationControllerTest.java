@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,6 +17,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -349,6 +351,120 @@ class FireStationControllerTest {
             .andDo(document("putInvalidFireStation",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
+  }
+  
+  @Test
+  void deleteFireStationTest() throws Exception {
+    // GIVEN
+
+    // WHEN
+    mockMvc.perform(delete("/fireStation/1"))
+
+            // THEN
+            .andExpect(status().isNoContent())
+            .andDo(document("deleteFireStation",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestParameters(
+                            parameterWithName("id").description(
+                    "Station Id of the fireStation mapping to retrieve. "
+                    + "This parameter *must be greater than 0*.")
+                            .optional()
+                        )));
+    verify(fireStationService, times(1)).deleteByStation(1);
+  }
+
+  @Test
+  void deleteNotFoundFireStationTest() throws Exception {
+    // GIVEN
+    doThrow(new ResourceNotFoundException("Station 9 mapping not found"))
+            .when(fireStationService)
+            .deleteByStation(anyInt());
+
+
+    // WHEN
+    mockMvc.perform(delete("/fireStation/9"))
+
+            // THEN
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$", is("Station 9 mapping not found")))
+            .andDo(document("deleteNotFoundFireStation",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(fireStationService, times(1)).deleteByStation(9);
+  }
+  
+  @Test
+  void deleteFireStationWithInvalidArgumentsTest() throws Exception {
+    // GIVEN
+
+    // WHEN
+    mockMvc.perform(delete("/fireStation/0"))
+
+            // THEN
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0]", is("Station Id must be greater than 0")))
+            .andDo(document("deleteInvalidFireStation",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(fireStationService, times(0)).deleteByStation(anyInt());
+  }
+  
+  @Test
+  void deleteFireStationByAddressTest() throws Exception {
+    // GIVEN
+
+    // WHEN
+    mockMvc.perform(delete("/fireStation?address=address"))
+
+            // THEN
+            .andExpect(status().isNoContent())
+            .andDo(document("deleteFireStation",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestParameters(
+                            parameterWithName("address").description(
+                    "Address of the fireStation mapping to retrieve. "
+                    + "This parameter *must not be blank*.")
+                            .optional()
+                        )));
+    verify(fireStationService, times(1)).deleteByAddress("address");
+  }
+
+  @Test
+  void deleteNotFoundFireStationByAddressTest() throws Exception {
+    // GIVEN
+    doThrow(new ResourceNotFoundException("address9 mapping not found"))
+            .when(fireStationService)
+            .deleteByAddress(anyString());
+
+
+    // WHEN
+    mockMvc.perform(delete("/fireStation?address=address9"))
+
+            // THEN
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$", is("address9 mapping not found")))
+            .andDo(document("deleteNotFoundFireStation",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(fireStationService, times(1)).deleteByAddress("address9");
+  }
+  
+  @Test
+  void deleteFireStationByAddressWithInvalidArgumentsTest() throws Exception {
+    // GIVEN
+
+    // WHEN
+    mockMvc.perform(delete("/fireStation?address="))
+
+            // THEN
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0]", is("Address is mandatory")))
+            .andDo(document("deleteInvalidFireStation",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(fireStationService, times(0)).deleteByAddress(anyString());
   }
   
 }
