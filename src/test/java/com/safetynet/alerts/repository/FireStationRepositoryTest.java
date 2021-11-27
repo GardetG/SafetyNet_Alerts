@@ -3,6 +3,7 @@ package com.safetynet.alerts.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.safetynet.alerts.model.FireStation;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -110,4 +111,52 @@ class FireStationRepositoryTest {
     assertThat(actualFireStation).isNull();
   }
 
+
+  @Test
+  void addFireStationTest() {
+    // GIVEN
+    fireStationRepository.setupRepository(new ArrayList<FireStation>(List.of(fireStationTest)));
+
+    // WHEN
+    boolean isSuccess = fireStationRepository.add(fireStationTest2);
+
+    // THEN
+    assertThat(isSuccess).isTrue();
+    assertThat(fireStationRepository.findAll()).hasSize(2)
+            .containsExactly(fireStationTest, fireStationTest2);
+  }
+
+  @Test
+  void updateFireStationTest() {
+    // GIVEN
+    fireStationRepository.setupRepository(new ArrayList<FireStation>(List.of(
+            fireStationTest, fireStationTest2)));
+    FireStation fireStationTestUpdated = new FireStation(9, "address");
+
+    // WHEN
+    boolean isSuccess = fireStationRepository.update(fireStationTestUpdated);
+
+    // THEN
+    assertThat(isSuccess).isTrue();
+    assertThat(fireStationRepository.findAll()).hasSize(2)
+            .doesNotContain(fireStationTest)
+            .containsExactly(fireStationTestUpdated, fireStationTest2);
+  }
+
+  @Test
+  void updateNotFoundFireStationTest() {
+    // GIVEN
+    fireStationRepository.setupRepository(new ArrayList<FireStation>(List.of(fireStationTest2)));
+    FireStation fireStationTestUpdated = new FireStation(9, "address");
+
+    // WHEN
+    boolean isSuccess = fireStationRepository.update(fireStationTestUpdated);
+
+    // THEN
+    assertThat(isSuccess).isFalse();
+    assertThat(fireStationRepository.findAll()).hasSize(1)
+            .doesNotContain(fireStationTestUpdated)
+            .containsExactly(fireStationTest2);
+  }
+  
 }
