@@ -1,6 +1,8 @@
 package com.safetynet.alerts.repository;
 
 import com.safetynet.alerts.model.FireStation;
+import com.safetynet.alerts.model.Person;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,8 +50,7 @@ public class FireStationRepositoryImpl
    */
   @Override
   public boolean add(FireStation fireStation) {
-    // TODO Auto-generated method stub
-    return false;
+    return fireStationsList.add(fireStation);
   }
 
   /**
@@ -57,8 +58,18 @@ public class FireStationRepositoryImpl
    */
   @Override
   public boolean update(FireStation fireStation) {
-    // TODO Auto-generated method stub
-    return false;
+    FireStation existingFireStation = fireStationsList.stream()
+            .filter(fireStationElemnt -> 
+            (fireStationElemnt.getAddress().equals(fireStation.getAddress())))
+            .findFirst().orElse(null);
+    
+    if (existingFireStation == null) {
+      return false;
+    }
+    
+    int index = fireStationsList.indexOf(existingFireStation);
+    fireStationsList.set(index, fireStation);
+    return true;
   }
 
   /**
