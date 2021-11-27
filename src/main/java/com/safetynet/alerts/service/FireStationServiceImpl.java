@@ -25,8 +25,7 @@ public class FireStationServiceImpl implements FireStationService {
    */
   @Override
   public List<FireStation> getAll() {
-    // TODO Auto-generated method stub
-    return null;
+    return fireStationRepository.findAll();
   }
 
   /**
@@ -34,8 +33,15 @@ public class FireStationServiceImpl implements FireStationService {
    */
   @Override
   public List<FireStation> getByStation(int station) throws ResourceNotFoundException {
-    // TODO Auto-generated method stub
-    return null;
+    
+    List<FireStation> fireStations = fireStationRepository.findByStation(station);
+    if (fireStations.isEmpty()) {
+      String error = String.format("Station %s mapping not found", station);
+      throw new ResourceNotFoundException(error);
+    }
+    
+    return fireStations;
+    
   }
 
   /**
@@ -43,8 +49,15 @@ public class FireStationServiceImpl implements FireStationService {
    */
   @Override
   public FireStation getByAddress(String address) throws ResourceNotFoundException {
-    // TODO Auto-generated method stub
-    return null;
+    
+    FireStation fireStation = fireStationRepository.findByAddress(address);
+    if (fireStation == null) {
+      String error = String.format("%s mapping not found", address);
+      throw new ResourceNotFoundException(error);
+    }
+    
+    return fireStation;
+    
   }
 
   /**
