@@ -65,8 +65,19 @@ public class FireStationServiceImpl implements FireStationService {
    */
   @Override
   public FireStation add(@Valid FireStation fireStation) throws ResourceAlreadyExistsException {
-    // TODO Auto-generated method stub
-    return null;
+    
+    FireStation existingFireStation = fireStationRepository.findByAddress(fireStation.getAddress());
+
+    if (existingFireStation != null) {
+      String error = String.format("%s mapping for station %s already exists", 
+              fireStation.getAddress(),
+              fireStation.getStation());
+      throw new ResourceAlreadyExistsException(error);
+    }
+
+    fireStationRepository.add(fireStation);
+    return fireStationRepository.findByAddress(fireStation.getAddress());
+    
   }
 
   /**
@@ -74,8 +85,16 @@ public class FireStationServiceImpl implements FireStationService {
    */
   @Override
   public FireStation update(@Valid FireStation fireStation) throws ResourceNotFoundException {
-    // TODO Auto-generated method stub
-    return null;
+    
+    FireStation existingFireStation = fireStationRepository.findByAddress(fireStation.getAddress());
+    if (existingFireStation == null) {
+      String error = String.format("%s mapping not found", fireStation.getAddress());
+      throw new ResourceNotFoundException(error);
+    }
+
+    fireStationRepository.update(fireStation);
+    return fireStationRepository.findByAddress(fireStation.getAddress());
+    
   }
 
   /**

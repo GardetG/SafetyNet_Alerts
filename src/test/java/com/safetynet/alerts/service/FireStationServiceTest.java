@@ -9,11 +9,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.repository.FireStationRepository;
 import java.util.Collections;
 import java.util.List;
+import javax.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,4 +130,102 @@ class FireStationServiceTest {
             .hasMessageContaining("address9 mapping not found");
   }
 
+  @Test
+  void addFireStationTest() throws Exception {
+    // GIVEN
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(null)
+            .thenReturn(fireStationTest);
+    when(fireStationRepository.add(any(FireStation.class))).thenReturn(true);
+
+    // WHEN
+    FireStation actualfireStation = fireStationService.add(fireStationTest);
+
+    // THEN
+    assertThat(actualfireStation).isEqualTo(fireStationTest);
+    verify(fireStationRepository, times(2)).findByAddress("address");
+    verify(fireStationRepository, times(1)).add(fireStationTest);
+  }
+
+  @Test
+  void addAlreadyExistingFireStationTest() throws Exception {
+    // GIVEN
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(fireStationTest);
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      fireStationService.add(fireStationTest);
+    })
+
+            // THEN
+            .isInstanceOf(ResourceAlreadyExistsException.class)
+            .hasMessageContaining("address mapping for station 1 already exists");
+    verify(fireStationRepository, times(1)).findByAddress("address");
+    verify(fireStationRepository, times(0)).add(any(FireStation.class));
+  }
+
+  @Test
+  void addInvalidFireStationTest() throws Exception {
+    // GIVEN
+    FireStation invalidFireStation = new FireStation(1, "");
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      fireStationService.add(invalidFireStation);
+    })
+
+            // THEN
+            .isInstanceOf(ConstraintViolationException.class)
+            .hasMessageContaining("Address is mandatory");
+  }
+
+  @Test
+  void updateFireStationTest() throws Exception {
+    // GIVEN
+    FireStation updatedFireStation = new FireStation(9, "address");
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(fireStationTest)
+            .thenReturn(updatedFireStation);
+    when(fireStationRepository.update(any(FireStation.class))).thenReturn(true);
+
+    // WHEN
+    FireStation actualfireStation = fireStationService.update(updatedFireStation);
+
+    // THEN
+    assertThat(actualfireStation).isEqualTo(updatedFireStation);
+    verify(fireStationRepository, times(2)).findByAddress("address");
+    verify(fireStationRepository, times(1)).update(updatedFireStation);
+  }
+
+  @Test
+  void updateNotFoundFireStationTest() throws Exception {
+    // GIVEN
+    FireStation updatedFireStation = new FireStation(9, "address9");
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(null);
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      fireStationService.update(updatedFireStation);
+    })
+
+            // THEN
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("address9 mapping not found");
+    verify(fireStationRepository, times(1)).findByAddress("address9");
+    verify(fireStationRepository, times(0)).update(any(FireStation.class));
+  }
+
+  @Test
+  void updateInvalidFireStationTest() throws Exception {
+    // GIVEN
+    FireStation invalidFireStation = new FireStation(1, "");
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      fireStationService.update(invalidFireStation);
+    })
+
+            // THEN
+            .isInstanceOf(ConstraintViolationException.class)
+            .hasMessageContaining("Address is mandatory");
+  }
+  
 }

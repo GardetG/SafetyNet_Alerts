@@ -36,4 +36,22 @@ public interface FireStationRepository {
    */
   FireStation findByAddress(String address);
   
+  /**
+   * Add a FireStation mapping to the repository.
+   * 
+
+   * @param fireStation mapping to add
+   * @return True is operation succeed
+   */
+  boolean add(FireStation fireStation);
+
+  /**
+   * Update a FireStation mapping in the repository.
+   * 
+
+   * @param fireStation mapping to update
+   * @return True if operation succeed
+   */
+  boolean update(FireStation fireStation);
+  
 }
