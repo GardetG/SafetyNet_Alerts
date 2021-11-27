@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,16 +54,16 @@ public class FireStationController {
   }
 
   /**
-   * Handle HTTP GET request on a fireStation resource by its firstName and lastName.
+   * Handle HTTP GET request on a fireStation mapping resource by id.
    * 
 
    * @param id of the fireStation
    * @return HTTP 200 Response with the fireStation
-   * @throws ResourceNotFoundException when for this fireStation mapping are not found
+   * @throws ResourceNotFoundException when mapping are not found for this fireStation
    */
   
   @GetMapping("/fireStations/{id}")
-  public ResponseEntity<List<FireStationDto>> getFireStation(
+  public ResponseEntity<List<FireStationDto>> getFireStationById(
           @PathVariable @Range(min = 1, message = "Station Id must be greater than 0") int id)
           throws ResourceNotFoundException {
     
@@ -81,11 +82,11 @@ public class FireStationController {
 
    * @param address of the fireStation mapping
    * @return HTTP 200 Response with the fireStation mapping
-   * @throws ResourceNotFoundException when this address mapping is not found
+   * @throws ResourceNotFoundException when mapping is not found for this address
    */
   
   @GetMapping("/fireStations/fireStation")
-  public ResponseEntity<FireStationDto> getFireStation(
+  public ResponseEntity<FireStationDto> getFireStationByAddress(
           @RequestParam @NotBlank(message = "Address is mandatory") String address)
           throws ResourceNotFoundException {
     
@@ -143,4 +144,45 @@ public class FireStationController {
     return ResponseEntity.ok(updatedFireStation);
   }
   
+  /**
+   * Handle HTTP DELETE request on a fireStation mapping resource by id.
+   * 
+
+   * @param id of fireStation mapping to delete
+   * @return HTTP 204
+   * @throws ResourceNotFoundException when mapping are not found for this fireStation
+   */
+  @DeleteMapping("/fireStation/{id}")
+  public ResponseEntity<Void> deleteFireStationById(
+          @PathVariable @Range(min = 1, message = "Station Id must be greater than 0") int id)
+          throws ResourceNotFoundException {
+
+    LOGGER.info("Request: Delete fireStation mapping for station {}", id);
+    fireStationService.deleteByStation(id);
+    
+    LOGGER.info("Response: FireStation mapping deleted");
+    return ResponseEntity.noContent().build();
+
+  }
+  
+  /**
+   * Handle HTTP DELETE request on a fireStation mapping resource by address.
+   * 
+
+   * @param address of fireStation mapping to delete
+   * @return HTTP 204
+   * @throws ResourceNotFoundException when mapping is not found for this address
+   */
+  @DeleteMapping("/fireStation")
+  public ResponseEntity<Void> deleteFireStationbyAddress(
+          @RequestParam @NotBlank(message = "Address is mandatory") String address)
+          throws ResourceNotFoundException {
+
+    LOGGER.info("Request: Delete fireStations mapping for {}", address);
+    fireStationService.deleteByAddress(address);
+    
+    LOGGER.info("Response: FireStation mapping deleted");
+    return ResponseEntity.noContent().build();
+
+  }
 }
