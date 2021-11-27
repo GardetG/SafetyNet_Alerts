@@ -1,0 +1,199 @@
+=== Get all medical records
+
+==== Resquest
+
+===== Request
+include::{snippets}/getAllFireStation/http-request.adoc[]
+
+===== cURL
+include::{snippets}/getAllFireStation/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/getAllFireStation/http-response.adoc[]
+
+
+=== Get fireStation by Station Id
+
+==== Request
+
+===== Request
+include::{snippets}/getFireStationById/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/getFireStationById/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/getFireStationById/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/getFireStationById/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When the medical record of this person can't be found, this response can be expected:
+
+include::{snippets}/getNotFoundFireStationById/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid parameters, this response can be expected:
+
+include::{snippets}/getInvalidFireStationById/http-response.adoc[]
+
+
+=== Get fireStation by Address
+
+==== Request
+
+===== Request
+include::{snippets}/getFireStationByAddress/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/getFireStationByAddress/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/getFireStationByAddress/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/getFireStationByAddress/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When the medical record of this person can't be found, this response can be expected:
+
+include::{snippets}/getNotFoundFireStationByAddress/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid parameters, this response can be expected:
+
+include::{snippets}/getInvalidFireStationByAddress/http-response.adoc[]
+
+=== Post fireStation
+
+==== Resquest
+
+===== Request
+include::{snippets}/postFireStation/http-request.adoc[]
+
+====== Request fields
+include::{snippets}/postFireStation/request-fields.adoc[]
+
+===== cURL
+include::{snippets}/postFireStation/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/postFireStation/http-response.adoc[]
+
+==== Error Response
+
+===== Already Exists
+When the medical record of this person already exists, this response can be expected:
+
+include::{snippets}/postConflictFireStation/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid person, this response can be expected:
+
+include::{snippets}/postInvalidFireStation/http-response.adoc[]
+
+
+=== Put fireStation
+
+==== Resquest
+
+===== Request
+include::{snippets}/putFireStation/http-request.adoc[]
+
+====== Request fields
+include::{snippets}/putFireStation/request-fields.adoc[]
+
+===== cURL
+include::{snippets}/putFireStation/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/putFireStation/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When the medical record to update can't be found, this response can be expected:
+
+include::{snippets}/putNotFoundFireStation/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid person, this response can be expected:
+
+include::{snippets}/putInvalidFireStation/http-response.adoc[]
+
+
+=== Delete fireStation by Station Id
+
+==== Resquest
+
+===== Request
+include::{snippets}/deleteFireStationById/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/deleteFireStationById/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/deleteFireStationById/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/deleteFireStationById/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When the medical record to delete can't be found, this response can be expected:
+
+include::{snippets}/deleteNotFoundFireStationById/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid parameters, this response can be expected:
+
+include::{snippets}/deleteInvalidFireStationById/http-response.adoc[]
+
+
+=== Delete fireStation by Address
+
+==== Resquest
+
+===== Request
+include::{snippets}/deleteFireStationByAddress/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/deleteFireStationByAddress/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/deleteFireStationByAddress/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/deleteFireStationByAddress/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When the medical record to delete can't be found, this response can be expected:
+
+include::{snippets}/deleteNotFoundFireStationByAddress/http-response.adoc[]
+
+===== Invalid Parameter
+When making a call with invalid parameters, this response can be expected:
+
+include::{snippets}/deleteInvalidFireStationByAddress/http-response.adoc[]

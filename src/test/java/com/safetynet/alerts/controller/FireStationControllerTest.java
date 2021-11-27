@@ -111,7 +111,7 @@ class FireStationControllerTest {
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].address", is("address")))
             .andExpect(jsonPath("$[1].address", is("address2")))
-            .andDo(document("getFireStation",
+            .andDo(document("getFireStationById",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
                     requestParameters(
@@ -135,7 +135,7 @@ class FireStationControllerTest {
             // THEN
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$[0]", is("Station Id must be greater than 0")))
-            .andDo(document("getInvalidFireStation",
+            .andDo(document("getInvalidFireStationById",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(fireStationService, times(0)).getByStation(1);
@@ -153,7 +153,7 @@ class FireStationControllerTest {
             // THEN
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$", is("Station 9 mapping not found")))
-            .andDo(document("getNotFoundFireStation",
+            .andDo(document("getNotFoundFireStationById",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(fireStationService, times(1)).getByStation(9);
@@ -170,7 +170,7 @@ class FireStationControllerTest {
             // THEN
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.address", is("address")))
-            .andDo(document("getFireStation",
+            .andDo(document("getFireStationByAddress",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
                     requestParameters(
@@ -193,7 +193,7 @@ class FireStationControllerTest {
             // THEN
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$[0]", is("Address is mandatory")))
-            .andDo(document("getInvalidFireStation",
+            .andDo(document("getInvalidFireStationByAddress",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(fireStationService, times(0)).getByAddress(anyString());
@@ -211,7 +211,7 @@ class FireStationControllerTest {
             // THEN
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$", is("Address9 mapping not found")))
-            .andDo(document("getNotFoundFireStation",
+            .andDo(document("getNotFoundFireStationByAddress",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(fireStationService, times(1)).getByAddress("address9");
@@ -362,7 +362,7 @@ class FireStationControllerTest {
 
             // THEN
             .andExpect(status().isNoContent())
-            .andDo(document("deleteFireStation",
+            .andDo(document("deleteFireStationById",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
                     requestParameters(
@@ -388,7 +388,7 @@ class FireStationControllerTest {
             // THEN
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$", is("Station 9 mapping not found")))
-            .andDo(document("deleteNotFoundFireStation",
+            .andDo(document("deleteNotFoundFireStationById",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(fireStationService, times(1)).deleteByStation(9);
@@ -404,7 +404,7 @@ class FireStationControllerTest {
             // THEN
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$[0]", is("Station Id must be greater than 0")))
-            .andDo(document("deleteInvalidFireStation",
+            .andDo(document("deleteInvalidFireStationById",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(fireStationService, times(0)).deleteByStation(anyInt());
@@ -419,7 +419,7 @@ class FireStationControllerTest {
 
             // THEN
             .andExpect(status().isNoContent())
-            .andDo(document("deleteFireStation",
+            .andDo(document("deleteFireStationByAddress",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
                     requestParameters(
@@ -445,7 +445,7 @@ class FireStationControllerTest {
             // THEN
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$", is("address9 mapping not found")))
-            .andDo(document("deleteNotFoundFireStation",
+            .andDo(document("deleteNotFoundFireStationByAddress",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(fireStationService, times(1)).deleteByAddress("address9");
@@ -461,7 +461,7 @@ class FireStationControllerTest {
             // THEN
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$[0]", is("Address is mandatory")))
-            .andDo(document("deleteInvalidFireStation",
+            .andDo(document("deleteInvalidFireStationByAddress",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(fireStationService, times(0)).deleteByAddress(anyString());

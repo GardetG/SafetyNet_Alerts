@@ -13,3 +13,7 @@ include::person.adoc[]
 == Medical Records Management
 
 include::medicalrecord.adoc[]
+
+== FireStation Management
+
+include::FireStation.adoc[]
