@@ -20,6 +20,15 @@ public interface PersonRepository {
   List<Person> findAll();
 
   /**
+   * Find all Person from a city.
+   * 
+
+   * @param city of Person
+   * @return List of all Person from the city
+   */
+  List<Person> findByCity(String city);
+  
+  /**
    * Find a Person by its name.
    * 
 
