@@ -1,5 +1,6 @@
 package com.safetynet.alerts.model;
 
+import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,5 +23,25 @@ public class FireStation {
   private int station;
   @NotBlank(message = "Address is mandatory")
   private String address;
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(address, station);
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    FireStation other = (FireStation) obj;
+    return Objects.equals(address, other.address) && station == other.station;
+  }
 
 }

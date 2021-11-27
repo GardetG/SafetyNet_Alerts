@@ -2,9 +2,12 @@ package com.safetynet.alerts.controller;
 
 import com.safetynet.alerts.dto.FireStationDto;
 import com.safetynet.alerts.dto.FireStationMapper;
+import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.FireStationService;
+import java.net.URI;
 import java.util.List;
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
@@ -15,6 +18,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -92,5 +98,49 @@ public class FireStationController {
     
   }
   
+  /**
+   * Handle HTTP POST request for a fireStation mapping resource.
+   * 
+
+   * @param fireStation mapping to create
+   * @return HTTP 201 Response with the fireStation mapping created
+   * @throws ResourceAlreadyExistsException when the fireStation mapping already exists
+   */
+  @PostMapping("/fireStation")
+  public ResponseEntity<FireStationDto> postFireStation(
+          @Valid @RequestBody FireStationDto fireStation) 
+          throws ResourceAlreadyExistsException {
+
+    LOGGER.info("Request: Create {} mapping to station {}", 
+            fireStation.getAddress(), fireStation.getStation());
+    FireStationDto createdFireStation = FireStationMapper.toDto(
+            fireStationService.add(FireStationMapper.toModel(fireStation)));
+
+    URI uri = URI.create("/fireStations/fireStation?address=" + createdFireStation.getAddress());
+    LOGGER.info("Response: fireStation mapping created");
+    return ResponseEntity.created(uri).body(createdFireStation);
+  }
+  
+  /**
+   * Handle HTTP PUT request on a fireStation mapping resource.
+   * 
+
+   * @param fireStation mapping to update
+   * @return HTTP 200 Response with the fireStation mapping updated
+   * @throws ResourceNotFoundException when the fireStation mapping to update is not found
+   */
+  @PutMapping("/fireStation")
+  public ResponseEntity<FireStationDto> putFireStation(
+          @Valid @RequestBody FireStationDto fireStation) 
+          throws ResourceNotFoundException {
+
+    LOGGER.info("Request: Update {} mapping to station {}", 
+            fireStation.getAddress(), fireStation.getStation());
+    FireStationDto updatedFireStation = FireStationMapper.toDto(fireStationService
+            .update(FireStationMapper.toModel(fireStation)));
+    
+    LOGGER.info("Response: FireStation mapping updated");
+    return ResponseEntity.ok(updatedFireStation);
+  }
   
 }
