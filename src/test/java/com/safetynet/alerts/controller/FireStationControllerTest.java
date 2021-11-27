@@ -134,10 +134,7 @@ class FireStationControllerTest {
 
             // THEN
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]", is("Station Id must be greater than 0")))
-            .andDo(document("getInvalidFireStationById",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$[0]", is("Station Id must be greater than 0")));
     verify(fireStationService, times(0)).getByStation(1);
   }
 
@@ -192,10 +189,7 @@ class FireStationControllerTest {
 
             // THEN
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]", is("Address is mandatory")))
-            .andDo(document("getInvalidFireStationByAddress",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$[0]", is("Address is mandatory")));
     verify(fireStationService, times(0)).getByAddress(anyString());
   }
 
@@ -279,10 +273,7 @@ class FireStationControllerTest {
 
             // THEN
             .andExpect(status().isUnprocessableEntity())
-            .andExpect(jsonPath("$.address", is("Address is mandatory")))
-            .andDo(document("postInvalidFireStation",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$.address", is("Address is mandatory")));
     verify(fireStationService, times(0)).add(any(FireStation.class));
   }
   
@@ -347,10 +338,7 @@ class FireStationControllerTest {
 
             // THEN
             .andExpect(status().isUnprocessableEntity())
-            .andExpect(jsonPath("$.address", is("Address is mandatory")))
-            .andDo(document("putInvalidFireStation",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$.address", is("Address is mandatory")));
   }
   
   @Test
@@ -403,10 +391,7 @@ class FireStationControllerTest {
 
             // THEN
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]", is("Station Id must be greater than 0")))
-            .andDo(document("deleteInvalidFireStationById",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$[0]", is("Station Id must be greater than 0")));
     verify(fireStationService, times(0)).deleteByStation(anyInt());
   }
   
@@ -460,10 +445,7 @@ class FireStationControllerTest {
 
             // THEN
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]", is("Address is mandatory")))
-            .andDo(document("deleteInvalidFireStationByAddress",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$[0]", is("Address is mandatory")));
     verify(fireStationService, times(0)).deleteByAddress(anyString());
   }
   

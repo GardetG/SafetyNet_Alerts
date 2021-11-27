@@ -131,10 +131,7 @@ class MedicalRecordControllerTest {
 
             // THEN
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")))
-            .andDo(document("getInvalidMedicalRecord",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")));
     verify(medicalRecordService, times(0)).getByName(anyString(), anyString());
   }
 
@@ -228,10 +225,7 @@ class MedicalRecordControllerTest {
 
             // THEN
             .andExpect(status().isUnprocessableEntity())
-            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")))
-            .andDo(document("postInvalidMedicalRecord",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")));
     verify(medicalRecordService, times(0)).add(any(MedicalRecord.class));
   }
   
@@ -306,10 +300,7 @@ class MedicalRecordControllerTest {
 
             // THEN
             .andExpect(status().isUnprocessableEntity())
-            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")))
-            .andDo(document("putInvalidMedicalRecord",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")));
   }
   
   @Test
@@ -368,10 +359,7 @@ class MedicalRecordControllerTest {
 
             // THEN
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")))
-            .andDo(document("deleteInvalidMedicalRecord",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")));
     verify(medicalRecordService, times(0)).delete(anyString(), anyString());
   }
 }

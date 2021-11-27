@@ -39,11 +39,6 @@ When the medical record of this person can't be found, this response can be expe
 
 include::{snippets}/getNotFoundMedicalRecord/http-response.adoc[]
 
-===== Invalid Parameter
-When making a call with invalid parameters, this response can be expected:
-
-include::{snippets}/getInvalidMedicalRecord/http-response.adoc[]
-
 
 === Post medical record
 
@@ -69,11 +64,6 @@ include::{snippets}/postMedicalRecord/http-response.adoc[]
 When the medical record of this person already exists, this response can be expected:
 
 include::{snippets}/postConflictMedicalRecord/http-response.adoc[]
-
-===== Invalid Parameter
-When making a call with invalid person, this response can be expected:
-
-include::{snippets}/postInvalidMedicalRecord/http-response.adoc[]
 
 
 === Put medical record
@@ -101,11 +91,6 @@ When the medical record to update can't be found, this response can be expected:
 
 include::{snippets}/putNotFoundMedicalRecord/http-response.adoc[]
 
-===== Invalid Parameter
-When making a call with invalid person, this response can be expected:
-
-include::{snippets}/putInvalidMedicalRecord/http-response.adoc[]
-
 
 === Delete medical record
 
@@ -131,8 +116,3 @@ include::{snippets}/deleteMedicalRecord/http-response.adoc[]
 When the medical record to delete can't be found, this response can be expected:
 
 include::{snippets}/deleteNotFoundMedicalRecord/http-response.adoc[]
-
-===== Invalid Parameter
-When making a call with invalid parameters, this response can be expected:
-
-include::{snippets}/deleteInvalidMedicalRecord/http-response.adoc[]

@@ -55,7 +55,7 @@ class AlertsControllerTest {
                     preprocessResponse(prettyPrint()),
                     requestParameters(
                             parameterWithName("city").description(
-                    "Address of the fireStation mapping to retrieve. "
+                    "The city from which we want to retrieve the residents' emails."
                     + "This parameter *must not be blank*.")
                             .optional()
                         )));
@@ -91,10 +91,7 @@ class AlertsControllerTest {
 
             // THEN
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]", is("City is mandatory")))
-            .andDo(document("GetCommunityEmailInvalid",
-                    preprocessRequest(prettyPrint()), 
-                    preprocessResponse(prettyPrint())));
+            .andExpect(jsonPath("$[0]", is("City is mandatory")));
     verify(alertsService, times(0)).getCommunityEmail(anyString());
   }
 }
