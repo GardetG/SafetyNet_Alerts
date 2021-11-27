@@ -77,8 +77,7 @@ public class FireStationRepositoryImpl
    */
   @Override
   public boolean delete(FireStation fireStation) {
-    // TODO Auto-generated method stub
-    return false;
+    return fireStationsList.remove(fireStation);
   }
 
   /**
