@@ -14,7 +14,6 @@ public interface AlertsService {
    * Return a list of all residents' email of the city without duplicate.
    * 
 
-
    * @param city of the residents
    * @return list of emails
    * @throws ResourceNotFoundException when no residents found for this city
