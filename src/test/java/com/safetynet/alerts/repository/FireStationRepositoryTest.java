@@ -3,6 +3,8 @@ package com.safetynet.alerts.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.safetynet.alerts.model.FireStation;
+import com.safetynet.alerts.model.FireStation;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -156,6 +158,37 @@ class FireStationRepositoryTest {
     assertThat(isSuccess).isFalse();
     assertThat(fireStationRepository.findAll()).hasSize(1)
             .doesNotContain(fireStationTestUpdated)
+            .containsExactly(fireStationTest2);
+  }
+  
+  @Test
+  void deleteFireStationTest() {
+    // GIVEN
+    fireStationRepository.setupRepository(new ArrayList<FireStation>(List.of(
+            fireStationTest, fireStationTest2)));
+
+    // WHEN
+    boolean isSuccess = fireStationRepository.delete(fireStationTest);
+
+    // THEN
+    assertThat(isSuccess).isTrue();
+    assertThat(fireStationRepository.findAll()).hasSize(1)
+            .doesNotContain(fireStationTest)
+            .containsExactly(fireStationTest2);
+  }
+
+  @Test
+  void deleteNotFoundFireStationTest() {
+    // GIVEN
+    fireStationRepository.setupRepository(new ArrayList<FireStation>(List.of(
+            fireStationTest2)));
+
+    // WHEN
+    boolean isSuccess = fireStationRepository.delete(fireStationTest);
+
+    // THEN
+    assertThat(isSuccess).isFalse();
+    assertThat(fireStationRepository.findAll()).hasSize(1)
             .containsExactly(fireStationTest2);
   }
   
