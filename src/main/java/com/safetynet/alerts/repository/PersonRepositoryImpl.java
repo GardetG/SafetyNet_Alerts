@@ -4,6 +4,8 @@ import com.safetynet.alerts.model.Person;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Repository;
 
 /**
@@ -27,8 +29,9 @@ public class PersonRepositoryImpl implements LoadableRepository<Person>, PersonR
    */
   @Override
   public List<Person> findByCity(String city) {
-    // TODO Auto-generated method stub
-    return null;
+    return personsList.stream()
+            .filter(person -> (person.getCity().equals(city)))
+            .collect(Collectors.toList());
   }
   
   /**
