@@ -3,6 +3,7 @@ package com.safetynet.alerts.repository;
 import com.safetynet.alerts.model.FireStation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -19,8 +20,7 @@ public class FireStationRepositoryImpl
    */
   @Override
   public List<FireStation> findAll() {
-    // TODO Auto-generated method stub
-    return null;
+    return fireStationsList;
   }
 
   /**
@@ -28,8 +28,9 @@ public class FireStationRepositoryImpl
    */
   @Override
   public List<FireStation> findByStation(int station) {
-    // TODO Auto-generated method stub
-    return null;
+    return fireStationsList.stream()
+            .filter(fireStation -> (fireStation.getStation() == station))
+            .collect(Collectors.toList());
   }
 
   /**
@@ -37,8 +38,9 @@ public class FireStationRepositoryImpl
    */
   @Override
   public FireStation findByAddress(String address) {
-    // TODO Auto-generated method stub
-    return null;
+    return fireStationsList.stream()
+            .filter(fireStation -> (fireStation.getAddress().equals(address)))
+            .findFirst().orElse(null);
   }
 
   /**
