@@ -17,8 +17,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.AlertsService;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,4 +158,70 @@ class AlertsControllerTest {
             .andExpect(jsonPath("$[0]", is("Station Id must be greater than 0")));
     verify(alertsService, times(0)).getPhoneAlert(anyInt());
   }
+  
+  @Test
+  void getPersonInfoTest() throws Exception {
+    // GIVEN
+    PersonInfoDto personTest = new PersonInfoDto("firstName", "lastName", "address", 
+            18, List.of("med1", "med2"), Collections.emptyList());
+    when(alertsService.getPersonInfo(anyString(), anyString())).thenReturn(List.of(personTest));
+
+    // WHEN
+    mockMvc.perform(get("/personInfo?firstName=firstName&lastName=lastName"))
+
+            // THEN
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].firstName", is("firstName")))
+            .andExpect(jsonPath("$[0].lastName", is("lastName")))
+            .andExpect(jsonPath("$[0].age", is(18)))
+            .andDo(document("GetPhoneAlert",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestParameters(
+                            parameterWithName("firstName").description(
+                    "The firstName of the person."
+                    + "This parameter *must be greater than 0*.")
+                            .optional(),
+                            parameterWithName("lastName").description(
+                    "The lastName of the person."
+                    + "This parameter *must be greater than 0*.")
+                            .optional()
+                        )));
+    verify(alertsService, times(1)).getPersonInfo("firstName", "lastName");
+  }
+  
+  @Test
+  void getPersonInfoNotFoundTest() throws Exception {
+    // GIVEN
+    when(alertsService.getPersonInfo(anyString(), anyString())).thenThrow(
+            new ResourceNotFoundException("firstName lastName not found"));
+
+    // WHEN
+    mockMvc.perform(get("/personInfo?firstName=firstName9&lastName=lastName"))
+
+            // THEN
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$", is("firstName lastName not found")))
+            .andDo(document("GetPhoneAlertNotFound",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(alertsService, times(1)).getPersonInfo("firstName9", "lastName");
+  }
+  
+  @Test
+  void getPersonInfoInvalidTest() throws Exception {
+    // GIVEN
+    when(alertsService.getPhoneAlert(anyInt())).thenReturn(List.of(
+            "000-000-0001", "000-000-0002"));
+
+    // WHEN
+    mockMvc.perform(get("/personInfo?firstName= &lastName=lastName"))
+
+            // THEN
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0]", is("Firstname is mandatory")));
+    verify(alertsService, times(0)).getPersonInfo(anyString(), anyString());
+  }
+  
 }

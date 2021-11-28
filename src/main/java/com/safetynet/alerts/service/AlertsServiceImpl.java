@@ -1,5 +1,6 @@
 package com.safetynet.alerts.service;
 
+import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.repository.FireStationRepository;
 import com.safetynet.alerts.repository.PersonRepository;
@@ -73,6 +74,16 @@ public class AlertsServiceImpl implements AlertsService {
     }
     
     return phoneNumbersList;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<PersonInfoDto> getPersonInfo(String firstName, String lastName)
+          throws ResourceNotFoundException {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

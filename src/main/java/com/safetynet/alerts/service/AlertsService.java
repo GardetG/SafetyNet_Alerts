@@ -1,5 +1,6 @@
 package com.safetynet.alerts.service;
 
+import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,17 @@ public interface AlertsService {
    * @throws ResourceNotFoundException when no residents covered found for this fireStation
    */
   List<String> getPhoneAlert(int station) throws ResourceNotFoundException;
+
+  /**
+   * Return person informations with address, age, and medical data.
+   * 
+
+   * @param firstName of the person
+   * @param lastName of the person
+   * @return person informations
+   * @throws ResourceNotFoundException when person is not found
+   */
+  List<PersonInfoDto> getPersonInfo(String firstName, String lastName) 
+          throws ResourceNotFoundException;
   
 }
