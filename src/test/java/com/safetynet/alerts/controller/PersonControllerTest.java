@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.safetynet.alerts.dto.PersonDto;
+import com.safetynet.alerts.dto.PersonMapper;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.Person;
@@ -155,12 +156,13 @@ class PersonControllerTest {
   @Test
   void postPersonTest() throws Exception {
     // GIVEN
+    PersonDto personDto = PersonMapper.toDto(personTest);
     when(personService.add(any(Person.class))).thenReturn(personTest);
 
     // WHEN
     mockMvc.perform(post("/person")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(personTest)))
+            .content(JsonParser.asString(personDto)))
 
             // THEN
             .andExpect(status().isCreated())
@@ -234,12 +236,13 @@ class PersonControllerTest {
   @Test
   void putPersonTest() throws Exception {
     // GIVEN
+    PersonDto personDto = PersonMapper.toDto(personTest);
     when(personService.update(any(Person.class))).thenReturn(personTest);
 
     // WHEN
     mockMvc.perform(put("/person")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(personTest)))
+            .content(JsonParser.asString(personDto)))
 
             // THEN
             .andExpect(status().isOk())

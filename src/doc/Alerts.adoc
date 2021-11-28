@@ -1,3 +1,29 @@
+=== Child Alert
+
+==== Resquest
+
+===== Request
+include::{snippets}/GetChildAlert/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/GetChildAlert/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/GetChildAlert/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/GetChildAlert/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When no residents for the city can be found, this response can be expected:
+
+include::{snippets}/GetChildAlertNotFound/http-response.adoc[]
+
+
 === Phone Alert
 
 ==== Resquest

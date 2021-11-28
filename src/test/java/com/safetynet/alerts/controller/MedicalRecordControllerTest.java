@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.safetynet.alerts.dto.MedicalRecordDto;
+import com.safetynet.alerts.dto.MedicalRecordMapper;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.MedicalRecord;
@@ -159,12 +160,13 @@ class MedicalRecordControllerTest {
   @Test
   void postMedicalRecordTest() throws Exception {
     // GIVEN
+    MedicalRecordDto medicalRecordDto = MedicalRecordMapper.toDto(medicalRecordTest);
     when(medicalRecordService.add(any(MedicalRecord.class))).thenReturn(medicalRecordTest);
 
     // WHEN
     mockMvc.perform(post("/medicalRecord")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(medicalRecordTest)))
+            .content(JsonParser.asString(medicalRecordDto)))
 
             // THEN
             .andExpect(status().isCreated())
@@ -235,12 +237,13 @@ class MedicalRecordControllerTest {
   @Test
   void putMedicalRecordTest() throws Exception {
     // GIVEN
+    MedicalRecordDto medicalRecordDto = MedicalRecordMapper.toDto(medicalRecordTest);
     when(medicalRecordService.update(any(MedicalRecord.class))).thenReturn(medicalRecordTest);
 
     // WHEN
     mockMvc.perform(put("/medicalRecord")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(medicalRecordTest)))
+            .content(JsonParser.asString(medicalRecordDto)))
 
             // THEN
             .andExpect(status().isOk())

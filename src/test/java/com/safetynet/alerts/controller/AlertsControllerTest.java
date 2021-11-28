@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.AlertsService;
@@ -163,7 +164,7 @@ class AlertsControllerTest {
   void getPersonInfoTest() throws Exception {
     // GIVEN
     PersonInfoDto personTest = new PersonInfoDto("firstName", "lastName", "address", 
-            18, List.of("med1", "med2"), Collections.emptyList());
+            "18", List.of("med1", "med2"), Collections.emptyList());
     when(alertsService.getPersonInfo(anyString(), anyString())).thenReturn(List.of(personTest));
 
     // WHEN
@@ -174,7 +175,7 @@ class AlertsControllerTest {
             .andExpect(jsonPath("$", hasSize(1)))
             .andExpect(jsonPath("$[0].firstName", is("firstName")))
             .andExpect(jsonPath("$[0].lastName", is("lastName")))
-            .andExpect(jsonPath("$[0].age", is(18)))
+            .andExpect(jsonPath("$[0].age", is("18")))
             .andDo(document("GetPersonInfo",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
@@ -222,6 +223,69 @@ class AlertsControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$[0]", is("Firstname is mandatory")));
     verify(alertsService, times(0)).getPersonInfo(anyString(), anyString());
+  }
+  
+  @Test
+  void getChildAlertTest() throws Exception {
+    // GIVEN
+    ChildAlertDto childAlertDto = new ChildAlertDto(
+            List.of(new PersonInfoDto("FirstNameA", "LastName", null, "10", null, null)),
+            List.of(new PersonInfoDto("FirstNameB", "LastName", null, null, null, null),
+                    new PersonInfoDto("FirstNameC", "LastName", null, null, null, null))); 
+    when(alertsService.childAlert(anyString())).thenReturn(childAlertDto);
+
+    // WHEN
+    mockMvc.perform(get("/childAlert?address=address"))
+
+            // THEN
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.children", hasSize(1)))
+            .andExpect(jsonPath("$.householdMembers", hasSize(2)))
+            .andDo(document("GetChildAlert",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestParameters(
+                            parameterWithName("address").description(
+                    "Household address for which we want to retrieve child alert informations."
+                    + "This parameter *must not be blank*.")
+                            .optional()
+                        )));
+    verify(alertsService, times(1)).childAlert("address");
+  }
+  
+  @Test
+  void getChildAlertNotFoundTest() throws Exception {
+    // GIVEN
+    when(alertsService.childAlert(anyString())).thenThrow(
+            new ResourceNotFoundException("No residents found living at address"));
+
+    // WHEN
+    mockMvc.perform(get("/childAlert?address=address"))
+
+            // THEN
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$", is("No residents found living at address")))
+            .andDo(document("GetChildAlertNotFound",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(alertsService, times(1)).childAlert("address");
+  }
+  
+  @Test
+  void getChildAlertInvalidTest() throws Exception {
+    // GIVEN
+    ChildAlertDto childAlertDto = new ChildAlertDto(
+            List.of(new PersonInfoDto()),
+            List.of(new PersonInfoDto(), new PersonInfoDto())); 
+    when(alertsService.childAlert(anyString())).thenReturn(childAlertDto);
+
+    // WHEN
+    mockMvc.perform(get("/childAlert?address= "))
+
+            // THEN
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0]", is("Address is mandatory")));
+    verify(alertsService, times(0)).childAlert(anyString());
   }
   
 }

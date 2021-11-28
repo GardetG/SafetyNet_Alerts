@@ -1,5 +1,6 @@
 package com.safetynet.alerts.controller;
 
+import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.AlertsService;
@@ -32,6 +33,7 @@ public class AlertsController {
    * list of the city.
    * 
 
+   * @param city of the residents
    * @return HTTP 200 Response with a list of emails
    * @throws ResourceNotFoundException when no residents' emails found for the city
    */
@@ -53,6 +55,7 @@ public class AlertsController {
    * list of the city.
    * 
 
+   * @param firestation id covering the residents
    * @return HTTP 200 Response with a list of phone numbers
    * @throws ResourceNotFoundException when no residents' phone numbers found this station
    */
@@ -76,6 +79,8 @@ public class AlertsController {
    * address, age, and medical data.
    * 
 
+   * @param firstName of the person
+   * @param lastName of the person
    * @return HTTP 200 Response with a list of phone info
    * @throws ResourceNotFoundException when the person is not found
    */
@@ -92,4 +97,27 @@ public class AlertsController {
     return ResponseEntity.ok(personInfo);
 
   }
+  
+  /**
+   * Handle HTTP GET request on /childAlert and return child alert information with
+   * a lits of childs of the household with their age and the list of others household memebers.
+   * 
+
+   * @param address of the household
+   * @return HTTP 200 Response with a list of phone info
+   * @throws ResourceNotFoundException when the person is not found
+   */
+  @GetMapping("/childAlert")
+  public ResponseEntity<ChildAlertDto> getChildAlert(
+          @RequestParam @NotBlank(message = "Address is mandatory") String address)
+          throws ResourceNotFoundException {
+    
+    LOGGER.info("Request: Get child alert information at {}", address);
+    ChildAlertDto childAlertDto = alertsService.childAlert(address);
+    
+    LOGGER.info("Response: Child alert informations sent");
+    return ResponseEntity.ok(childAlertDto);
+
+  }
+  
 }

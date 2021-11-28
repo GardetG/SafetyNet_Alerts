@@ -2,10 +2,12 @@ package com.safetynet.alerts.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.Objects;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,11 +28,40 @@ public class MedicalRecord {
   private String firstName;
   @NotBlank(message = "Lastname is mandatory")
   private String lastName;
+  @Past
   @NotNull(message = "Birthdate is mandatory")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
   private LocalDate birthdate;
   private List<String> medications;
   private List<String> allergies;
+  
+  /**
+   * Calculate the age of the medical record owner or throw exception if 
+   * birthdate is invalid.
+   * 
+
+   * @return Age of the medical record owner
+   */
+  public int getAge() {
+    if (LocalDate.now().isBefore(birthdate)) {
+      throw new IllegalArgumentException();
+    }
+    Period lifeTime = Period.between(birthdate, LocalDate.now());
+    return lifeTime.getYears();
+  }
+  
+  /**
+   * Check if the medical record owner is minor or not.
+   * 
+
+   * @return True if the medical record owner is minor
+   */
+  public boolean isMinor() {
+    if (getAge() > 18) {
+      return false;
+    }
+    return true;
+  }
   
   @Override
   public int hashCode() {
