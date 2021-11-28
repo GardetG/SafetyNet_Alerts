@@ -6,11 +6,14 @@ import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
-import java.time.LocalDate;
-import java.time.Period;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,19 +100,16 @@ public class AlertsServiceImpl implements AlertsService {
     personInfo.setFirstName(person.getFirstName());
     personInfo.setLastName(person.getLastName());
     personInfo.setAddress(person.getAddress());
+    personInfo.setAge("Information not specified");
+    personInfo.setMedications(List.of("Information not specified"));
+    personInfo.setAllergies(List.of("Information not specified"));
     
-    // Try retrieve medical record data if it exists, else log warning and let fields null
-    try {
-      MedicalRecord medicalRecord = medicalRecordService.getByName(firstName, lastName);
-      Period lifeTime = Period.between(medicalRecord.getBirthdate(), LocalDate.now());
-      personInfo.setAge(String.valueOf(lifeTime.getYears()));
-      personInfo.setMedications(medicalRecord.getMedications());
-      personInfo.setAllergies(medicalRecord.getAllergies());
-    } catch (ResourceNotFoundException ex) {
-      LOGGER.warn(ex.getMessage());
-      personInfo.setAge("Information not specified");
-      personInfo.setMedications(List.of("Information not specified"));
-      personInfo.setAllergies(List.of("Information not specified"));
+    // retrieve medical record data if it exists
+    Optional<MedicalRecord> medicalRecord = getMedicalRecord(person);
+    if (medicalRecord.isPresent()) {
+      personInfo.setAge(String.valueOf(medicalRecord.get().getAge()));
+      personInfo.setMedications(medicalRecord.get().getMedications());
+      personInfo.setAllergies(medicalRecord.get().getAllergies());
     }
 
     return List.of(personInfo);
@@ -120,8 +120,53 @@ public class AlertsServiceImpl implements AlertsService {
    */
   @Override
   public ChildAlertDto childAlert(String address) throws ResourceNotFoundException {
-    // TODO Auto-generated method stub
-    return null;
+    
+    ChildAlertDto childAlertDto = new ChildAlertDto();
+    
+    // Fetch resident at the address and map them with optional medical record
+    Map<Person, Optional<MedicalRecord>> household = personService.getByAddress(address)
+            .stream()
+            .collect(Collectors.toMap(Function.identity(), this::getMedicalRecord));
+    
+    List<PersonInfoDto> childrenList = household.entrySet().stream()
+            // Filter resident with medical record and who are minor
+            .filter(entry -> entry.getValue().isPresent() && entry.getValue().get().isMinor())
+            .map(entry -> {
+              PersonInfoDto childDto = new PersonInfoDto();
+              childDto.setFirstName(entry.getKey().getFirstName());
+              childDto.setLastName(entry.getKey().getLastName());
+              childDto.setAge(String.valueOf(entry.getValue().get().getAge()));
+              return childDto;
+            }).collect(Collectors.toList());
+    
+    List<PersonInfoDto> householdMembers = household.entrySet().stream()
+            // Filter out minor
+            .filter(entry -> !(entry.getValue().isPresent() && entry.getValue().get().isMinor()))
+            .map(entry -> {
+              PersonInfoDto childDto = new PersonInfoDto();
+              childDto.setFirstName(entry.getKey().getFirstName());
+              childDto.setLastName(entry.getKey().getLastName());
+              if (entry.getValue().isEmpty()) {
+                // If they don't have medical record, precise the lack of informations
+                childDto.setAge("Information not specified");
+              }
+              return childDto;
+            }).collect(Collectors.toList());
+    
+    childAlertDto.setChildren(childrenList);
+    childAlertDto.setHouseholdMembers(householdMembers);
+    
+    return childAlertDto;
   }
-
+  
+  private Optional<MedicalRecord> getMedicalRecord(Person person) {
+    Optional<MedicalRecord> medicalRecord = Optional.empty();
+    try {
+      medicalRecord = Optional.of(medicalRecordService.getByName(
+               person.getFirstName(), person.getLastName()));
+    } catch (ResourceNotFoundException ex) {
+      LOGGER.warn(ex.getMessage());
+    }
+    return medicalRecord;
+  }
 }

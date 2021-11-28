@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
@@ -219,4 +220,89 @@ class AlertsServiceTest {
     verify(medicalRecordService, times(1)).getByName("firstName", "lastName");
   }
   
+  
+  @Test
+  void getChildAlertTest() throws Exception {
+    // GIVEN
+    Person child = new Person("firstNameA", "lastName", "address", "city", "", "", "");
+    MedicalRecord childRecord = new MedicalRecord("firstNameA", "lastName",
+            LocalDate.ofYearDay(2010, 1), Collections.emptyList(), Collections.emptyList());
+    
+    Person parent1 = new Person("firstNameB", "lastName", "address", "city", "", "", "");
+    MedicalRecord parent1Record = new MedicalRecord("firstNameB", "lastName",
+            LocalDate.ofYearDay(1980, 1), List.of("med1", "med2"), Collections.emptyList());
+    
+    Person parent2 = new Person("firstNameC", "lastName", "address", "city", "", "", "");
+    MedicalRecord parent2Record = new MedicalRecord("firstNameC", "lastName",
+            LocalDate.ofYearDay(1975, 1), List.of("med1", "med2"), Collections.emptyList());
+    
+    
+    ChildAlertDto expectedDto = new ChildAlertDto(
+            List.of(new PersonInfoDto("firstNameA", "lastName", null, "11", null, null)),
+            List.of(new PersonInfoDto("firstNameB", "lastName", null, null, null, null),
+                    new PersonInfoDto("firstNameC", "lastName", null, null, null, null)));
+    
+    when(personService.getByAddress(anyString())).thenReturn(List.of(child, parent1, parent2));
+    when(medicalRecordService.getByName(anyString(), anyString())).thenReturn(childRecord)
+            .thenReturn(parent1Record).thenReturn(parent2Record);
+
+    // WHEN
+    ChildAlertDto actualDto = alertsService.childAlert("address");
+
+    // THEN
+    assertThat(actualDto).usingRecursiveComparison().isEqualTo(expectedDto);
+    verify(personService, times(1)).getByAddress("address");
+    verify(medicalRecordService, times(3)).getByName(anyString(), anyString());
+  }
+
+  @Test
+  void getChildAlertNotFoundTest() throws Exception {
+    // GIVEN
+    when(personService.getByAddress(anyString())).thenThrow(
+            new ResourceNotFoundException("No residents found living at address9"));
+    
+    // WHEN
+    assertThatThrownBy(() -> {
+      alertsService.childAlert("address9");
+    })
+
+            // THEN
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("No residents found living at address9");
+    verify(personService, times(1)).getByAddress("address9");
+    verify(medicalRecordService, times(0)).getByName(anyString(), anyString());
+  }
+  
+  @Test
+  void getChildAlertMedicalRecordNotFoundTest() throws Exception {
+    // GIVEN
+    Person child = new Person("firstNameA", "lastName", "address", "city", "", "", "");
+    MedicalRecord childRecord = new MedicalRecord("firstNameA", "lastName",
+            LocalDate.ofYearDay(2010, 1), Collections.emptyList(), Collections.emptyList());
+    
+    Person parent1 = new Person("firstNameB", "lastName", "address", "city", "", "", "");
+    MedicalRecord parent1Record = new MedicalRecord("firstNameB", "lastName",
+            LocalDate.ofYearDay(1980, 1), List.of("med1", "med2"), Collections.emptyList());
+    
+    Person parent2 = new Person("firstNameC", "lastName", "address", "city", "", "", "");
+    
+    ChildAlertDto expectedDto = new ChildAlertDto(
+            List.of(new PersonInfoDto("firstNameA", "lastName", null, "11", null, null)),
+            List.of(new PersonInfoDto("firstNameB", "lastName", null, null, null, null),
+                    new PersonInfoDto("firstNameC", "lastName", null, "Information not specified",
+                            null, null)));
+    
+    when(personService.getByAddress(anyString())).thenReturn(List.of(child, parent1, parent2));
+    when(medicalRecordService.getByName(anyString(), anyString())).thenReturn(childRecord)
+            .thenReturn(parent1Record).thenThrow(
+                  new ResourceNotFoundException("Medical record of firstNameC lastName not found"));
+
+    // WHEN
+    ChildAlertDto actualDto = alertsService.childAlert("address");
+
+    // THEN
+    assertThat(actualDto).usingRecursiveComparison().isEqualTo(expectedDto);
+    verify(personService, times(1)).getByAddress("address");
+    verify(medicalRecordService, times(3)).getByName(anyString(), anyString());
+  }
 }
