@@ -2,13 +2,16 @@ package com.safetynet.alerts.service;
 
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
+import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,17 +41,13 @@ public class AlertsServiceImpl implements AlertsService {
   public List<String> getCommunityEmail(String city) throws ResourceNotFoundException {
     
     // Fetch all resident of the city, throw an exception if no resident found
-    List<String> emailsList = personService.getByCity(city).stream()
+    return personService.getByCity(city).stream()
             // Retrieved their email
-            .map(person -> { 
-              return person.getEmail(); 
-            })
+            .map(Person::getEmail)
             // Filter out any duplicate or empty field
             .distinct()
             .filter(email -> (email != null && !email.isBlank()))
             .collect(Collectors.toList());
-    
-    return emailsList;
     
   }
 
@@ -62,11 +61,10 @@ public class AlertsServiceImpl implements AlertsService {
     List<String> addressesList = fireStationService.getByStation(station)
             .stream()
             // Retrieve addresses covered by the station
-            .map(fireStation -> {
-              return fireStation.getAddress();
-            }).collect(Collectors.toList());
+            .map(FireStation::getAddress)
+            .collect(Collectors.toList());
     
-    List<String> phoneNumbersList = addressesList
+    return addressesList
             .stream()
             // Retrieve all resident for each address
             .flatMap(address -> {
@@ -79,15 +77,11 @@ public class AlertsServiceImpl implements AlertsService {
               return persons.stream();
             })
             //retrieve their phone number
-            .map(person -> {
-              return person.getPhone();
-            })
+            .map(Person::getPhone)
             // Filter out any duplicate or empty field
             .distinct()
             .filter(phone -> (phone != null && !phone.isBlank()))
             .collect(Collectors.toList());
-    
-    return phoneNumbersList;
   }
 
   /**

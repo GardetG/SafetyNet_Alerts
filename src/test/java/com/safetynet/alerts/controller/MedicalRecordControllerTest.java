@@ -182,7 +182,8 @@ class MedicalRecordControllerTest {
                             .description("The last name of the person. "
                                     + "This parameter *must not be blank*."),
                         fieldWithPath("birthdate")
-                            .description("The birthdate of the person."),
+                            .description("The birthdate of the person."
+                                    + "This parameter *must not be null*."),
                         fieldWithPath("medications")
                             .description("The list of all medications and their dosage taken"
                                     + " by this person."),
@@ -257,7 +258,8 @@ class MedicalRecordControllerTest {
                             .description("The last name of the person. "
                                     + "This parameter *must not be blank*."),
                         fieldWithPath("birthdate")
-                            .description("The birthdate of the medicalRecord."),
+                            .description("The birthdate of the medicalRecord."
+                                    + "This parameter *must not be null*."),
                         fieldWithPath("medications")
                             .description("The list of all medications and their dosage taken"
                                     + " by this person."),

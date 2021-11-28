@@ -68,7 +68,7 @@ class MedicalRecordRepositoryTest {
             .findByName("firstName", "lastName");
 
     // THEN
-    assertThat(actualMedicalRecord.get()).isEqualTo(medicalRecordTest);
+    assertThat(actualMedicalRecord).contains(medicalRecordTest);
   }
 
   @Test
@@ -81,7 +81,7 @@ class MedicalRecordRepositoryTest {
             .findByName("Name3", "lastName");
 
     // THEN
-    assertThat(actualMedicalRecord.isEmpty()).isTrue();
+    assertThat(actualMedicalRecord).isEmpty();
   }
 
   @Test
@@ -94,7 +94,7 @@ class MedicalRecordRepositoryTest {
             .findByName("firstName", "Name3");
 
     // THEN
-    assertThat(actualMedicalRecord.isEmpty()).isTrue();
+    assertThat(actualMedicalRecord).isEmpty();
   }
 
 

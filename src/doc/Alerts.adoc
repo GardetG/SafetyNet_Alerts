@@ -24,6 +24,32 @@ When no residents for the city can be found, this response can be expected:
 include::{snippets}/GetPhoneAlertNotFound/http-response.adoc[]
 
 
+=== Person Info
+
+==== Resquest
+
+===== Request
+include::{snippets}/GetPersonInfo/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/GetPersonInfo/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/GetPersonInfo/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/GetPersonInfo/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When no residents can be found, this response can be expected:
+
+include::{snippets}/GetPersonInfoNotFound/http-response.adoc[]
+
+
 === Community Emails
 
 ==== Resquest

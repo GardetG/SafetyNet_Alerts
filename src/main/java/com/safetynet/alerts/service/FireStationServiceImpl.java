@@ -112,9 +112,7 @@ public class FireStationServiceImpl implements FireStationService {
       throw new ResourceNotFoundException(error);
     }
     
-    existingFireStationList.forEach(fireStation -> {
-      fireStationRepository.delete(fireStation);
-    });
+    existingFireStationList.forEach(fireStation -> fireStationRepository.delete(fireStation));
 
   }
 

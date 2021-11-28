@@ -175,7 +175,7 @@ class AlertsControllerTest {
             .andExpect(jsonPath("$[0].firstName", is("firstName")))
             .andExpect(jsonPath("$[0].lastName", is("lastName")))
             .andExpect(jsonPath("$[0].age", is(18)))
-            .andDo(document("GetPhoneAlert",
+            .andDo(document("GetPersonInfo",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
                     requestParameters(
@@ -203,7 +203,7 @@ class AlertsControllerTest {
             // THEN
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$", is("firstName lastName not found")))
-            .andDo(document("GetPhoneAlertNotFound",
+            .andDo(document("GetPersonInfoNotFound",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(alertsService, times(1)).getPersonInfo("firstName9", "lastName");

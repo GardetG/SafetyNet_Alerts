@@ -96,7 +96,7 @@ class FireStationRepositoryTest {
     Optional<FireStation> actualFireStation = fireStationRepository.findByAddress("address");
 
     // THEN
-    assertThat(actualFireStation.get()).isEqualTo(fireStationTest);
+    assertThat(actualFireStation).contains(fireStationTest);
   }
 
   @Test
@@ -109,7 +109,7 @@ class FireStationRepositoryTest {
     Optional<FireStation> actualFireStation = fireStationRepository.findByAddress("address9");
 
     // THEN
-    assertThat(actualFireStation.isEmpty()).isTrue();
+    assertThat(actualFireStation).isEmpty();
   }
 
 
