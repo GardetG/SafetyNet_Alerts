@@ -33,6 +33,35 @@ public class PersonServiceImpl implements PersonService {
    * {@inheritDoc}
    */
   @Override
+  public List<Person> getByCity(String city) throws ResourceNotFoundException {
+    
+    List<Person> personList = personRepository.findByCity(city);
+    if (personList.isEmpty()) {
+      String error = String.format("No residents found for %s", city);
+      throw new ResourceNotFoundException(error);
+    }
+    return personList;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<Person> getByAddress(String address) throws ResourceNotFoundException {
+    
+    List<Person> personList = personRepository.findByAddress(address);
+    if (personList.isEmpty()) {
+      String error = String.format("No residents found living at %s", address);
+      throw new ResourceNotFoundException(error);
+    }
+    return personList;
+    
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public Person getByName(String firstName, String lastName) throws ResourceNotFoundException {
     
     Optional<Person> person = personRepository.findByName(firstName, lastName);

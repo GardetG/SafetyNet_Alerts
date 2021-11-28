@@ -115,7 +115,7 @@ class PersonRepositoryTest {
     Optional<Person> actualPerson = personRepository.findByName("firstName", "lastName");
 
     // THEN
-    assertThat(actualPerson.get()).isEqualTo(personTest);
+    assertThat(actualPerson).contains(personTest);
   }
 
   @Test
@@ -127,7 +127,7 @@ class PersonRepositoryTest {
     Optional<Person> actualPerson = personRepository.findByName("Name3", "lastName");
 
     // THEN
-    assertThat(actualPerson.isEmpty()).isTrue();
+    assertThat(actualPerson).isEmpty();
   }
 
   @Test
@@ -139,7 +139,7 @@ class PersonRepositoryTest {
     Optional<Person> actualPerson = personRepository.findByName("firstName", "Name3");
 
     // THEN
-    assertThat(actualPerson.isEmpty()).isTrue();
+    assertThat(actualPerson).isEmpty();
   }
 
   @Test

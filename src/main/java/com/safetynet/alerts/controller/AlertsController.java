@@ -1,5 +1,6 @@
 package com.safetynet.alerts.controller;
 
+import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.AlertsService;
 import java.util.List;
@@ -32,6 +33,7 @@ public class AlertsController {
    * 
 
    * @return HTTP 200 Response with a list of emails
+   * @throws ResourceNotFoundException when no residents' emails found for the city
    */
   @GetMapping("/communityEmail")
   public ResponseEntity<List<String>> getCommunityEmail(
@@ -52,6 +54,7 @@ public class AlertsController {
    * 
 
    * @return HTTP 200 Response with a list of phone numbers
+   * @throws ResourceNotFoundException when no residents' phone numbers found this station
    */
   @GetMapping("/phoneAlert")
   public ResponseEntity<List<String>> getCommunityEmail(
@@ -67,4 +70,26 @@ public class AlertsController {
 
   }
   
+  
+  /**
+   * Handle HTTP GET request on /personInfo and return list of person informations with
+   * address, age, and medical data.
+   * 
+
+   * @return HTTP 200 Response with a list of phone info
+   * @throws ResourceNotFoundException when the person is not found
+   */
+  @GetMapping("/personInfo")
+  public ResponseEntity<List<PersonInfoDto>> getPersonInfo(
+          @RequestParam @NotBlank(message = "Firstname is mandatory") String firstName,
+          @RequestParam @NotBlank(message = "LastName is mandatory") String lastName)
+          throws ResourceNotFoundException {
+    
+    LOGGER.info("Request: Get persons info with parameters: {}, {}", firstName, lastName);
+    List<PersonInfoDto> personInfo = alertsService.getPersonInfo(firstName, lastName);
+    
+    LOGGER.info("Response: person sent");
+    return ResponseEntity.ok(personInfo);
+
+  }
 }
