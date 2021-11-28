@@ -50,6 +50,33 @@ When no residents for the city can be found, this response can be expected:
 include::{snippets}/GetPhoneAlertNotFound/http-response.adoc[]
 
 
+=== Fire
+
+==== Resquest
+
+===== Request
+include::{snippets}/GetFireAlert/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/GetFireAlert/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/GetFireAlert/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/GetFireAlert/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When no residents at this address can be found, this response can be expected:
+
+include::{snippets}/GetFireAlertNotFound/http-response.adoc[]
+
+
+
 === Person Info
 
 ==== Resquest

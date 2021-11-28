@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
+import com.safetynet.alerts.dto.FireAlertDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.AlertsService;
@@ -164,7 +165,7 @@ class AlertsControllerTest {
   void getPersonInfoTest() throws Exception {
     // GIVEN
     PersonInfoDto personTest = new PersonInfoDto("firstName", "lastName", "address", 
-            "18", List.of("med1", "med2"), Collections.emptyList());
+            "18", List.of("med1", "med2"), Collections.emptyList(), null, null);
     when(alertsService.getPersonInfo(anyString(), anyString())).thenReturn(List.of(personTest));
 
     // WHEN
@@ -228,10 +229,11 @@ class AlertsControllerTest {
   @Test
   void getChildAlertTest() throws Exception {
     // GIVEN
-    ChildAlertDto childAlertDto = new ChildAlertDto(
-            List.of(new PersonInfoDto("FirstNameA", "LastName", null, "10", null, null)),
-            List.of(new PersonInfoDto("FirstNameB", "LastName", null, null, null, null),
-                    new PersonInfoDto("FirstNameC", "LastName", null, null, null, null))); 
+    ChildAlertDto childAlertDto = new ChildAlertDto(List.of(
+              new PersonInfoDto("FirstNameA", "LastName", null, "10", null, null, null, null)),
+            List.of(
+              new PersonInfoDto("FirstNameB", "LastName", null, null, null, null, null, null),
+              new PersonInfoDto("FirstNameC", "LastName", null, null, null, null, null, null))); 
     when(alertsService.childAlert(anyString())).thenReturn(childAlertDto);
 
     // WHEN
@@ -274,9 +276,7 @@ class AlertsControllerTest {
   @Test
   void getChildAlertInvalidTest() throws Exception {
     // GIVEN
-    ChildAlertDto childAlertDto = new ChildAlertDto(
-            List.of(new PersonInfoDto()),
-            List.of(new PersonInfoDto(), new PersonInfoDto())); 
+    ChildAlertDto childAlertDto = new ChildAlertDto(); 
     when(alertsService.childAlert(anyString())).thenReturn(childAlertDto);
 
     // WHEN
@@ -286,6 +286,68 @@ class AlertsControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$[0]", is("Address is mandatory")));
     verify(alertsService, times(0)).childAlert(anyString());
+  }
+  
+  @Test
+  void getFireAlertTest() throws Exception {
+    // GIVEN
+    FireAlertDto fireAlertDto = new FireAlertDto(List.of(
+              new PersonInfoDto("FirstName", "LastName", null, "10", Collections.emptyList(),
+                      List.of("allg1"), "000-000-0001", null),
+              new PersonInfoDto("FirstName", "LastName", null, "40", List.of("med1", "med2"),
+                      Collections.emptyList(), "000-000-0002", null)), "1"); 
+    when(alertsService.fireAlert(anyString())).thenReturn(fireAlertDto);
+
+    // WHEN
+    mockMvc.perform(get("/fire?address=address"))
+
+            // THEN
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.residents", hasSize(2)))
+            .andExpect(jsonPath("$.station", is("1")))
+            .andDo(document("GetFireAlert",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestParameters(
+                            parameterWithName("address").description(
+                    "Address for which we want to retrieve fire alert informations."
+                    + "This parameter *must not be blank*.")
+                            .optional()
+                        )));
+    verify(alertsService, times(1)).fireAlert("address");
+  }
+  
+  @Test
+  void getFireAlertNotFoundTest() throws Exception {
+    // GIVEN
+    when(alertsService.fireAlert(anyString())).thenThrow(
+            new ResourceNotFoundException("No residents found living at address"));
+
+    // WHEN
+    mockMvc.perform(get("/fire?address=address"))
+
+            // THEN
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$", is("No residents found living at address")))
+            .andDo(document("GetFireAlertNotFound",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(alertsService, times(1)).fireAlert("address");
+  }
+  
+  @Test
+  void getFireAlertInvalidTest() throws Exception {
+    // GIVEN
+    FireAlertDto fireAlertDto = new FireAlertDto(); 
+    when(alertsService.fireAlert(anyString())).thenReturn(fireAlertDto);
+
+    // WHEN
+    mockMvc.perform(get("/childAlert?address= "))
+
+            // THEN
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0]", is("Address is mandatory")));
+    verify(alertsService, times(0)).fireAlert(anyString());
   }
   
 }

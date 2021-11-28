@@ -1,19 +1,18 @@
 package com.safetynet.alerts.service;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
+import com.safetynet.alerts.dto.FireAlertDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,8 +120,6 @@ public class AlertsServiceImpl implements AlertsService {
   @Override
   public ChildAlertDto childAlert(String address) throws ResourceNotFoundException {
     
-    ChildAlertDto childAlertDto = new ChildAlertDto();
-    
     // Fetch resident at the address and map them with optional medical record
     Map<Person, Optional<MedicalRecord>> household = personService.getByAddress(address)
             .stream()
@@ -153,10 +150,55 @@ public class AlertsServiceImpl implements AlertsService {
               return childDto;
             }).collect(Collectors.toList());
     
+    
+    ChildAlertDto childAlertDto = new ChildAlertDto();
     childAlertDto.setChildren(childrenList);
     childAlertDto.setHouseholdMembers(householdMembers);
     
     return childAlertDto;
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public FireAlertDto fireAlert(String address) throws ResourceNotFoundException {
+    
+    // Fetch resident at the address and map them with optional medical record
+    Map<Person, Optional<MedicalRecord>> residents = personService.getByAddress(address)
+            .stream()
+            .collect(Collectors.toMap(Function.identity(), this::getMedicalRecord));
+    
+    List<PersonInfoDto> residentsList = residents.entrySet().stream()
+            .map(entry -> {
+              PersonInfoDto personInfo = new PersonInfoDto();
+              personInfo.setFirstName(entry.getKey().getFirstName());
+              personInfo.setLastName(entry.getKey().getLastName());
+              personInfo.setPhone(entry.getKey().getPhone());
+              
+              personInfo.setAge("Information not specified");
+              personInfo.setMedications(List.of("Information not specified"));
+              personInfo.setAllergies(List.of("Information not specified"));
+              if (entry.getValue().isPresent()) {
+                personInfo.setAge(String.valueOf(entry.getValue().get().getAge()));
+                personInfo.setMedications(entry.getValue().get().getMedications());
+                personInfo.setAllergies(entry.getValue().get().getAllergies());
+              }
+              return personInfo;
+            }).collect(Collectors.toList());
+    
+    String station = "No station mapped for this address";
+    try {
+      station = String.valueOf(fireStationService.getByAddress(address).getStation());
+    } catch (ResourceNotFoundException ex) {
+      LOGGER.warn(ex.getMessage());
+    }
+    
+    FireAlertDto fireAlertDto = new FireAlertDto();
+    fireAlertDto.setResidents(residentsList);
+    fireAlertDto.setStation(station);
+    
+    return fireAlertDto;
   }
   
   private Optional<MedicalRecord> getMedicalRecord(Person person) {
@@ -169,4 +211,5 @@ public class AlertsServiceImpl implements AlertsService {
     }
     return medicalRecord;
   }
+
 }
