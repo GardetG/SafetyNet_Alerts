@@ -25,8 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+@ActiveProfiles("UnitTests")
 @WebMvcTest(AlertsController.class)
 @AutoConfigureRestDocs
 class AlertsControllerTest {
@@ -110,7 +112,7 @@ class AlertsControllerTest {
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0]", is("000-000-0001")))
             .andExpect(jsonPath("$[1]", is("000-000-0002")))
-            .andDo(document("GetCommunityEmail",
+            .andDo(document("GetPhoneAlert",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
                     requestParameters(
@@ -134,7 +136,7 @@ class AlertsControllerTest {
             // THEN
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$", is("No residents for station 9 found")))
-            .andDo(document("GetCommunityEmailNotFound",
+            .andDo(document("GetPhoneAlertNotFound",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(alertsService, times(1)).getPhoneAlert(9);
