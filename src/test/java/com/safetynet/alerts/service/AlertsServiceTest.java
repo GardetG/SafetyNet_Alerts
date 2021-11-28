@@ -8,9 +8,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
+import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
+import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +35,9 @@ class AlertsServiceTest {
   
   @MockBean
   FireStationService fireStationService;
+  
+  @MockBean
+  MedicalRecordService medicalRecordService;
 
   private Person personTest;
   private Person personTest2;
@@ -150,24 +157,65 @@ class AlertsServiceTest {
             // THEN
             .isInstanceOf(ResourceNotFoundException.class)
             .hasMessageContaining("No addresses mapped for station 9 found");
+    verify(fireStationService, times(1)).getByStation(9);
+    verify(personService, times(0)).getByAddress(anyString());
   }
   
   @Test
-  void getPhoneAlertPhoneNumbersNotFoundTest() throws Exception {
+  void getPersonInfoTest() throws Exception {
     // GIVEN
-    when(fireStationService.getByStation(anyInt())).thenReturn(List.of(
-            new FireStation(1, "address9")));
-    when(personService.getByAddress(anyString())).thenThrow(
-            new ResourceNotFoundException("No residents found living at address9"));
+    Person person = new Person("firstName", "lastName", "address", "city", "", "", "");
+    MedicalRecord medicalRecord = new MedicalRecord("firstName", "lastName",
+            LocalDate.ofYearDay(1980, 1), List.of("med1", "med2"), Collections.emptyList());
+    PersonInfoDto expectedDto = new PersonInfoDto("firstName", "lastName", "address", 41,
+            List.of("med1", "med2"), Collections.emptyList());
+    when(personService.getByName(anyString(), anyString())).thenReturn(person);
+    when(medicalRecordService.getByName(anyString(), anyString())).thenReturn(medicalRecord);
 
     // WHEN
+    List<PersonInfoDto> actualList = alertsService.getPersonInfo("firstName", "lastName");
+
+    // THEN
+    assertThat(actualList).usingRecursiveComparison().isEqualTo(List.of(expectedDto));
+    verify(personService, times(1)).getByName("firstName", "lastName");
+    verify(medicalRecordService, times(1)).getByName("firstName", "lastName");
+  }
+
+  @Test
+  void getPersonInfoNotFoundTest() throws Exception {
+    // GIVEN
+    when(personService.getByName(anyString(), anyString())).thenThrow(
+            new ResourceNotFoundException("firstName lastName not found"));
+    
+    // WHEN
     assertThatThrownBy(() -> {
-      alertsService.getPhoneAlert(9);
+      alertsService.getPersonInfo("firstName", "lastName");
     })
 
             // THEN
             .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("No phone numbers for resident covered by station 9 found");
+            .hasMessageContaining("firstName lastName not found");
+    verify(personService, times(1)).getByName("firstName", "lastName");
+    verify(medicalRecordService, times(0)).getByName(anyString(), anyString());
+  }
+  
+  @Test
+  void getPersonInfoMedicalRecordNotFoundTest() throws Exception {
+    // GIVEN
+    Person person = new Person("firstName", "lastName", "address", "city", "", "", "");
+    PersonInfoDto expectedDto = new PersonInfoDto("firstName", "lastName", "address", null,
+            null, null);
+    when(personService.getByName(anyString(), anyString())).thenReturn(person);
+    when(medicalRecordService.getByName(anyString(), anyString())).thenThrow(
+            new ResourceNotFoundException("Medical record of firstName lastName not found"));
+
+    // WHEN
+    List<PersonInfoDto> actualList = alertsService.getPersonInfo("firstName", "lastName");
+
+    // THEN
+    assertThat(actualList).usingRecursiveComparison().isEqualTo(List.of(expectedDto));
+    verify(personService, times(1)).getByName("firstName", "lastName");
+    verify(medicalRecordService, times(1)).getByName("firstName", "lastName");
   }
   
 }
