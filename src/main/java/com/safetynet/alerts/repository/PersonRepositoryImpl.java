@@ -38,8 +38,9 @@ public class PersonRepositoryImpl implements LoadableRepository<Person>, PersonR
    */
   @Override
   public List<Person> findByAddress(String address) {
-    // TODO Auto-generated method stub
-    return null;
+    return personsList.stream()
+            .filter(person -> (person.getAddress().equals(address)))
+            .collect(Collectors.toList());
   }
   
   /**
