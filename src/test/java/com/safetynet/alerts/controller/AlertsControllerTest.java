@@ -294,7 +294,7 @@ class AlertsControllerTest {
     FireAlertDto fireAlertDto = new FireAlertDto(List.of(
               new PersonInfoDto("FirstName", "LastName", null, "10", Collections.emptyList(),
                       List.of("allg1"), "000-000-0001", null),
-              new PersonInfoDto("FirstName", "LastName", null, "10", List.of("med1", "med2"),
+              new PersonInfoDto("FirstName", "LastName", null, "40", List.of("med1", "med2"),
                       Collections.emptyList(), "000-000-0002", null)), "1"); 
     when(alertsService.fireAlert(anyString())).thenReturn(fireAlertDto);
 
