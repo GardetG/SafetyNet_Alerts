@@ -76,7 +76,7 @@ class AlertsIntegrationTest {
             .andExpect(jsonPath("$[0].firstName", is("firstNameA")))
             .andExpect(jsonPath("$[0].lastName", is("lastNameA")))
             .andExpect(jsonPath("$[0].address", is("1 Test St")))
-            .andExpect(jsonPath("$[0].age", is(41)))
+            .andExpect(jsonPath("$[0].age", is("41")))
             .andExpect(jsonPath("$[0].medications", hasSize(2)))
             .andExpect(jsonPath("$[0].allergies", hasSize(1)));
   }

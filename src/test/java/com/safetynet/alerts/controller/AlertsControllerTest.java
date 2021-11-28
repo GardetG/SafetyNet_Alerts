@@ -163,7 +163,7 @@ class AlertsControllerTest {
   void getPersonInfoTest() throws Exception {
     // GIVEN
     PersonInfoDto personTest = new PersonInfoDto("firstName", "lastName", "address", 
-            18, List.of("med1", "med2"), Collections.emptyList());
+            "18", List.of("med1", "med2"), Collections.emptyList());
     when(alertsService.getPersonInfo(anyString(), anyString())).thenReturn(List.of(personTest));
 
     // WHEN
@@ -174,7 +174,7 @@ class AlertsControllerTest {
             .andExpect(jsonPath("$", hasSize(1)))
             .andExpect(jsonPath("$[0].firstName", is("firstName")))
             .andExpect(jsonPath("$[0].lastName", is("lastName")))
-            .andExpect(jsonPath("$[0].age", is(18)))
+            .andExpect(jsonPath("$[0].age", is("18")))
             .andDo(document("GetPersonInfo",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),

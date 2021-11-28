@@ -167,7 +167,7 @@ class AlertsServiceTest {
     Person person = new Person("firstName", "lastName", "address", "city", "", "", "");
     MedicalRecord medicalRecord = new MedicalRecord("firstName", "lastName",
             LocalDate.ofYearDay(1980, 1), List.of("med1", "med2"), Collections.emptyList());
-    PersonInfoDto expectedDto = new PersonInfoDto("firstName", "lastName", "address", 41,
+    PersonInfoDto expectedDto = new PersonInfoDto("firstName", "lastName", "address", "41",
             List.of("med1", "med2"), Collections.emptyList());
     when(personService.getByName(anyString(), anyString())).thenReturn(person);
     when(medicalRecordService.getByName(anyString(), anyString())).thenReturn(medicalRecord);
@@ -203,8 +203,9 @@ class AlertsServiceTest {
   void getPersonInfoMedicalRecordNotFoundTest() throws Exception {
     // GIVEN
     Person person = new Person("firstName", "lastName", "address", "city", "", "", "");
-    PersonInfoDto expectedDto = new PersonInfoDto("firstName", "lastName", "address", null,
-            null, null);
+    PersonInfoDto expectedDto = new PersonInfoDto("firstName", "lastName", "address", 
+            "Information not specified", List.of("Information not specified"), 
+            List.of("Information not specified"));
     when(personService.getByName(anyString(), anyString())).thenReturn(person);
     when(medicalRecordService.getByName(anyString(), anyString())).thenThrow(
             new ResourceNotFoundException("Medical record of firstName lastName not found"));

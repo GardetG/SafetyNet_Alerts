@@ -5,13 +5,11 @@ import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
-
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,11 +101,14 @@ public class AlertsServiceImpl implements AlertsService {
     try {
       MedicalRecord medicalRecord = medicalRecordService.getByName(firstName, lastName);
       Period lifeTime = Period.between(medicalRecord.getBirthdate(), LocalDate.now());
-      personInfo.setAge(lifeTime.getYears());
+      personInfo.setAge(String.valueOf(lifeTime.getYears()));
       personInfo.setMedications(medicalRecord.getMedications());
       personInfo.setAllergies(medicalRecord.getAllergies());
     } catch (ResourceNotFoundException ex) {
       LOGGER.warn(ex.getMessage());
+      personInfo.setAge("Information not specified");
+      personInfo.setMedications(List.of("Information not specified"));
+      personInfo.setAllergies(List.of("Information not specified"));
     }
 
     return List.of(personInfo);
