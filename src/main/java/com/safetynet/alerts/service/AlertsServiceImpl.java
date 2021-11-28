@@ -29,6 +29,7 @@ public class AlertsServiceImpl implements AlertsService {
             .map(person -> { 
               return person.getEmail(); 
             }).distinct()
+            .filter(email -> (email != null && !email.isBlank()))
             .collect(Collectors.toList());
     
     if (emailsList.isEmpty()) {
@@ -62,6 +63,7 @@ public class AlertsServiceImpl implements AlertsService {
             }).map(person -> {
               return person.getPhone();
             }).distinct()
+            .filter(phone -> (phone != null && !phone.isBlank()))
             .collect(Collectors.toList());
     
     if (phoneNumbersList.isEmpty()) {

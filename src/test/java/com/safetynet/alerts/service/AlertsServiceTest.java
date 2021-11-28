@@ -64,6 +64,24 @@ class AlertsServiceTest {
   }
 
   @Test
+  void getCommunityEmailWithBlankEmailTest() throws Exception {
+    // GIVEN
+    Person personNullEmail = new Person("firstName", "lastName", "address", "city", "0001", 
+            "000-000-0001", null);
+    Person personBlankEmail = new Person("firstName", "lastName", "address", "city", "0001", 
+            "000-000-0001", "  ");
+    when(personRepository.findByCity(anyString())).thenReturn(List.of(
+            personTest, personNullEmail, personBlankEmail));
+
+    // WHEN
+    List<String> actualList = alertsService.getCommunityEmail("city");
+
+    // THEN
+    assertThat(actualList).isEqualTo(List.of("email@mail.fr"));
+    verify(personRepository, times(1)).findByCity("city");
+  }
+  
+  @Test
   void getCommunityEmailNotFoundTest() throws Exception {
     // GIVEN
     when(personRepository.findByCity(anyString())).thenReturn(Collections.emptyList());
@@ -95,6 +113,29 @@ class AlertsServiceTest {
     verify(personRepository, times(2)).findByAddress(anyString());
   }
 
+
+  @Test
+  void getPhoneAlertBlankPhoneTest() throws Exception {
+    // GIVEN
+    Person personNullEmail = new Person("firstName", "lastName", "address", "city", "0001", null,
+            "email@mail.fr");
+    Person personBlankEmail = new Person("firstName", "lastName", "address", "city", "0001", "  ",
+            "email@mail.fr");
+    when(fireStationRepository.findByStation(anyInt())).thenReturn(List.of(
+            new FireStation(1, "address"), new FireStation(1, "address2")));
+    when(personRepository.findByAddress(anyString())).thenReturn(List.of(
+            personTest, personNullEmail, personBlankEmail)).thenReturn(Collections.emptyList());
+
+    // WHEN
+    List<String> actualList = alertsService.getPhoneAlert(1);
+
+    // THEN
+    assertThat(actualList).isEqualTo(List.of("000-000-0001"));
+    verify(fireStationRepository, times(1)).findByStation(1);
+    verify(personRepository, times(2)).findByAddress(anyString());
+  }
+
+  
   @Test
   void getPhoneAlertAddressesNotFoundTest() throws Exception {
     // GIVEN
