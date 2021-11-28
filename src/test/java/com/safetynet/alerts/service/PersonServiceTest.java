@@ -100,6 +100,62 @@ class PersonServiceTest {
   }
 
   @Test
+  void getPersonByCityTest() throws Exception {
+    // GIVEN
+    when(personRepository.findByCity(anyString())).thenReturn(List.of(personTest));
+
+    // WHEN
+    List<Person> actualList = personService.getByCity("city");
+
+    // THEN
+    assertThat(actualList).isEqualTo(List.of(personTest));
+    verify(personRepository, times(1)).findByCity("city");
+  }
+
+  @Test
+  void getPersonByCityWhenNotFoundTest() throws Exception {
+    // GIVEN
+    when(personRepository.findByCity(anyString())).thenReturn(Collections.emptyList());
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      personService.getByCity("city9");
+    })
+
+            // THEN
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("No residents found for city9");
+  }
+  
+  @Test
+  void getPersonByAddressTest() throws Exception {
+    // GIVEN
+    when(personRepository.findByAddress(anyString())).thenReturn(List.of(personTest));
+
+    // WHEN
+    List<Person> actualList = personService.getByAddress("address");
+
+    // THEN
+    assertThat(actualList).isEqualTo(List.of(personTest));
+    verify(personRepository, times(1)).findByAddress("address");
+  }
+
+  @Test
+  void getPersonByAddressWhenNotFoundTest() throws Exception {
+    // GIVEN
+    when(personRepository.findByAddress(anyString())).thenReturn(Collections.emptyList());
+
+    // WHEN
+    assertThatThrownBy(() -> {
+      personService.getByAddress("address9");
+    })
+
+            // THEN
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("No residents found living at address9");
+  }
+  
+  @Test
   void addPersonTest() throws Exception {
     // GIVEN
     when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty())
