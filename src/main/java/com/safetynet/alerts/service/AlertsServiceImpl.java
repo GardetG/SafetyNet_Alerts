@@ -1,6 +1,7 @@
 package com.safetynet.alerts.service;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
+import com.safetynet.alerts.dto.FireAlertDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
@@ -157,6 +158,15 @@ public class AlertsServiceImpl implements AlertsService {
     return childAlertDto;
   }
   
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public FireAlertDto fireAlert(String address) throws ResourceNotFoundException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  
   private Optional<MedicalRecord> getMedicalRecord(Person person) {
     Optional<MedicalRecord> medicalRecord = Optional.empty();
     try {
@@ -167,4 +177,5 @@ public class AlertsServiceImpl implements AlertsService {
     }
     return medicalRecord;
   }
+
 }

@@ -1,6 +1,7 @@
 package com.safetynet.alerts.service;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
+import com.safetynet.alerts.dto.FireAlertDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import java.util.List;
@@ -53,5 +54,15 @@ public interface AlertsService {
    * @throws ResourceNotFoundException when no residents found at this address
    */
   ChildAlertDto childAlert(String address) throws ResourceNotFoundException;
+
+  /**
+   * Return fire alert informations with list of residents and associated firestation.
+   * 
+
+   * @param address of the residents
+   * @return fire alert information
+   * @throws ResourceNotFoundException when no residents found at this address
+   */
+  FireAlertDto fireAlert(String address) throws ResourceNotFoundException;
   
 }
