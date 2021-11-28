@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.safetynet.alerts.dto.FireStationDto;
+import com.safetynet.alerts.dto.FireStationMapper;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
@@ -215,12 +216,13 @@ class FireStationControllerTest {
   @Test
   void postFireStationTest() throws Exception {
     // GIVEN
+    FireStationDto fireStationDto = FireStationMapper.toDto(fireStationTest);
     when(fireStationService.add(any(FireStation.class))).thenReturn(fireStationTest);
 
     // WHEN
     mockMvc.perform(post("/fireStation")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(fireStationTest)))
+            .content(JsonParser.asString(fireStationDto)))
 
             // THEN
             .andExpect(status().isCreated())
@@ -281,12 +283,13 @@ class FireStationControllerTest {
   @Test
   void putFireStationTest() throws Exception {
     // GIVEN
+    FireStationDto fireStationDto = FireStationMapper.toDto(fireStationTest);
     when(fireStationService.update(any(FireStation.class))).thenReturn(fireStationTest);
 
     // WHEN
     mockMvc.perform(put("/fireStation")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(fireStationTest)))
+            .content(JsonParser.asString(fireStationDto)))
 
             // THEN
             .andExpect(status().isOk())

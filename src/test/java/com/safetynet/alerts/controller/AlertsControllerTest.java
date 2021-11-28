@@ -229,8 +229,9 @@ class AlertsControllerTest {
   void getChildAlertTest() throws Exception {
     // GIVEN
     ChildAlertDto childAlertDto = new ChildAlertDto(
-            List.of(new PersonInfoDto()),
-            List.of(new PersonInfoDto(), new PersonInfoDto())); 
+            List.of(new PersonInfoDto("FirstNameA", "LastName", null, "10", null, null)),
+            List.of(new PersonInfoDto("FirstNameB", "LastName", null, null, null, null),
+                    new PersonInfoDto("FirstNameC", "LastName", null, null, null, null))); 
     when(alertsService.childAlert(anyString())).thenReturn(childAlertDto);
 
     // WHEN
@@ -264,7 +265,7 @@ class AlertsControllerTest {
             // THEN
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$", is("No residents found living at address")))
-            .andDo(document("GetCommunityEmailNotFound",
+            .andDo(document("GetChildAlertNotFound",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(alertsService, times(1)).childAlert("address");
