@@ -13,11 +13,8 @@ import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.FireStationRepository;
 import com.safetynet.alerts.repository.PersonRepository;
-
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +90,7 @@ class AlertsServiceTest {
     List<String> actualList = alertsService.getPhoneAlert(1);
 
     // THEN
-    assertThat(actualList).containsExactly("000-000-0001");
+    assertThat(actualList).isEqualTo(List.of("000-000-0001"));
     verify(fireStationRepository, times(1)).findByStation(1);
     verify(personRepository, times(2)).findByAddress(anyString());
   }

@@ -100,7 +100,7 @@ class PersonRepositoryTest {
     personRepository.setupRepository(List.of(personTest, personTest2));
 
     // WHEN
-    List<Person> actualList = personRepository.findByCity("address9");
+    List<Person> actualList = personRepository.findByAddress("address9");
 
     // THEN
     assertThat(actualList).isEmpty();
