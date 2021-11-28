@@ -164,7 +164,7 @@ class AlertsControllerTest {
   void getPersonInfoTest() throws Exception {
     // GIVEN
     PersonInfoDto personTest = new PersonInfoDto("firstName", "lastName", "address", 
-            "18", List.of("med1", "med2"), Collections.emptyList());
+            "18", List.of("med1", "med2"), Collections.emptyList(), null, null);
     when(alertsService.getPersonInfo(anyString(), anyString())).thenReturn(List.of(personTest));
 
     // WHEN
@@ -228,10 +228,11 @@ class AlertsControllerTest {
   @Test
   void getChildAlertTest() throws Exception {
     // GIVEN
-    ChildAlertDto childAlertDto = new ChildAlertDto(
-            List.of(new PersonInfoDto("FirstNameA", "LastName", null, "10", null, null)),
-            List.of(new PersonInfoDto("FirstNameB", "LastName", null, null, null, null),
-                    new PersonInfoDto("FirstNameC", "LastName", null, null, null, null))); 
+    ChildAlertDto childAlertDto = new ChildAlertDto(List.of(
+              new PersonInfoDto("FirstNameA", "LastName", null, "10", null, null, null, null)),
+            List.of(
+              new PersonInfoDto("FirstNameB", "LastName", null, null, null, null, null, null),
+              new PersonInfoDto("FirstNameC", "LastName", null, null, null, null, null, null))); 
     when(alertsService.childAlert(anyString())).thenReturn(childAlertDto);
 
     // WHEN

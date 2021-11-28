@@ -169,7 +169,7 @@ class AlertsServiceTest {
     MedicalRecord medicalRecord = new MedicalRecord("firstName", "lastName",
             LocalDate.ofYearDay(1980, 1), List.of("med1", "med2"), Collections.emptyList());
     PersonInfoDto expectedDto = new PersonInfoDto("firstName", "lastName", "address", "41",
-            List.of("med1", "med2"), Collections.emptyList());
+            List.of("med1", "med2"), Collections.emptyList(), null, null);
     when(personService.getByName(anyString(), anyString())).thenReturn(person);
     when(medicalRecordService.getByName(anyString(), anyString())).thenReturn(medicalRecord);
 
@@ -206,7 +206,7 @@ class AlertsServiceTest {
     Person person = new Person("firstName", "lastName", "address", "city", "", "", "");
     PersonInfoDto expectedDto = new PersonInfoDto("firstName", "lastName", "address", 
             "Information not specified", List.of("Information not specified"), 
-            List.of("Information not specified"));
+            List.of("Information not specified"), null, null);
     when(personService.getByName(anyString(), anyString())).thenReturn(person);
     when(medicalRecordService.getByName(anyString(), anyString())).thenThrow(
             new ResourceNotFoundException("Medical record of firstName lastName not found"));
@@ -237,10 +237,11 @@ class AlertsServiceTest {
             LocalDate.ofYearDay(1975, 1), List.of("med1", "med2"), Collections.emptyList());
     
     
-    ChildAlertDto expectedDto = new ChildAlertDto(
-            List.of(new PersonInfoDto("firstNameA", "lastName", null, "11", null, null)),
-            List.of(new PersonInfoDto("firstNameB", "lastName", null, null, null, null),
-                    new PersonInfoDto("firstNameC", "lastName", null, null, null, null)));
+    ChildAlertDto expectedDto = new ChildAlertDto(List.of(
+              new PersonInfoDto("firstNameA", "lastName", null, "11", null, null, null, null)),
+            List.of(
+              new PersonInfoDto("firstNameB", "lastName", null, null, null, null, null, null),
+              new PersonInfoDto("firstNameC", "lastName", null, null, null, null, null, null)));
     
     when(personService.getByAddress(anyString())).thenReturn(List.of(child, parent1, parent2));
     when(medicalRecordService.getByName(anyString(), anyString())).thenReturn(childRecord)
@@ -286,11 +287,12 @@ class AlertsServiceTest {
     
     Person parent2 = new Person("firstNameC", "lastName", "address", "city", "", "", "");
     
-    ChildAlertDto expectedDto = new ChildAlertDto(
-            List.of(new PersonInfoDto("firstNameA", "lastName", null, "11", null, null)),
-            List.of(new PersonInfoDto("firstNameB", "lastName", null, null, null, null),
-                    new PersonInfoDto("firstNameC", "lastName", null, "Information not specified",
-                            null, null)));
+    ChildAlertDto expectedDto = new ChildAlertDto(List.of(
+              new PersonInfoDto("firstNameA", "lastName", null, "11", null, null, null, null)),
+            List.of(
+              new PersonInfoDto("firstNameB", "lastName", null, null, null, null, null, null),
+              new PersonInfoDto("firstNameC", "lastName", null, "Information not specified",
+                      null, null, null, null)));
     
     when(personService.getByAddress(anyString())).thenReturn(List.of(child, parent1, parent2));
     when(medicalRecordService.getByName(anyString(), anyString())).thenReturn(childRecord)

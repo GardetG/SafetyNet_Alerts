@@ -27,5 +27,9 @@ public class PersonInfoDto {
   private List<String> medications;
   @JsonInclude(Include.NON_NULL)
   private List<String> allergies;
+  @JsonInclude(Include.NON_NULL)
+  private String phone;
+  @JsonInclude(Include.NON_NULL)
+  private String email;
   
 }
