@@ -29,6 +29,15 @@ public interface PersonRepository {
   List<Person> findByCity(String city);
   
   /**
+   * Find all Person living at an address.
+   * 
+
+   * @param address of Person
+   * @return List of all Person at this address
+   */
+  List<Person> findByAddress(String address);
+  
+  /**
    * Find a Person by its name.
    * 
 
