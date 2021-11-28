@@ -62,4 +62,23 @@ class AlertsIntegrationTest {
             .andExpect(jsonPath("$[1]", is("000-000-0002")));
   }
   
+  @Test
+  void getPersonInfoTest() throws Exception {
+    // GIVEN
+
+    // WHEN
+    mockMvc.perform(get("/personInfo?firstName=firstNameA&lastName=lastNameA"))
+
+            // THEN
+            // Check response
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].firstName", is("firstNameA")))
+            .andExpect(jsonPath("$[0].lastName", is("lastNameA")))
+            .andExpect(jsonPath("$[0].address", is("1 Test St")))
+            .andExpect(jsonPath("$[0].age", is(41)))
+            .andExpect(jsonPath("$[0].medications", hasSize(2)))
+            .andExpect(jsonPath("$[0].allergies", hasSize(1)));
+  }
+  
 }
