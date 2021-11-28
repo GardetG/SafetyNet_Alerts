@@ -1,3 +1,29 @@
+=== Phone Alert
+
+==== Resquest
+
+===== Request
+include::{snippets}/GetPhoneAlert/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/GetPhoneAlert/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/GetPhoneAlert/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/GetPhoneAlert/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When no residents for the city can be found, this response can be expected:
+
+include::{snippets}/GetPhoneAlertNotFound/http-response.adoc[]
+
+
 === Community Emails
 
 ==== Resquest

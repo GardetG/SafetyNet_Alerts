@@ -38,9 +38,9 @@ class PersonServiceTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    personTest = new Person("firstName", "lastName", "address", "city", "0001", "000.000.0001",
+    personTest = new Person("firstName", "lastName", "address", "city", "0001", "000-000-0001",
             "email@mail.fr");
-    personTest2 = new Person("firstName2", "lastName2", "address2", "city2", "0002", "000.000.0002",
+    personTest2 = new Person("firstName2", "lastName2", "address2", "city2", "0002", "000-000-0002",
             "email2@mail.fr");
   }
 

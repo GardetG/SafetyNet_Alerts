@@ -37,6 +37,16 @@ public class PersonRepositoryImpl implements LoadableRepository<Person>, PersonR
    * {@inheritDoc}
    */
   @Override
+  public List<Person> findByAddress(String address) {
+    return personsList.stream()
+            .filter(person -> (person.getAddress().equals(address)))
+            .collect(Collectors.toList());
+  }
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   public Optional<Person> findByName(String firstName, String lastName) {
     return personsList.stream()
             .filter(person -> (person.getFirstName().equals(firstName)

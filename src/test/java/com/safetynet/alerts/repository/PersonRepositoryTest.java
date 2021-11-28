@@ -26,9 +26,9 @@ class PersonRepositoryTest {
   @BeforeEach
   void setUp() throws Exception {
     personTest = new Person("firstName", "lastName", "address", "city", "00001",
-            "000.000.0001", "email@email.fr");
+            "000-000-0001", "email@email.fr");
     personTest2 = new Person("firstName2", "lastName2", "address2", "city2", "00002",
-            "000.000.0002", "email2@email.fr");
+            "000-000-0002", "email2@email.fr");
 
   }
 
@@ -77,6 +77,30 @@ class PersonRepositoryTest {
 
     // WHEN
     List<Person> actualList = personRepository.findByCity("city9");
+
+    // THEN
+    assertThat(actualList).isEmpty();
+  }
+  
+  @Test
+  void findPersonByAddressTest() {
+    // GIVEN
+    personRepository.setupRepository(List.of(personTest, personTest2));
+
+    // WHEN
+    List<Person> actualList = personRepository.findByAddress("address");
+
+    // THEN
+    assertThat(actualList).isEqualTo(List.of(personTest));
+  }
+
+  @Test
+  void findPersonByAddressNotFoundTest() {
+    // GIVEN
+    personRepository.setupRepository(List.of(personTest, personTest2));
+
+    // WHEN
+    List<Person> actualList = personRepository.findByAddress("address9");
 
     // THEN
     assertThat(actualList).isEmpty();

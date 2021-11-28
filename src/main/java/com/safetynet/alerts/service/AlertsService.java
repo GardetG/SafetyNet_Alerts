@@ -19,5 +19,15 @@ public interface AlertsService {
    * @throws ResourceNotFoundException when no residents found for this city
    */
   List<String> getCommunityEmail(String city) throws ResourceNotFoundException;
+
+  /**
+   * Return a list of all residents' phone numbers of the fireStation without duplicate.
+   * 
+
+   * @param station of the residents
+   * @return list of phone numbers
+   * @throws ResourceNotFoundException when no residents covered found for this fireStation
+   */
+  List<String> getPhoneAlert(int station) throws ResourceNotFoundException;
   
 }

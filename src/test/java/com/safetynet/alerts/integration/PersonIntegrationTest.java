@@ -42,7 +42,7 @@ class PersonIntegrationTest {
   @Test
   void postPersonIntegrationTest() throws Exception {
     // GIVEN
-    PersonDto personTest = new PersonDto("firstNameZ", "lastNameZ", "", "city", "", "", "");
+    PersonDto personTest = new PersonDto("firstNameZ", "lastNameZ", "address", "city", "", "", "");
 
     // WHEN
     mockMvc.perform(post("/person")

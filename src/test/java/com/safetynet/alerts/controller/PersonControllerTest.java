@@ -38,8 +38,10 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+@ActiveProfiles("UnitTests")
 @WebMvcTest(PersonController.class)
 @AutoConfigureRestDocs
 class PersonControllerTest {
@@ -55,10 +57,10 @@ class PersonControllerTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    personTest = new Person("firstName", "lastName", "address", "city", "0001", "000.000.0001",
+    personTest = new Person("firstName", "lastName", "address", "city", "0001", "000-000-0001",
             "email@mail.fr");
     personTest2 = new Person("firstName2", "lastName2", "address2", "city2", "0002",
-            "000.000.0002", "email2@mail.fr");
+            "000-000-0002", "email2@mail.fr");
   }
 
   @Test
@@ -175,7 +177,8 @@ class PersonControllerTest {
                             .description("The last name of the person. "
                                     + "This parameter *must not be blank*."),
                         fieldWithPath("address")
-                            .description("The address of the person."),
+                            .description("The address of the person."
+                                    + "This parameter *must no be blank*."),
                         fieldWithPath("city")
                             .description("The city of the person."
                                     + "This parameter *must no be blank*."),
@@ -253,9 +256,11 @@ class PersonControllerTest {
                             .description("The last name of the person. "
                                     + "This parameter *must not be blank*."),
                         fieldWithPath("address")
-                            .description("The address of the person."),
+                            .description("The address of the person."
+                                    + "This parameter *must no be blank*."),
                         fieldWithPath("city")
-                            .description("The city of the person."),
+                            .description("The city of the person."
+                                    + "This parameter *must no be blank*."),
                         fieldWithPath("zip")
                             .description("The ZIP code."),
                         fieldWithPath("phone")
