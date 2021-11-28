@@ -11,9 +11,6 @@ import static org.mockito.Mockito.when;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.repository.FireStationRepository;
-import com.safetynet.alerts.repository.PersonRepository;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,10 +27,10 @@ class AlertsServiceTest {
   private AlertsService alertsService;
 
   @MockBean
-  PersonRepository personRepository;
+  PersonService personService;
   
   @MockBean
-  FireStationRepository fireStationRepository;
+  FireStationService fireStationService;
 
   private Person personTest;
   private Person personTest2;
@@ -52,7 +49,7 @@ class AlertsServiceTest {
   @Test
   void getCommunityEmailTest() throws Exception {
     // GIVEN
-    when(personRepository.findByCity(anyString())).thenReturn(List.of(
+    when(personService.getByCity(anyString())).thenReturn(List.of(
             personTest, personTest2, personTest3));
 
     // WHEN
@@ -60,7 +57,7 @@ class AlertsServiceTest {
 
     // THEN
     assertThat(actualList).isEqualTo(List.of("email@mail.fr", "email2@mail.fr"));
-    verify(personRepository, times(1)).findByCity("city");
+    verify(personService, times(1)).getByCity("city");
   }
 
   @Test
@@ -70,7 +67,7 @@ class AlertsServiceTest {
             "000-000-0001", null);
     Person personBlankEmail = new Person("firstName", "lastName", "address", "city", "0001", 
             "000-000-0001", "  ");
-    when(personRepository.findByCity(anyString())).thenReturn(List.of(
+    when(personService.getByCity(anyString())).thenReturn(List.of(
             personTest, personNullEmail, personBlankEmail));
 
     // WHEN
@@ -78,13 +75,14 @@ class AlertsServiceTest {
 
     // THEN
     assertThat(actualList).isEqualTo(List.of("email@mail.fr"));
-    verify(personRepository, times(1)).findByCity("city");
+    verify(personService, times(1)).getByCity("city");
   }
   
   @Test
   void getCommunityEmailNotFoundTest() throws Exception {
     // GIVEN
-    when(personRepository.findByCity(anyString())).thenReturn(Collections.emptyList());
+    when(personService.getByCity(anyString())).thenThrow(
+            new ResourceNotFoundException("No residents found for city9"));
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -93,24 +91,25 @@ class AlertsServiceTest {
 
             // THEN
             .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("No residents for city9 found");
+            .hasMessageContaining("No residents found for city9");
   }
 
   @Test
   void getPhoneAlertTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByStation(anyInt())).thenReturn(List.of(
+    when(fireStationService.getByStation(anyInt())).thenReturn(List.of(
             new FireStation(1, "address"), new FireStation(1, "address2")));
-    when(personRepository.findByAddress(anyString())).thenReturn(List.of(
-            personTest, personTest2)).thenReturn(Collections.emptyList());
+    when(personService.getByAddress(anyString())).thenReturn(List.of(
+            personTest, personTest2)).thenThrow(
+                    new ResourceNotFoundException("No residents found living at address2"));
 
     // WHEN
     List<String> actualList = alertsService.getPhoneAlert(1);
 
     // THEN
     assertThat(actualList).isEqualTo(List.of("000-000-0001"));
-    verify(fireStationRepository, times(1)).findByStation(1);
-    verify(personRepository, times(2)).findByAddress(anyString());
+    verify(fireStationService, times(1)).getByStation(1);
+    verify(personService, times(2)).getByAddress(anyString());
   }
 
 
@@ -121,25 +120,27 @@ class AlertsServiceTest {
             "email@mail.fr");
     Person personBlankEmail = new Person("firstName", "lastName", "address", "city", "0001", "  ",
             "email@mail.fr");
-    when(fireStationRepository.findByStation(anyInt())).thenReturn(List.of(
+    when(fireStationService.getByStation(anyInt())).thenReturn(List.of(
             new FireStation(1, "address"), new FireStation(1, "address2")));
-    when(personRepository.findByAddress(anyString())).thenReturn(List.of(
-            personTest, personNullEmail, personBlankEmail)).thenReturn(Collections.emptyList());
+    when(personService.getByAddress(anyString())).thenReturn(List.of(
+            personTest, personNullEmail, personBlankEmail)).thenThrow(
+                    new ResourceNotFoundException("No residents found living at address2"));
 
     // WHEN
     List<String> actualList = alertsService.getPhoneAlert(1);
 
     // THEN
     assertThat(actualList).isEqualTo(List.of("000-000-0001"));
-    verify(fireStationRepository, times(1)).findByStation(1);
-    verify(personRepository, times(2)).findByAddress(anyString());
+    verify(fireStationService, times(1)).getByStation(1);
+    verify(personService, times(2)).getByAddress(anyString());
   }
 
   
   @Test
   void getPhoneAlertAddressesNotFoundTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByStation(anyInt())).thenReturn(Collections.emptyList());
+    when(fireStationService.getByStation(anyInt())).thenThrow(
+            new ResourceNotFoundException("No addresses mapped for station 9 found"));
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -148,15 +149,16 @@ class AlertsServiceTest {
 
             // THEN
             .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("No addresses mapped found for station 9");
+            .hasMessageContaining("No addresses mapped for station 9 found");
   }
   
   @Test
   void getPhoneAlertPhoneNumbersNotFoundTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByStation(anyInt())).thenReturn(List.of(
+    when(fireStationService.getByStation(anyInt())).thenReturn(List.of(
             new FireStation(1, "address9")));
-    when(personRepository.findByAddress(anyString())).thenReturn(Collections.emptyList());
+    when(personService.getByAddress(anyString())).thenThrow(
+            new ResourceNotFoundException("No residents found living at address9"));
 
     // WHEN
     assertThatThrownBy(() -> {

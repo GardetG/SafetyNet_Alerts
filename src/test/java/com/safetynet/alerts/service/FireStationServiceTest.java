@@ -99,7 +99,7 @@ class FireStationServiceTest {
 
             // THEN
             .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("Station 9 mapping not found");
+            .hasMessageContaining("No addresses mapped for station 9 found");
   }
 
   @Test

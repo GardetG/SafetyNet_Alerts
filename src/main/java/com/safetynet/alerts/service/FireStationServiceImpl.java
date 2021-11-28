@@ -37,7 +37,7 @@ public class FireStationServiceImpl implements FireStationService {
     
     List<FireStation> fireStations = fireStationRepository.findByStation(station);
     if (fireStations.isEmpty()) {
-      String error = String.format("Station %s mapping not found", station);
+      String error = String.format("No addresses mapped for station %s found", station);
       throw new ResourceNotFoundException(error);
     }
     

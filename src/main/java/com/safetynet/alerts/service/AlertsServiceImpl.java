@@ -1,11 +1,16 @@
 package com.safetynet.alerts.service;
 
+import com.safetynet.alerts.controller.AlertsController;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
-import com.safetynet.alerts.repository.FireStationRepository;
-import com.safetynet.alerts.repository.PersonRepository;
+import com.safetynet.alerts.model.Person;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,28 +20,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class AlertsServiceImpl implements AlertsService {
 
-  @Autowired
-  PersonRepository personRepository;
+  private static final Logger LOGGER = LoggerFactory.getLogger(AlertsServiceImpl.class);
   
   @Autowired
-  FireStationRepository fireStationRepository;
+  PersonService personService;
+  
+  @Autowired
+  FireStationService fireStationService;
   
   /**
    * {@inheritDoc}
    */
   @Override
   public List<String> getCommunityEmail(String city) throws ResourceNotFoundException {
-    List<String> emailsList = personRepository.findByCity(city).stream()
+    List<String> emailsList = personService.getByCity(city).stream()
             .map(person -> { 
               return person.getEmail(); 
             }).distinct()
             .filter(email -> (email != null && !email.isBlank()))
             .collect(Collectors.toList());
-    
-    if (emailsList.isEmpty()) {
-      String error = String.format("No residents for %s found", city);
-      throw new ResourceNotFoundException(error);
-    }
     
     return emailsList;
   }
@@ -46,32 +48,27 @@ public class AlertsServiceImpl implements AlertsService {
    */
   @Override
   public List<String> getPhoneAlert(int station) throws ResourceNotFoundException {
-    List<String> addressesList = fireStationRepository.findByStation(station)
+    List<String> addressesList = fireStationService.getByStation(station)
             .stream()
             .map(fireStation -> {
               return fireStation.getAddress();
             }).collect(Collectors.toList());
     
-    if (addressesList.isEmpty()) {
-      String error = String.format("No addresses mapped found for station %s", station);
-      throw new ResourceNotFoundException(error);
-    }
-    
     List<String> phoneNumbersList = addressesList
             .stream()
             .flatMap(address -> {
-              return personRepository.findByAddress(address).stream();
+              List<Person> persons = new ArrayList<>();
+              try {
+                persons = personService.getByAddress(address);
+              } catch (ResourceNotFoundException ex) {
+                LOGGER.warn(ex.getMessage());
+              }
+              return persons.stream();
             }).map(person -> {
               return person.getPhone();
             }).distinct()
             .filter(phone -> (phone != null && !phone.isBlank()))
             .collect(Collectors.toList());
-    
-    if (phoneNumbersList.isEmpty()) {
-      String error = String.format("No phone numbers for resident covered by station %s found",
-              station);
-      throw new ResourceNotFoundException(error);
-    }
     
     return phoneNumbersList;
   }
