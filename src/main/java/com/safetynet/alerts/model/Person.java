@@ -22,6 +22,7 @@ public class Person {
   private String firstName;
   @NotBlank(message = "Lastname is mandatory")
   private String lastName;
+  @NotBlank(message = "Address is mandatory")
   private String address;
   @NotBlank(message = "City is mandatory")
   private String city;
