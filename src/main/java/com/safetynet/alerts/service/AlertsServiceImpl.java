@@ -35,4 +35,13 @@ public class AlertsServiceImpl implements AlertsService {
     return emailsList;
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public List<String> getPhoneAlert(int station) throws ResourceNotFoundException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }
