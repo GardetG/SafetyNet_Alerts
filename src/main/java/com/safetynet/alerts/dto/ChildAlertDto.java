@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 public class ChildAlertDto {
 
-  List<PersonInfoDto> childs;
+  List<PersonInfoDto> children;
   List<PersonInfoDto> householdMembers;
   
 }

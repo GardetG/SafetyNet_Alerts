@@ -1,5 +1,6 @@
 package com.safetynet.alerts.service;
 
+import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import java.util.List;
@@ -42,5 +43,15 @@ public interface AlertsService {
    */
   List<PersonInfoDto> getPersonInfo(String firstName, String lastName) 
           throws ResourceNotFoundException;
+
+  /**
+   * Return child alert informations with list of children and list of others household members.
+   * 
+
+   * @param address of the household
+   * @return child alert information
+   * @throws ResourceNotFoundException when no residents found at this address
+   */
+  ChildAlertDto childAlert(String address) throws ResourceNotFoundException;
   
 }

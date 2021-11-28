@@ -1,5 +1,6 @@
 package com.safetynet.alerts.service;
 
+import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
@@ -112,6 +113,15 @@ public class AlertsServiceImpl implements AlertsService {
     }
 
     return List.of(personInfo);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public ChildAlertDto childAlert(String address) throws ResourceNotFoundException {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

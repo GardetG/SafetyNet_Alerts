@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.AlertsService;
@@ -222,6 +223,68 @@ class AlertsControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$[0]", is("Firstname is mandatory")));
     verify(alertsService, times(0)).getPersonInfo(anyString(), anyString());
+  }
+  
+  @Test
+  void getChildAlertTest() throws Exception {
+    // GIVEN
+    ChildAlertDto childAlertDto = new ChildAlertDto(
+            List.of(new PersonInfoDto()),
+            List.of(new PersonInfoDto(), new PersonInfoDto())); 
+    when(alertsService.childAlert(anyString())).thenReturn(childAlertDto);
+
+    // WHEN
+    mockMvc.perform(get("/childAlert?address=address"))
+
+            // THEN
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.children", hasSize(1)))
+            .andExpect(jsonPath("$.householdMembers", hasSize(2)))
+            .andDo(document("GetChildAlert",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestParameters(
+                            parameterWithName("address").description(
+                    "Household address for which we want to retrieve child alert informations."
+                    + "This parameter *must not be blank*.")
+                            .optional()
+                        )));
+    verify(alertsService, times(1)).childAlert("address");
+  }
+  
+  @Test
+  void getChildAlertNotFoundTest() throws Exception {
+    // GIVEN
+    when(alertsService.childAlert(anyString())).thenThrow(
+            new ResourceNotFoundException("No residents found living at address"));
+
+    // WHEN
+    mockMvc.perform(get("/childAlert?address=address"))
+
+            // THEN
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$", is("No residents found living at address")))
+            .andDo(document("GetCommunityEmailNotFound",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(alertsService, times(1)).childAlert("address");
+  }
+  
+  @Test
+  void getChildAlertInvalidTest() throws Exception {
+    // GIVEN
+    ChildAlertDto childAlertDto = new ChildAlertDto(
+            List.of(new PersonInfoDto()),
+            List.of(new PersonInfoDto(), new PersonInfoDto())); 
+    when(alertsService.childAlert(anyString())).thenReturn(childAlertDto);
+
+    // WHEN
+    mockMvc.perform(get("/childAlert?address= "))
+
+            // THEN
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0]", is("Address is mandatory")));
+    verify(alertsService, times(0)).childAlert(anyString());
   }
   
 }
