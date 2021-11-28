@@ -34,7 +34,7 @@ class AlertsIntegrationTest {
   }
 
   @Test
-  void postPersonIntegrationTest() throws Exception {
+  void getCommunityEmailIntegrationTest() throws Exception {
     // GIVEN
 
     // WHEN
@@ -47,4 +47,19 @@ class AlertsIntegrationTest {
             .andExpect(jsonPath("$[0]", is("test1@email.com")));
   }
 
+  @Test
+  void getPhoneAlertIntegrationTest() throws Exception {
+    // GIVEN
+
+    // WHEN
+    mockMvc.perform(get("/phoneAlert?firestation=1"))
+
+            // THEN
+            // Check response
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0]", is("000-000-0001")))
+            .andExpect(jsonPath("$[1]", is("000-000-0002")));
+  }
+  
 }
