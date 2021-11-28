@@ -3,6 +3,7 @@ package com.safetynet.alerts.controller;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -19,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.FireAlertDto;
+import com.safetynet.alerts.dto.FloodHouseholdDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.AlertsService;
@@ -132,14 +134,14 @@ class AlertsControllerTest {
   void getPhoneAlertFoundTest() throws Exception {
     // GIVEN
     when(alertsService.getPhoneAlert(anyInt())).thenThrow(
-            new ResourceNotFoundException("No residents for station 9 found"));
+            new ResourceNotFoundException("No addresses mapped for station 9 found"));
 
     // WHEN
     mockMvc.perform(get("/phoneAlert?firestation=9"))
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("No residents for station 9 found")))
+            .andExpect(jsonPath("$", is("No addresses mapped for station 9 found")))
             .andDo(document("GetPhoneAlertNotFound",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
@@ -292,9 +294,9 @@ class AlertsControllerTest {
   void getFireAlertTest() throws Exception {
     // GIVEN
     FireAlertDto fireAlertDto = new FireAlertDto(List.of(
-              new PersonInfoDto("FirstName", "LastName", null, "10", Collections.emptyList(),
+              new PersonInfoDto("FirstNameA", "LastName", null, "10", Collections.emptyList(),
                       List.of("allg1"), "000-000-0001", null),
-              new PersonInfoDto("FirstName", "LastName", null, "40", List.of("med1", "med2"),
+              new PersonInfoDto("FirstNameB", "LastName", null, "40", List.of("med1", "med2"),
                       Collections.emptyList(), "000-000-0002", null)), "1"); 
     when(alertsService.fireAlert(anyString())).thenReturn(fireAlertDto);
 
@@ -348,6 +350,76 @@ class AlertsControllerTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$[0]", is("Address is mandatory")));
     verify(alertsService, times(0)).fireAlert(anyString());
+  }
+  
+  @Test
+  void getFloodAlertTest() throws Exception {
+    // GIVEN
+    FloodHouseholdDto floodHouseholdDto = new FloodHouseholdDto("address", List.of(
+              new PersonInfoDto("FirstNameA", "LastName", null, "10", Collections.emptyList(),
+                      List.of("allg1"), "000-000-0001", null),
+              new PersonInfoDto("FirstNameB", "LastName", null, "40", List.of("med1", "med2"),
+                      Collections.emptyList(), "000-000-0002", null))); 
+    FloodHouseholdDto floodHousehold2Dto = new FloodHouseholdDto("address2", List.of(
+              new PersonInfoDto("FirstNameC", "LastName", null, "30", List.of("med1"),
+                      List.of("allg1"), "000-000-0002", null))); 
+    
+    when(alertsService.floodAlert(anyList()))
+            .thenReturn(List.of(floodHouseholdDto, floodHousehold2Dto));
+
+    // WHEN
+    mockMvc.perform(get("/flood/stations?stations=1,2"))
+
+            // THEN
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].address", is("address")))
+            .andExpect(jsonPath("$[0].residents", hasSize(2)))
+            .andExpect(jsonPath("$[1].address", is("address2")))
+            .andExpect(jsonPath("$[1].residents", hasSize(1)))
+            .andDo(document("GetFloodAlert",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestParameters(
+                            parameterWithName("stations").description(
+                    "List of stations for which we want to retrieve flood alert informations."
+                    + "This parameter *must not be empty*.")
+                            .optional()
+                        )));
+    verify(alertsService, times(1)).floodAlert(List.of(1, 2));
+  }
+  
+  @Test
+  void getFloodAlertNotFoundTest() throws Exception {
+    // GIVEN
+    when(alertsService.floodAlert(anyList())).thenThrow(
+            new ResourceNotFoundException("No addresses mapped for stations 9,10 found"));
+
+    // WHEN
+    mockMvc.perform(get("/flood/stations?stations=9,10"))
+
+            // THEN
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$", is("No addresses mapped for stations 9,10 found")))
+            .andDo(document("GetFloodAlertNotFound",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(alertsService, times(1)).floodAlert(List.of(9, 10));
+  }
+  
+  @Test
+  void getFloodAlertInvalidTest() throws Exception {
+    // GIVEN
+    FloodHouseholdDto floodHouseholdDto = new FloodHouseholdDto(); 
+    when(alertsService.floodAlert(anyList())).thenReturn(List.of(floodHouseholdDto));
+
+    // WHEN
+    mockMvc.perform(get("/flood/stations?stations="))
+
+            // THEN
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0]", is("Stations list is mandatory")));
+    verify(alertsService, times(0)).floodAlert(anyList());
   }
   
 }
