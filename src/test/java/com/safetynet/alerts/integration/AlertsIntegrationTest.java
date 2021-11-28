@@ -81,4 +81,24 @@ class AlertsIntegrationTest {
             .andExpect(jsonPath("$[0].allergies", hasSize(1)));
   }
   
+  @Test
+  void getChildAlertIntegrationTest() throws Exception {
+    // GIVEN
+
+    // WHEN
+    mockMvc.perform(get("/childAlert?address=1 Test St"))
+
+            // THEN
+            // Check response
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.children", hasSize(1)))
+            .andExpect(jsonPath("$.children[0].firstName", is("firstNameB")))
+            .andExpect(jsonPath("$.children[0].lastName", is("lastNameA")))
+            .andExpect(jsonPath("$.children[0].age", is("11")))
+            .andExpect(jsonPath("$.householdMembers", hasSize(1)))
+            .andExpect(jsonPath("$.householdMembers[0].firstName", is("firstNameA")))
+            .andExpect(jsonPath("$.householdMembers[0].lastName", is("lastNameA")))
+            .andExpect(jsonPath("$.householdMembers[0].age").doesNotExist());
+  }
+  
 }
