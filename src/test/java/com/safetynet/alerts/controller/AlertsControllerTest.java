@@ -470,7 +470,7 @@ class AlertsControllerTest {
             // THEN
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$", is("No addresses mapped for stations 9")))
-            .andDo(document("GetFloodAlertNotFound",
+            .andDo(document("GetFireStationAlertNotFound",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
     verify(alertsService, times(1)).fireStationCoverage(9);
