@@ -2,6 +2,7 @@ package com.safetynet.alerts.service;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.FireAlertDto;
+import com.safetynet.alerts.dto.FireStationCoverageDto;
 import com.safetynet.alerts.dto.FloodHouseholdDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
@@ -9,8 +10,10 @@ import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -121,7 +124,8 @@ public class AlertsServiceImpl implements AlertsService {
 
     // retrieve medical record data if it exists
     Optional<MedicalRecord> medicalRecord = getMedicalRecord(person);
-    mapMedicalRecordData(personInfo, medicalRecord);
+    mapAge(personInfo, medicalRecord);
+    mapMedicalData(personInfo, medicalRecord);
 
     return List.of(personInfo);
   }
@@ -133,10 +137,14 @@ public class AlertsServiceImpl implements AlertsService {
   public ChildAlertDto childAlert(String address) throws ResourceNotFoundException {
 
     // Fetch resident at the address and map them with optional medical record
-    Map<Person, Optional<MedicalRecord>> household = personService.getByAddress(address).stream()
-            .collect(Collectors.toMap(Function.identity(), this::getMedicalRecord));
+    Map<Person, Optional<MedicalRecord>> residents = getPersonWithMedicalRecordFromAddress(address);
 
-    List<PersonInfoDto> childrenList = household.entrySet().stream()
+    if (residents.isEmpty()) {
+      String error = String.format("No residents found living at %s", address);
+      throw new ResourceNotFoundException(error);
+    }
+    
+    List<PersonInfoDto> childrenList = residents.entrySet().stream()
             // Filter resident with medical record and who are minor
             .filter(entry -> entry.getValue().isPresent() && entry.getValue().get().isMinor())
             .map(entry -> {
@@ -147,7 +155,7 @@ public class AlertsServiceImpl implements AlertsService {
               return childDto;
             }).collect(Collectors.toList());
 
-    List<PersonInfoDto> householdMembers = household.entrySet().stream()
+    List<PersonInfoDto> householdMembers = residents.entrySet().stream()
             // Filter out minor
             .filter(entry -> !(entry.getValue().isPresent() && entry.getValue().get().isMinor()))
             .map(entry -> {
@@ -155,7 +163,6 @@ public class AlertsServiceImpl implements AlertsService {
               childDto.setFirstName(entry.getKey().getFirstName());
               childDto.setLastName(entry.getKey().getLastName());
               if (entry.getValue().isEmpty()) {
-                // If they don't have medical record, precise the lack of informations
                 childDto.setAge("Information not specified");
               }
               return childDto;
@@ -177,6 +184,11 @@ public class AlertsServiceImpl implements AlertsService {
     // Fetch resident at the address and medical record data if it exists
     List<PersonInfoDto> residentsList = getPersonInfoFromAddress(address);
 
+    if (residentsList.isEmpty()) {
+      String error = String.format("No residents found living at %s", address);
+      throw new ResourceNotFoundException(error);
+    }
+    
     String station = "No station mapped for this address";
     try {
       station = String.valueOf(fireStationService.getByAddress(address).getStation());
@@ -200,61 +212,102 @@ public class AlertsServiceImpl implements AlertsService {
     
     List<FloodHouseholdDto> floodlist = stations.stream()
             // Fetch all addresses cover by the stations
-            .flatMap(station -> {
-              List<String> addressList = new ArrayList<>();
-              try {
-                addressList = fireStationService
-                    .getByStation(station.intValue())
-                    .stream()
-                    .map(FireStation::getAddress)
-                    .collect(Collectors.toList());
-              } catch (ResourceNotFoundException ex) {
-                LOGGER.warn(ex.getMessage());
-              }
-              return addressList.stream();
-            })
+            .flatMap(station -> getAddressListMappedToStation(station.intValue()).stream())
             .map(address -> {
-              List<PersonInfoDto> residentsList = new ArrayList<>();
               // Fetch resident at the address and medical record data if it exists
-              try {
-                residentsList = getPersonInfoFromAddress(address);
-              } catch (ResourceNotFoundException ex) {
-                LOGGER.warn(ex.getMessage());
-              }
               FloodHouseholdDto floodDto = new FloodHouseholdDto();
               floodDto.setAddress(address);
-              floodDto.setResidents(residentsList);
+              floodDto.setResidents(getPersonInfoFromAddress(address));
               return floodDto;
             })
             .filter(household -> !household.getResidents().isEmpty())
             .collect(Collectors.toList());
 
     if (floodlist.isEmpty()) {
-      String error = String.format("No resident coverd by stations %s", stations);
+      String error = String.format("No residents covered found for stations %s", stations);
       throw new ResourceNotFoundException(error);
     }
     
     return floodlist;
   }
 
-  private List<PersonInfoDto> getPersonInfoFromAddress(String address)
-          throws ResourceNotFoundException {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public FireStationCoverageDto fireStationCoverage(int station) throws ResourceNotFoundException {
+    
+    // Fetch all resident with optional medical record covered by station
+    Map<Person, Optional<MedicalRecord>> residents = getAddressListMappedToStation(station)
+            .stream()
+            .flatMap(address -> getPersonWithMedicalRecordFromAddress(address).entrySet().stream())
+            .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    
+    List<PersonInfoDto> residentsList = residents.entrySet().stream()
+            .map(entry -> {
+              PersonInfoDto personDto = new PersonInfoDto();
+              personDto.setFirstName(entry.getKey().getFirstName());
+              personDto.setLastName(entry.getKey().getLastName());
+              personDto.setAddress(entry.getKey().getAddress());
+              personDto.setPhone(entry.getKey().getPhone());
+              return personDto;
+            }).collect(Collectors.toList());
+    
+    if (residentsList.isEmpty()) {
+      String error = String.format("No residents covered found for station %s", station);
+      throw new ResourceNotFoundException(error);
+    }
+    
+    int childrenCount = residents.entrySet().stream()
+            .filter(entry -> (entry.getValue().isPresent() && entry.getValue().get().isMinor()))
+            .collect(Collectors.toSet()).size();
+    
+    int adultCount = residents.entrySet().stream()
+            .filter(entry -> (entry.getValue().isPresent() && !entry.getValue().get().isMinor()))
+            .collect(Collectors.toSet()).size();
+    
+    int undeterminedAgeCount = residents.entrySet().stream()
+            .filter(entry -> (entry.getValue().isEmpty()))
+            .collect(Collectors.toSet()).size();
+    
+    FireStationCoverageDto fireStationCoverageDto = new FireStationCoverageDto();
+    fireStationCoverageDto.setResidents(residentsList);
+    fireStationCoverageDto.setChildrenCount(childrenCount);
+    fireStationCoverageDto.setAdultCount(adultCount);
+    fireStationCoverageDto.setUnderterminedAgeCount(
+            undeterminedAgeCount == 0 ? null : undeterminedAgeCount);
+    return fireStationCoverageDto;
+  }
+  
+  private List<String> getAddressListMappedToStation(int station) {
+    List<String> addressList = new ArrayList<>();
+    try {
+      addressList = fireStationService
+          .getByStation(station)
+          .stream()
+          .map(FireStation::getAddress)
+          .collect(Collectors.toList());
+    } catch (ResourceNotFoundException ex) {
+      LOGGER.warn(ex.getMessage());
+    }
+    return addressList;
+  }
+  
+  private Map<Person, Optional<MedicalRecord>> getPersonWithMedicalRecordFromAddress(
+          String address) {
     // Fetch resident at the address and map them with optional medical record
-    Map<Person, Optional<MedicalRecord>> residents = personService
+    Map<Person, Optional<MedicalRecord>> personsWithMedicalRecord = new HashMap<>();
+    try {
+      personsWithMedicalRecord = personService
             .getByAddress(address)
             .stream()
             .collect(Collectors.toMap(Function.identity(), this::getMedicalRecord));
-
-    return residents.entrySet().stream().map(entry -> {
-      PersonInfoDto personInfo = new PersonInfoDto();
-      personInfo.setFirstName(entry.getKey().getFirstName());
-      personInfo.setLastName(entry.getKey().getLastName());
-      personInfo.setPhone(entry.getKey().getPhone());
-      mapMedicalRecordData(personInfo, entry.getValue());
-      return personInfo;
-    }).collect(Collectors.toList());
+    } catch (ResourceNotFoundException ex) {
+      LOGGER.warn(ex.getMessage());
+    }
+    return personsWithMedicalRecord;
   }
-
+    
   private Optional<MedicalRecord> getMedicalRecord(Person person) {
     Optional<MedicalRecord> medicalRecord = Optional.empty();
     try {
@@ -265,20 +318,43 @@ public class AlertsServiceImpl implements AlertsService {
     }
     return medicalRecord;
   }
+  
+  private List<PersonInfoDto> getPersonInfoFromAddress(String address) {
+    // Fetch resident at the address and map them with optional medical record
+    Map<Person, Optional<MedicalRecord>> residents = getPersonWithMedicalRecordFromAddress(address);
 
-  private void mapMedicalRecordData(PersonInfoDto personInfo,
+    return residents.entrySet().stream().map(entry -> {
+      PersonInfoDto personInfo = new PersonInfoDto();
+      personInfo.setFirstName(entry.getKey().getFirstName());
+      personInfo.setLastName(entry.getKey().getLastName());
+      personInfo.setPhone(entry.getKey().getPhone());
+      mapAge(personInfo, entry.getValue());
+      mapMedicalData(personInfo, entry.getValue());
+      return personInfo;
+    }).collect(Collectors.toList());
+  }
+
+  private void mapAge(PersonInfoDto personInfo,
           Optional<MedicalRecord> medicalRecord) {
 
     if (medicalRecord.isEmpty()) {
       personInfo.setAge("Information not specified");
+    } else {
+      personInfo.setAge(String.valueOf(medicalRecord.get().getAge()));
+    }
+    
+  }
+
+  private void mapMedicalData(PersonInfoDto personInfo,
+          Optional<MedicalRecord> medicalRecord) {
+
+    if (medicalRecord.isEmpty()) {
       personInfo.setMedications(List.of("Information not specified"));
       personInfo.setAllergies(List.of("Information not specified"));
-      return;
+    } else {
+      personInfo.setMedications(medicalRecord.get().getMedications());
+      personInfo.setAllergies(medicalRecord.get().getAllergies());
     }
-    personInfo.setAge(String.valueOf(medicalRecord.get().getAge()));
-    personInfo.setMedications(medicalRecord.get().getMedications());
-    personInfo.setAllergies(medicalRecord.get().getAllergies());
-    return;
-
   }
+
 }
