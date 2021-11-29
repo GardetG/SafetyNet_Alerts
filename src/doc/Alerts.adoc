@@ -75,7 +75,30 @@ When no residents at this address can be found, this response can be expected:
 
 include::{snippets}/GetFireAlertNotFound/http-response.adoc[]
 
+=== Flood
 
+==== Resquest
+
+===== Request
+include::{snippets}/GetFloodAlert/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/GetFloodAlert/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/GetFloodAlert/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/GetFloodAlert/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When no residents covered by the stations can be found, this response can be expected:
+
+include::{snippets}/GetFloodAlertNotFound/http-response.adoc[]
 
 === Person Info
 

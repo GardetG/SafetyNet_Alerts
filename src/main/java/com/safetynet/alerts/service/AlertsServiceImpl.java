@@ -121,7 +121,7 @@ public class AlertsServiceImpl implements AlertsService {
 
     // retrieve medical record data if it exists
     Optional<MedicalRecord> medicalRecord = getMedicalRecord(person);
-    personInfo = mapMedicalRecordData(personInfo, medicalRecord);
+    mapMedicalRecordData(personInfo, medicalRecord);
 
     return List.of(personInfo);
   }
@@ -250,7 +250,7 @@ public class AlertsServiceImpl implements AlertsService {
       personInfo.setFirstName(entry.getKey().getFirstName());
       personInfo.setLastName(entry.getKey().getLastName());
       personInfo.setPhone(entry.getKey().getPhone());
-      personInfo = mapMedicalRecordData(personInfo, entry.getValue());
+      mapMedicalRecordData(personInfo, entry.getValue());
       return personInfo;
     }).collect(Collectors.toList());
   }
@@ -266,19 +266,19 @@ public class AlertsServiceImpl implements AlertsService {
     return medicalRecord;
   }
 
-  private PersonInfoDto mapMedicalRecordData(PersonInfoDto personInfo,
+  private void mapMedicalRecordData(PersonInfoDto personInfo,
           Optional<MedicalRecord> medicalRecord) {
 
     if (medicalRecord.isEmpty()) {
       personInfo.setAge("Information not specified");
       personInfo.setMedications(List.of("Information not specified"));
       personInfo.setAllergies(List.of("Information not specified"));
-      return personInfo;
+      return;
     }
     personInfo.setAge(String.valueOf(medicalRecord.get().getAge()));
     personInfo.setMedications(medicalRecord.get().getMedications());
     personInfo.setAllergies(medicalRecord.get().getAllergies());
-    return personInfo;
+    return;
 
   }
 }
