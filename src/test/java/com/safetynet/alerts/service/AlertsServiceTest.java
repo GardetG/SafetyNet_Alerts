@@ -10,15 +10,18 @@ import static org.mockito.Mockito.when;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.FireAlertDto;
+import com.safetynet.alerts.dto.FireStationCoverageDto;
 import com.safetynet.alerts.dto.FloodHouseholdDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
+
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -363,7 +366,7 @@ class AlertsServiceTest {
     
     // WHEN
     assertThatThrownBy(() -> {
-      alertsService.childAlert("address9");
+      alertsService.fireAlert("address9");
     })
 
             // THEN
@@ -549,8 +552,85 @@ class AlertsServiceTest {
 
             // THEN
             .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("No resident coverd by stations [9, 10]");
+            .hasMessageContaining("No residents covered found for stations [9, 10]");
     verify(personService, times(1)).getByAddress("address9");
     verify(medicalRecordService, times(0)).getByName(anyString(), anyString());
+  }
+  
+  @Test
+  void fireStationCoverageTest() throws Exception {
+    // GIVEN   
+    FireStationCoverageDto expectedDto = new FireStationCoverageDto(List.of(
+              new PersonInfoDto("firstNameA", "lastName", "address", null,
+                      null, null, "000-000-0001", null),
+              new PersonInfoDto("firstNameB", "lastName", "address", null,
+                      null, null, "000-000-0001", null)),
+              1, 1, null);
+    
+    when(personService.getByAddress(anyString()))
+          .thenReturn(List.of(childTest, parent1Test));
+    when(medicalRecordService.getByName(anyString(), anyString())).thenReturn(childRecordTest)
+          .thenReturn(parent1RecordTest);
+    when(fireStationService.getByStation(anyInt()))
+          .thenReturn(List.of(new FireStation(1, "address")));
+
+    // WHEN
+    FireStationCoverageDto actualDto = alertsService.fireStationCoverage(1);
+
+    // THEN
+    assertThat(actualDto).usingRecursiveComparison().isEqualTo(expectedDto);
+    verify(personService, times(1)).getByAddress("address");
+    verify(medicalRecordService, times(2)).getByName(anyString(), anyString());
+    verify(fireStationService, times(1)).getByStation(1);
+  }
+  
+  @Test
+  void fireStationCoverageMedicalRecordNotFoundTest() throws Exception {
+    // GIVEN   
+    Person parent2 = new Person("firstNameZ", "lastName", "address", "city", "",
+            "000-000-0002", "");
+    
+    FireStationCoverageDto expectedDto = new FireStationCoverageDto(List.of(
+              new PersonInfoDto("firstNameA", "lastName", "address", null,
+                      null, null, "000-000-0001", null),
+              new PersonInfoDto("firstNameZ", "lastName", "address", null,
+                      null, null, "000-000-0002", null)),
+              1, 0, 1);
+    
+    when(personService.getByAddress(anyString()))
+          .thenReturn(List.of(childTest, parent2));
+    when(medicalRecordService.getByName(anyString(), anyString())).thenReturn(childRecordTest)
+          .thenThrow(
+            new ResourceNotFoundException("Medical record of firstNameZ lastName not found"));
+    when(fireStationService.getByStation(anyInt()))
+          .thenReturn(List.of(new FireStation(1, "address")));
+
+    // WHEN
+    FireStationCoverageDto actualDto = alertsService.fireStationCoverage(1);
+
+    // THEN
+    assertThat(actualDto).usingRecursiveComparison().isEqualTo(expectedDto);
+    verify(personService, times(1)).getByAddress("address");
+    verify(medicalRecordService, times(2)).getByName(anyString(), anyString());
+    verify(fireStationService, times(1)).getByStation(1);
+  }
+  
+  @Test
+  void fireStationCoverageMappedAddressesNotFoundTest() throws Exception {
+    // GIVEN   
+    when(fireStationService.getByStation(anyInt()))
+          .thenThrow(new ResourceNotFoundException("No addresses mapped for station 9 found"));
+    
+    // WHEN
+    assertThatThrownBy(() -> {
+      alertsService.fireStationCoverage(9);
+    })
+
+            // THEN
+            .isInstanceOf(ResourceNotFoundException.class)
+            .hasMessageContaining("No residents covered found for station 9");
+    verify(personService, times(0)).getByAddress(anyString());
+    verify(medicalRecordService, times(0)).getByName(anyString(), anyString());
+    verify(fireStationService, times(1)).getByStation(9);
   }
 }
