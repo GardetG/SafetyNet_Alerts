@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.FireAlertDto;
+import com.safetynet.alerts.dto.FireStationCoverageDto;
 import com.safetynet.alerts.dto.FloodHouseholdDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
@@ -419,6 +420,74 @@ class AlertsControllerTest {
             // THEN
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$[0]", is("Stations list is mandatory")));
+    verify(alertsService, times(0)).floodAlert(anyList());
+  }
+  
+  @Test
+  void getFireStationTest() throws Exception {
+    // GIVEN
+    FireStationCoverageDto fireStationCoverageDto = new FireStationCoverageDto(List.of(
+              new PersonInfoDto("FirstNameA", "LastName", null, "10", Collections.emptyList(),
+                      List.of("allg1"), "000-000-0001", null),
+              new PersonInfoDto("FirstNameB", "LastName", null, "40", List.of("med1", "med2"),
+                      Collections.emptyList(), "000-000-0002", null)), 1, 1, null);
+    
+    when(alertsService.fireStationCoverage(anyInt())).thenReturn(fireStationCoverageDto);
+
+    // WHEN
+    mockMvc.perform(get("/firestation?stationNumber=1"))
+
+            // THEN
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.residents", hasSize(2)))
+            .andExpect(jsonPath("$.residents[0].firstName", is("FirstNameA")))
+            .andExpect(jsonPath("$.residents[0].lastName", is("LastName")))
+            .andExpect(jsonPath("$.residents[1].firstName", is("FirstNameB")))
+            .andExpect(jsonPath("$.residents[1].lastName", is("LastName")))
+            .andExpect(jsonPath("$.childrenCount", is(1)))
+            .andExpect(jsonPath("$.adultCount", is(1)))
+            .andDo(document("GetFireStationAlert",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint()),
+                    requestParameters(
+                            parameterWithName("stationNumber").description(
+                    "Station Id for which we want to retrieve covered residents informations."
+                    + "This parameter *must be greater than 0*.")
+                            .optional()
+                        )));
+    verify(alertsService, times(1)).fireStationCoverage(1);
+  }
+  
+  @Test
+  void getFireStationNotFoundTest() throws Exception {
+    // GIVEN
+    when(alertsService.fireStationCoverage(anyInt())).thenThrow(
+            new ResourceNotFoundException("No addresses mapped for stations 9"));
+
+    // WHEN
+    mockMvc.perform(get("/firestation?stationNumber=9"))
+
+            // THEN
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$", is("No addresses mapped for stations 9")))
+            .andDo(document("GetFloodAlertNotFound",
+                    preprocessRequest(prettyPrint()), 
+                    preprocessResponse(prettyPrint())));
+    verify(alertsService, times(1)).fireStationCoverage(9);
+  }
+  
+  @Test
+  void getFireStationInvalidTest() throws Exception {
+    // GIVEN
+    FireStationCoverageDto fireStationCoverageDto = new FireStationCoverageDto(); 
+    when(alertsService.fireStationCoverage(anyInt())).thenReturn(fireStationCoverageDto);
+
+    // WHEN
+    mockMvc.perform(get("/firestation?stationNumber=0"))
+
+            // THEN
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0]", is("Station Id must be greater than 0")));
     verify(alertsService, times(0)).floodAlert(anyList());
   }
   
