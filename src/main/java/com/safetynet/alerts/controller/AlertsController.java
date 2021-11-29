@@ -2,11 +2,13 @@ package com.safetynet.alerts.controller;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.FireAlertDto;
+import com.safetynet.alerts.dto.FloodHouseholdDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.AlertsService;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,4 +145,26 @@ public class AlertsController {
 
   }
   
+  /**
+   * Handle HTTP GET request on /flood/stations and return flood alert information with
+   * a list of the residents covered by the stations with their age and medical data,
+   * grouped by address.
+   * 
+
+   * @param stations of the residents
+   * @return HTTP 200 Response with flood alert informations
+   * @throws ResourceNotFoundException when no resident covered found for these stations
+   */
+  @GetMapping("/flood/stations")
+  public ResponseEntity<List<FloodHouseholdDto>> getfloodAlert(
+          @RequestParam @NotEmpty(message = "Stations list is mandatory") List<Integer> stations)
+          throws ResourceNotFoundException {
+    
+    LOGGER.info("Request: Get flood alert information for stations {}", stations);
+    List<FloodHouseholdDto> floodListDto = alertsService.floodAlert(stations);
+    
+    LOGGER.info("Response: Flood alert informations sent");
+    return ResponseEntity.ok(floodListDto);
+
+  }
 }

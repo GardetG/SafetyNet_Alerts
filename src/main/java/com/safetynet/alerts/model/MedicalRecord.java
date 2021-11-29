@@ -57,10 +57,7 @@ public class MedicalRecord {
    * @return True if the medical record owner is minor
    */
   public boolean isMinor() {
-    if (getAge() > 18) {
-      return false;
-    }
-    return true;
+    return !(getAge() > 18);
   }
   
   @Override

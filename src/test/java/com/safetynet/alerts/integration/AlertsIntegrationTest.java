@@ -121,4 +121,26 @@ class AlertsIntegrationTest {
             .andExpect(jsonPath("$.station", is("1")));
   }
   
+  @Test
+  void getFloodAlertIntegrationTest() throws Exception {
+    // GIVEN
+
+    // WHEN
+    mockMvc.perform(get("/flood/stations?stations=1,2"))
+
+            // THEN
+            // Check response
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].address", is("1 Test St")))
+            .andExpect(jsonPath("$[0].residents", hasSize(2)))
+            .andExpect(jsonPath("$[0].residents[0].firstName", is("firstNameA")))
+            .andExpect(jsonPath("$[0].residents[0].lastName", is("lastNameA")))
+            .andExpect(jsonPath("$[0].residents[1].firstName", is("firstNameB")))
+            .andExpect(jsonPath("$[0].residents[1].lastName", is("lastNameA")))
+            .andExpect(jsonPath("$[1].address", is("2 Test St")))
+            .andExpect(jsonPath("$[1].residents", hasSize(1)))
+            .andExpect(jsonPath("$[1].residents[0].firstName", is("firstNameC")))
+            .andExpect(jsonPath("$[1].residents[0].lastName", is("lastNameB")));
+  }
 }
