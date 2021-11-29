@@ -2,6 +2,7 @@ package com.safetynet.alerts.controller;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.FireAlertDto;
+import com.safetynet.alerts.dto.FireStationCoverageDto;
 import com.safetynet.alerts.dto.FloodHouseholdDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
@@ -63,7 +64,7 @@ public class AlertsController {
    * @throws ResourceNotFoundException when no residents' phone numbers found this station
    */
   @GetMapping("/phoneAlert")
-  public ResponseEntity<List<String>> getCommunityEmail(
+  public ResponseEntity<List<String>> getPhoneAlert(
           @RequestParam @Range(min = 1, message = "Station Id must be greater than 0")
           int firestation)
           throws ResourceNotFoundException {
@@ -165,6 +166,29 @@ public class AlertsController {
     
     LOGGER.info("Response: Flood alert informations sent");
     return ResponseEntity.ok(floodListDto);
+
+  }
+  
+  /**
+   * Handle HTTP GET request on /firestation and return the residents covered by
+   * the station and children and adults count.
+   * 
+
+   * @param stationNumber id covering the residents
+   * @return HTTP 200 Response with firestation coverage informations.
+   * @throws ResourceNotFoundException when no residents found this station
+   */
+  @GetMapping("/firestation")
+  public ResponseEntity<FireStationCoverageDto> getFireStation(
+          @RequestParam @Range(min = 1, message = "Station Id must be greater than 0")
+          int stationNumber)
+          throws ResourceNotFoundException {
+            
+    LOGGER.info("Request: Get station {} resident coverage", stationNumber);
+    FireStationCoverageDto coverageDto = alertsService.fireStationCoverage(stationNumber);
+
+    LOGGER.info("Response: phone alert sent");
+    return ResponseEntity.ok(coverageDto);
 
   }
 }

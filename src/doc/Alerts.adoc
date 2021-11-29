@@ -1,3 +1,29 @@
+=== FireStation
+
+==== Resquest
+
+===== Request
+include::{snippets}/GetFireStationAlert/http-request.adoc[]
+
+====== Request parameters
+include::{snippets}/GetFireStationAlert/request-parameters.adoc[]
+
+===== cURL
+include::{snippets}/GetFireStationAlert/curl-request.adoc[]
+
+==== Succesful Response
+When making a successfull call to this API endpoint, this response can be expected:
+
+include::{snippets}/GetFireStationAlert/http-response.adoc[]
+
+==== Error Response
+
+===== Not Found
+When no residents for this station can be found, this response can be expected:
+
+include::{snippets}/GetFireStationAlertNotFound/http-response.adoc[]
+
+
 === Child Alert
 
 ==== Resquest

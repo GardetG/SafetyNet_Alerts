@@ -2,6 +2,7 @@ package com.safetynet.alerts.service;
 
 import com.safetynet.alerts.dto.ChildAlertDto;
 import com.safetynet.alerts.dto.FireAlertDto;
+import com.safetynet.alerts.dto.FireStationCoverageDto;
 import com.safetynet.alerts.dto.FloodHouseholdDto;
 import com.safetynet.alerts.dto.PersonInfoDto;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
@@ -80,5 +81,16 @@ public interface AlertsService {
    * @throws ResourceNotFoundException when no resident covered found for these stations
    */
   List<FloodHouseholdDto> floodAlert(List<Integer> stations) throws ResourceNotFoundException;
+
+  /**
+   * Return firestation coverage informations with the list of all residents covered and
+   * children and adult count.
+   * 
+
+   * @param station of the residents
+   * @return firestation coverage informations
+   * @throws ResourceNotFoundException when no resident covered found for this stations
+   */
+  FireStationCoverageDto fireStationCoverage(int station) throws ResourceNotFoundException;
 
 }

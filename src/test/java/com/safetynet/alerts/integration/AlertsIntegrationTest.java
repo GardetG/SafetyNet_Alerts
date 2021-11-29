@@ -143,4 +143,24 @@ class AlertsIntegrationTest {
             .andExpect(jsonPath("$[1].residents[0].firstName", is("firstNameC")))
             .andExpect(jsonPath("$[1].residents[0].lastName", is("lastNameB")));
   }
+  
+  @Test
+  void getFireStationCoverageIntegrationTest() throws Exception {
+    // GIVEN
+
+    // WHEN
+    mockMvc.perform(get("/firestation?stationNumber=1"))
+
+            // THEN
+            // Check response
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.residents", hasSize(2)))
+            .andExpect(jsonPath("$.residents[0].firstName", is("firstNameA")))
+            .andExpect(jsonPath("$.residents[0].lastName", is("lastNameA")))
+            .andExpect(jsonPath("$.residents[1].firstName", is("firstNameB")))
+            .andExpect(jsonPath("$.residents[1].lastName", is("lastNameA")))
+            .andExpect(jsonPath("$.childrenCount", is(1)))
+            .andExpect(jsonPath("$.adultCount", is(1)))
+            .andExpect(jsonPath("$.undeterminedAgeCount").doesNotExist());
+  }
 }
