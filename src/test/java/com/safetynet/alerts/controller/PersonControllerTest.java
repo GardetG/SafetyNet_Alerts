@@ -24,10 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.safetynet.alerts.dto.PersonDto;
-import com.safetynet.alerts.dto.PersonMapper;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
-import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.service.PersonService;
 import com.safetynet.alerts.util.JsonParser;
 import java.util.Collections;
@@ -53,14 +51,14 @@ class PersonControllerTest {
   @MockBean
   private PersonService personService;
 
-  private Person personTest;
-  private Person personTest2;
+  private PersonDto personTest;
+  private PersonDto personTest2;
 
   @BeforeEach
   void setUp() throws Exception {
-    personTest = new Person("firstName", "lastName", "address", "city", "0001", "000-000-0001",
+    personTest = new PersonDto("firstName", "lastName", "address", "city", "0001", "000-000-0001",
             "email@mail.fr");
-    personTest2 = new Person("firstName2", "lastName2", "address2", "city2", "0002",
+    personTest2 = new PersonDto("firstName2", "lastName2", "address2", "city2", "0002",
             "000-000-0002", "email2@mail.fr");
   }
 
@@ -156,13 +154,12 @@ class PersonControllerTest {
   @Test
   void postPersonTest() throws Exception {
     // GIVEN
-    PersonDto personDto = PersonMapper.toDto(personTest);
-    when(personService.add(any(Person.class))).thenReturn(personTest);
+    when(personService.add(any(PersonDto.class))).thenReturn(personTest);
 
     // WHEN
     mockMvc.perform(post("/person")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(personDto)))
+            .content(JsonParser.asString(personTest)))
 
             // THEN
             .andExpect(status().isCreated())
@@ -199,7 +196,7 @@ class PersonControllerTest {
     String error = String.format("%s %s already exists", 
             personTest.getFirstName(),
             personTest.getLastName());
-    when(personService.add(any(Person.class))).thenThrow(
+    when(personService.add(any(PersonDto.class))).thenThrow(
             new ResourceAlreadyExistsException(error));
 
     // WHEN
@@ -230,19 +227,18 @@ class PersonControllerTest {
             // THEN
             .andExpect(status().isUnprocessableEntity())
             .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")));
-    verify(personService, times(0)).add(any(Person.class));
+    verify(personService, times(0)).add(any(PersonDto.class));
   }
   
   @Test
   void putPersonTest() throws Exception {
     // GIVEN
-    PersonDto personDto = PersonMapper.toDto(personTest);
-    when(personService.update(any(Person.class))).thenReturn(personTest);
+    when(personService.update(any(PersonDto.class))).thenReturn(personTest);
 
     // WHEN
     mockMvc.perform(put("/person")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(personDto)))
+            .content(JsonParser.asString(personTest)))
 
             // THEN
             .andExpect(status().isOk())
@@ -279,7 +275,7 @@ class PersonControllerTest {
     String error = String.format("%s %s not found", 
             personTest.getFirstName(),
             personTest.getLastName());
-    when(personService.update(any(Person.class))).thenThrow(
+    when(personService.update(any(PersonDto.class))).thenThrow(
             new ResourceNotFoundException(error));
 
     // WHEN

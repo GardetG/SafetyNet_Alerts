@@ -1,8 +1,8 @@
 package com.safetynet.alerts.service;
 
+import com.safetynet.alerts.dto.PersonDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
-import com.safetynet.alerts.model.Person;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public interface PersonService {
 
    * @return list of Person
    */
-  List<Person> getAll();
+  List<PersonDto> getAll();
 
   /**
    * Get a list of Person by their city.
@@ -29,7 +29,7 @@ public interface PersonService {
    * @return List of Person
    * @throws ResourceNotFoundException when no Person found for this city
    */
-  List<Person> getByCity(String city) throws ResourceNotFoundException;
+  List<PersonDto> getByCity(String city) throws ResourceNotFoundException;
   
   /**
    * Get a Person by its name.
@@ -39,7 +39,7 @@ public interface PersonService {
    * @return List of Person
    * @throws ResourceNotFoundException when  no Person found for this address
    */
-  List<Person> getByAddress(String address) throws ResourceNotFoundException;
+  List<PersonDto> getByAddress(String address) throws ResourceNotFoundException;
   
   /**
    * Get a Person by its name.
@@ -50,7 +50,7 @@ public interface PersonService {
    * @return Person
    * @throws ResourceNotFoundException when the Person doesn't exists
    */
-  Person getByName(String firstName, String lastName) throws ResourceNotFoundException;
+  PersonDto getByName(String firstName, String lastName) throws ResourceNotFoundException;
   
   /**
    * Add a Person if it doesn't already exists.
@@ -60,7 +60,7 @@ public interface PersonService {
    * @return Person added
    * @throws ResourceAlreadyExistsException when Person already exists
    */
-  Person add(@Valid Person person) throws ResourceAlreadyExistsException;
+  PersonDto add(@Valid PersonDto person) throws ResourceAlreadyExistsException;
 
   /**
    * Update a Person if it already exists.
@@ -70,7 +70,7 @@ public interface PersonService {
    * @return Person updated
    * @throws ResourceNotFoundException when the Person doesn't exists
    */
-  Person update(@Valid Person person) throws ResourceNotFoundException;
+  PersonDto update(@Valid PersonDto person) throws ResourceNotFoundException;
 
   /**
    * Delete a Person by its name.
