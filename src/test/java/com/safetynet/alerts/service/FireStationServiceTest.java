@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.safetynet.alerts.dto.FireStationDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
@@ -37,26 +38,32 @@ class FireStationServiceTest {
   private FireStation fireStationTest;
   private FireStation fireStationTest2;
   private FireStation fireStationTest3;
+  private FireStationDto fireStationDto;
+  private FireStationDto fireStationDto2;
+  private FireStationDto fireStationDto3;
 
   @BeforeEach
   void setUp() throws Exception {
     fireStationTest = new FireStation(1, "address");
+    fireStationDto = new FireStationDto(1, "address");
     fireStationTest2 = new FireStation(1, "address2");
+    fireStationDto2 = new FireStationDto(1, "address2");
     fireStationTest3 = new FireStation(2, "address3");
+    fireStationDto3 = new FireStationDto(2, "address3");
   }
 
   @Test
   void getAllFireStationsTest() throws Exception {
     // GIVEN
-    List<FireStation> expectedList = List.of(
-            fireStationTest, fireStationTest2, fireStationTest3);
-    when(fireStationRepository.findAll()).thenReturn(expectedList);
+    when(fireStationRepository.findAll())
+            .thenReturn(List.of(fireStationTest, fireStationTest2, fireStationTest3));
 
     // WHEN
-    List<FireStation> actualList = fireStationService.getAll();
+    List<FireStationDto> actualList = fireStationService.getAll();
 
     // THEN
-    assertThat(actualList).isEqualTo(expectedList);
+    assertThat(actualList).usingRecursiveComparison()
+            .isEqualTo(List.of(fireStationDto, fireStationDto2, fireStationDto3));
     verify(fireStationRepository, times(1)).findAll();
   }
 
@@ -66,7 +73,7 @@ class FireStationServiceTest {
     when(fireStationRepository.findAll()).thenReturn(Collections.emptyList());
 
     // WHEN
-    List<FireStation> actualList = fireStationService.getAll();
+    List<FireStationDto> actualList = fireStationService.getAll();
 
     // THEN
     assertThat(actualList).isNotNull().isEmpty();
@@ -76,14 +83,15 @@ class FireStationServiceTest {
   @Test
   void getFireStationByStationTest() throws Exception {
     // GIVEN
-    List<FireStation> expectedList = List.of(fireStationTest, fireStationTest2);
-    when(fireStationRepository.findByStation(anyInt())).thenReturn(expectedList);
+    when(fireStationRepository.findByStation(anyInt()))
+            .thenReturn(List.of(fireStationTest, fireStationTest2));
 
     // WHEN
-    List<FireStation> actualList = fireStationService.getByStation(1);
+    List<FireStationDto> actualList = fireStationService.getByStation(1);
 
     // THEN
-    assertThat(actualList).isEqualTo(expectedList);
+    assertThat(actualList).usingRecursiveComparison()
+            .isEqualTo(List.of(fireStationTest, fireStationTest2));
     verify(fireStationRepository, times(1)).findByStation(1);
   }
 
@@ -109,10 +117,10 @@ class FireStationServiceTest {
             .thenReturn(Optional.of(fireStationTest));
 
     // WHEN
-    FireStation actualFireStation = fireStationService.getByAddress("address");
+    FireStationDto actualFireStation = fireStationService.getByAddress("address");
 
     // THEN
-    assertThat(actualFireStation).isEqualTo(fireStationTest);
+    assertThat(actualFireStation).usingRecursiveComparison().isEqualTo(fireStationDto);
     verify(fireStationRepository, times(1)).findByAddress("address");
   }
 
@@ -139,10 +147,10 @@ class FireStationServiceTest {
     when(fireStationRepository.add(any(FireStation.class))).thenReturn(true);
 
     // WHEN
-    FireStation actualfireStation = fireStationService.add(fireStationTest);
+    FireStationDto actualfireStation = fireStationService.add(fireStationDto);
 
     // THEN
-    assertThat(actualfireStation).isEqualTo(fireStationTest);
+    assertThat(actualfireStation).usingRecursiveComparison().isEqualTo(fireStationDto);
     verify(fireStationRepository, times(2)).findByAddress("address");
     verify(fireStationRepository, times(1)).add(fireStationTest);
   }
@@ -154,7 +162,7 @@ class FireStationServiceTest {
 
     // WHEN
     assertThatThrownBy(() -> {
-      fireStationService.add(fireStationTest);
+      fireStationService.add(fireStationDto);
     })
 
             // THEN
@@ -167,7 +175,7 @@ class FireStationServiceTest {
   @Test
   void addInvalidFireStationTest() throws Exception {
     // GIVEN
-    FireStation invalidFireStation = new FireStation(1, "");
+    FireStationDto invalidFireStation = new FireStationDto(1, "");
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -183,15 +191,16 @@ class FireStationServiceTest {
   void updateFireStationTest() throws Exception {
     // GIVEN
     FireStation updatedFireStation = new FireStation(9, "address");
+    FireStationDto updatedFireStationDto = new FireStationDto(9, "address");
     when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.of(fireStationTest))
             .thenReturn(Optional.of(updatedFireStation));
     when(fireStationRepository.update(any(FireStation.class))).thenReturn(true);
 
     // WHEN
-    FireStation actualfireStation = fireStationService.update(updatedFireStation);
+    FireStationDto actualfireStation = fireStationService.update(updatedFireStationDto);
 
     // THEN
-    assertThat(actualfireStation).isEqualTo(updatedFireStation);
+    assertThat(actualfireStation).usingRecursiveComparison().isEqualTo(updatedFireStationDto);
     verify(fireStationRepository, times(2)).findByAddress("address");
     verify(fireStationRepository, times(1)).update(updatedFireStation);
   }
@@ -199,12 +208,12 @@ class FireStationServiceTest {
   @Test
   void updateNotFoundFireStationTest() throws Exception {
     // GIVEN
-    FireStation updatedFireStation = new FireStation(9, "address9");
+    FireStationDto updatedFireStationDto = new FireStationDto(9, "address9");
     when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.empty());
 
     // WHEN
     assertThatThrownBy(() -> {
-      fireStationService.update(updatedFireStation);
+      fireStationService.update(updatedFireStationDto);
     })
 
             // THEN
@@ -217,7 +226,7 @@ class FireStationServiceTest {
   @Test
   void updateInvalidFireStationTest() throws Exception {
     // GIVEN
-    FireStation invalidFireStation = new FireStation(1, "");
+    FireStationDto invalidFireStation = new FireStationDto(1, "");
 
     // WHEN
     assertThatThrownBy(() -> {
