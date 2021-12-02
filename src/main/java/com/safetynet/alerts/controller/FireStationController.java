@@ -4,8 +4,6 @@ import com.safetynet.alerts.dto.FireStationDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.FireStationService;
-import com.safetynet.alerts.util.FireStationMapper;
-
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.List;
@@ -48,7 +46,7 @@ public class FireStationController {
   public ResponseEntity<List<FireStationDto>> getAllFireStations() {
     
     LOGGER.info("Request: Get all fireStation mapping");
-    List<FireStationDto> allFireStations = FireStationMapper.toDto(fireStationService.getAll());
+    List<FireStationDto> allFireStations = fireStationService.getAll();
     
     LOGGER.info("Response: List of all fireStation mapping sent");
     return ResponseEntity.ok(allFireStations);
@@ -70,8 +68,7 @@ public class FireStationController {
           throws ResourceNotFoundException {
     
     LOGGER.info("Request: Get fireStation mapping of station{}", id);
-    List<FireStationDto> fireStationMappings = FireStationMapper.toDto(
-            fireStationService.getByStation(id));
+    List<FireStationDto> fireStationMappings = fireStationService.getByStation(id);
     
     LOGGER.info("Response: fireStation mapping sent");
     return ResponseEntity.ok(fireStationMappings);
@@ -93,8 +90,7 @@ public class FireStationController {
           throws ResourceNotFoundException {
     
     LOGGER.info("Request: Get fireStation mapping for {}", address);
-    FireStationDto fireStation = FireStationMapper.toDto(
-            fireStationService.getByAddress(address));
+    FireStationDto fireStation = fireStationService.getByAddress(address);
     
     LOGGER.info("Response: fireStation mapping sent");
     return ResponseEntity.ok(fireStation);
@@ -116,8 +112,7 @@ public class FireStationController {
 
     LOGGER.info("Request: Create {} mapping to station {}", 
             fireStation.getAddress(), fireStation.getStation());
-    FireStationDto createdFireStation = FireStationMapper.toDto(
-            fireStationService.add(FireStationMapper.toModel(fireStation)));
+    FireStationDto createdFireStation = fireStationService.add(fireStation);
 
     String address = URLEncoder.encode(createdFireStation.getAddress(), 
             java.nio.charset.StandardCharsets.UTF_8);
@@ -141,8 +136,7 @@ public class FireStationController {
 
     LOGGER.info("Request: Update {} mapping to station {}", 
             fireStation.getAddress(), fireStation.getStation());
-    FireStationDto updatedFireStation = FireStationMapper.toDto(fireStationService
-            .update(FireStationMapper.toModel(fireStation)));
+    FireStationDto updatedFireStation = fireStationService.update(fireStation);
     
     LOGGER.info("Response: FireStation mapping updated");
     return ResponseEntity.ok(updatedFireStation);
