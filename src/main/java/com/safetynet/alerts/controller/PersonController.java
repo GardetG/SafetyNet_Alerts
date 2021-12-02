@@ -43,7 +43,7 @@ public class PersonController {
   public ResponseEntity<List<PersonDto>> getAllPersons() {
     
     LOGGER.info("Request: Get all persons");
-    List<PersonDto> allPersons =personService.getAll();
+    List<PersonDto> allPersons = personService.getAll();
     
     LOGGER.info("Response: List of all persons sent");
     return ResponseEntity.ok(allPersons);
