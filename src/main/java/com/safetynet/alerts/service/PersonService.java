@@ -20,26 +20,6 @@ public interface PersonService {
    * @return list of Person
    */
   List<PersonDto> getAll();
-
-  /**
-   * Get a list of Person by their city.
-   * 
-
-   * @param city of the Person
-   * @return List of Person
-   * @throws ResourceNotFoundException when no Person found for this city
-   */
-  List<PersonDto> getByCity(String city) throws ResourceNotFoundException;
-  
-  /**
-   * Get a Person by its name.
-   * 
-
-   * @param address of the Person
-   * @return List of Person
-   * @throws ResourceNotFoundException when  no Person found for this address
-   */
-  List<PersonDto> getByAddress(String address) throws ResourceNotFoundException;
   
   /**
    * Get a Person by its name.
