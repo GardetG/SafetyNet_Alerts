@@ -1,5 +1,6 @@
 package com.safetynet.alerts.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,6 +33,8 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -48,6 +51,9 @@ class PersonControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
+  @Captor
+  ArgumentCaptor<PersonDto> personCaptor;
+  
   @MockBean
   private PersonService personService;
 
@@ -187,7 +193,9 @@ class PersonControllerTest {
                             .description("The phone number of the person."),
                         fieldWithPath("email")
                             .description("The email of the person."))));
-    verify(personService, times(1)).add(personTest);
+    verify(personService, times(1)).add(personCaptor.capture());
+    assertThat(personCaptor.getValue()).usingRecursiveComparison().isEqualTo(personTest);
+
   }
 
   @Test
@@ -210,7 +218,8 @@ class PersonControllerTest {
             .andDo(document("postConflictPerson",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(personService, times(1)).add(personTest);
+    verify(personService, times(1)).add(personCaptor.capture());
+    assertThat(personCaptor.getValue()).usingRecursiveComparison().isEqualTo(personTest);
   }
 
   @Test
@@ -266,7 +275,8 @@ class PersonControllerTest {
                             .description("The phone number of the person."),
                         fieldWithPath("email")
                             .description("The email of the person."))));
-    verify(personService, times(1)).update(personTest);
+    verify(personService, times(1)).update(personCaptor.capture());
+    assertThat(personCaptor.getValue()).usingRecursiveComparison().isEqualTo(personTest);
   }
 
   @Test
@@ -289,7 +299,8 @@ class PersonControllerTest {
             .andDo(document("putNotFoundPerson",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(personService, times(1)).update(personTest);
+    verify(personService, times(1)).update(personCaptor.capture());
+    assertThat(personCaptor.getValue()).usingRecursiveComparison().isEqualTo(personTest);
   }
 
   @Test

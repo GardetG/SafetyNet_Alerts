@@ -1,7 +1,6 @@
 package com.safetynet.alerts.controller;
 
 import com.safetynet.alerts.dto.PersonDto;
-import com.safetynet.alerts.dto.PersonMapper;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.PersonService;
@@ -44,7 +43,7 @@ public class PersonController {
   public ResponseEntity<List<PersonDto>> getAllPersons() {
     
     LOGGER.info("Request: Get all persons");
-    List<PersonDto> allPersons = PersonMapper.toDto(personService.getAll());
+    List<PersonDto> allPersons =personService.getAll();
     
     LOGGER.info("Response: List of all persons sent");
     return ResponseEntity.ok(allPersons);
@@ -68,7 +67,7 @@ public class PersonController {
           throws ResourceNotFoundException {
     
     LOGGER.info("Request: Get persons with parameters: {}, {}", firstName, lastName);
-    PersonDto person = PersonMapper.toDto(personService.getByName(firstName, lastName));
+    PersonDto person = personService.getByName(firstName, lastName);
     
     LOGGER.info("Response: person sent");
     return ResponseEntity.ok(person);
@@ -88,7 +87,7 @@ public class PersonController {
           throws ResourceAlreadyExistsException {
 
     LOGGER.info("Request: Create person {} {}", person.getFirstName(), person.getLastName());
-    PersonDto createdPerson = PersonMapper.toDto(personService.add(PersonMapper.toModel(person)));
+    PersonDto createdPerson = personService.add(person);
 
     URI uri = URI.create("/persons/person?firstName=" + createdPerson.getFirstName() + "&lastName="
             + createdPerson.getLastName());
@@ -109,8 +108,7 @@ public class PersonController {
           throws ResourceNotFoundException {
 
     LOGGER.info("Request: Update person {} {}", person.getFirstName(), person.getLastName());
-    PersonDto updatedPerson = PersonMapper.toDto(personService
-            .update(PersonMapper.toModel(person)));
+    PersonDto updatedPerson = personService.update(person);
     
     LOGGER.info("Response: Person updated");
     return ResponseEntity.ok(updatedPerson);
