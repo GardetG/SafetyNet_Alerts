@@ -1,5 +1,6 @@
-package com.safetynet.alerts.dto;
+package com.safetynet.alerts.util;
 
+import com.safetynet.alerts.dto.FireStationDto;
 import com.safetynet.alerts.model.FireStation;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -25,11 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.safetynet.alerts.dto.FireStationDto;
-import com.safetynet.alerts.dto.FireStationMapper;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.service.FireStationService;
+import com.safetynet.alerts.util.FireStationMapper;
 import com.safetynet.alerts.util.JsonParser;
 import java.util.Collections;
 import java.util.List;

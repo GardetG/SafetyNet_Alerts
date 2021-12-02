@@ -1,10 +1,11 @@
 package com.safetynet.alerts.controller;
 
 import com.safetynet.alerts.dto.MedicalRecordDto;
-import com.safetynet.alerts.dto.MedicalRecordMapper;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.MedicalRecordService;
+import com.safetynet.alerts.util.MedicalRecordMapper;
+
 import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
