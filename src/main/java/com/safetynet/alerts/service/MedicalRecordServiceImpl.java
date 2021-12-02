@@ -1,9 +1,11 @@
 package com.safetynet.alerts.service;
 
+import com.safetynet.alerts.dto.MedicalRecordDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.repository.MedicalRecordRepository;
+import com.safetynet.alerts.util.MedicalRecordMapper;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -25,15 +27,15 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
    * {@inheritDoc}
    */
   @Override
-  public List<MedicalRecord> getAll() {
-    return medicalRecordRepository.findAll();
+  public List<MedicalRecordDto> getAll() {
+    return MedicalRecordMapper.toDto(medicalRecordRepository.findAll());
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public MedicalRecord getByName(String firstName, String lastName)
+  public MedicalRecordDto getByName(String firstName, String lastName)
           throws ResourceNotFoundException {
     
     Optional<MedicalRecord> medicalRecord = medicalRecordRepository.findByName(firstName, lastName);
@@ -41,7 +43,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
       String error = String.format("Medical record of %s %s not found", firstName, lastName);
       throw new ResourceNotFoundException(error);
     }
-    return medicalRecord.get();
+    return MedicalRecordMapper.toDto(medicalRecord.get());
     
   }
 
@@ -49,7 +51,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
    * {@inheritDoc}
    */
   @Override
-  public MedicalRecord add(@Valid MedicalRecord medicalRecord) 
+  public MedicalRecordDto add(@Valid MedicalRecordDto medicalRecord) 
           throws ResourceAlreadyExistsException {
   
     Optional<MedicalRecord> existingMedicalRecord = medicalRecordRepository
@@ -61,17 +63,20 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
       throw new ResourceAlreadyExistsException(error);
     }
 
-    medicalRecordRepository.add(medicalRecord);
-    return medicalRecordRepository
+    medicalRecordRepository.add(MedicalRecordMapper.toModel(medicalRecord));
+    
+    MedicalRecord addedMedicalRecord = medicalRecordRepository
             .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName()).get();
   
+    return MedicalRecordMapper.toDto(addedMedicalRecord);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public MedicalRecord update(@Valid MedicalRecord medicalRecord) throws ResourceNotFoundException {
+  public MedicalRecordDto update(@Valid MedicalRecordDto medicalRecord) 
+          throws ResourceNotFoundException {
     
     Optional<MedicalRecord> existingMedicalRecord = medicalRecordRepository
             .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
@@ -81,10 +86,12 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
       throw new ResourceNotFoundException(error);
     }
 
-    medicalRecordRepository.update(medicalRecord);
-    return medicalRecordRepository
+    medicalRecordRepository.update(MedicalRecordMapper.toModel(medicalRecord));
+    
+    MedicalRecord updatedMedicalRecord = medicalRecordRepository
             .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName()).get();
     
+    return MedicalRecordMapper.toDto(updatedMedicalRecord);
   }
 
   /**
