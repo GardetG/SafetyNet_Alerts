@@ -1,9 +1,11 @@
 package com.safetynet.alerts.service;
 
+import com.safetynet.alerts.dto.FireStationDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.repository.FireStationRepository;
+import com.safetynet.alerts.util.FireStationMapper;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -25,15 +27,15 @@ public class FireStationServiceImpl implements FireStationService {
    * {@inheritDoc}
    */
   @Override
-  public List<FireStation> getAll() {
-    return fireStationRepository.findAll();
+  public List<FireStationDto> getAll() {
+    return FireStationMapper.toDto(fireStationRepository.findAll());
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public List<FireStation> getByStation(int station) throws ResourceNotFoundException {
+  public List<FireStationDto> getByStation(int station) throws ResourceNotFoundException {
     
     List<FireStation> fireStations = fireStationRepository.findByStation(station);
     if (fireStations.isEmpty()) {
@@ -41,7 +43,7 @@ public class FireStationServiceImpl implements FireStationService {
       throw new ResourceNotFoundException(error);
     }
     
-    return fireStations;
+    return FireStationMapper.toDto(fireStations);
     
   }
 
@@ -49,7 +51,7 @@ public class FireStationServiceImpl implements FireStationService {
    * {@inheritDoc}
    */
   @Override
-  public FireStation getByAddress(String address) throws ResourceNotFoundException {
+  public FireStationDto getByAddress(String address) throws ResourceNotFoundException {
     
     Optional<FireStation> fireStation = fireStationRepository.findByAddress(address);
     if (fireStation.isEmpty()) {
@@ -57,7 +59,7 @@ public class FireStationServiceImpl implements FireStationService {
       throw new ResourceNotFoundException(error);
     }
     
-    return fireStation.get();
+    return FireStationMapper.toDto(fireStation.get());
     
   }
 
@@ -65,7 +67,8 @@ public class FireStationServiceImpl implements FireStationService {
    * {@inheritDoc}
    */
   @Override
-  public FireStation add(@Valid FireStation fireStation) throws ResourceAlreadyExistsException {
+  public FireStationDto add(@Valid FireStationDto fireStation) 
+          throws ResourceAlreadyExistsException {
     
     Optional<FireStation> existingFireStation = fireStationRepository
             .findByAddress(fireStation.getAddress());
@@ -77,8 +80,12 @@ public class FireStationServiceImpl implements FireStationService {
       throw new ResourceAlreadyExistsException(error);
     }
 
-    fireStationRepository.add(fireStation);
-    return fireStationRepository.findByAddress(fireStation.getAddress()).get();
+    fireStationRepository.add(FireStationMapper.toModel(fireStation));
+    
+    FireStation addedFireStation = fireStationRepository
+            .findByAddress(fireStation.getAddress()).get();
+    
+    return FireStationMapper.toDto(addedFireStation);
     
   }
 
@@ -86,7 +93,7 @@ public class FireStationServiceImpl implements FireStationService {
    * {@inheritDoc}
    */
   @Override
-  public FireStation update(@Valid FireStation fireStation) throws ResourceNotFoundException {
+  public FireStationDto update(@Valid FireStationDto fireStation) throws ResourceNotFoundException {
     
     Optional<FireStation> existingFireStation = fireStationRepository
             .findByAddress(fireStation.getAddress());
@@ -95,9 +102,12 @@ public class FireStationServiceImpl implements FireStationService {
       throw new ResourceNotFoundException(error);
     }
 
-    fireStationRepository.update(fireStation);
-    return fireStationRepository.findByAddress(fireStation.getAddress()).get();
+    fireStationRepository.update(FireStationMapper.toModel(fireStation));
     
+    FireStation updatedFireStation = fireStationRepository
+            .findByAddress(fireStation.getAddress()).get();
+    
+    return FireStationMapper.toDto(updatedFireStation);    
   }
 
   /**
