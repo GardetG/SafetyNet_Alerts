@@ -60,7 +60,7 @@ class PersonServiceTest {
     List<PersonDto> actualList = personService.getAll();
 
     // THEN
-    assertThat(actualList).isEqualTo(List.of(personDto, personDto2));
+    assertThat(actualList).usingRecursiveComparison().isEqualTo(List.of(personDto, personDto2));
     verify(personRepository, times(1)).findAll();
   }
 
@@ -86,7 +86,7 @@ class PersonServiceTest {
     PersonDto actualperson = personService.getByName("firstName", "lastName");
 
     // THEN
-    assertThat(actualperson).isEqualTo(personDto);
+    assertThat(actualperson).usingRecursiveComparison().isEqualTo(personDto);
     verify(personRepository, times(1)).findByName("firstName", "lastName");
   }
 
@@ -104,62 +104,6 @@ class PersonServiceTest {
             .isInstanceOf(ResourceNotFoundException.class)
             .hasMessageContaining("firstName lastName not found");
   }
-
-  @Test
-  void getPersonByCityTest() throws Exception {
-    // GIVEN
-    when(personRepository.findByCity(anyString())).thenReturn(List.of(personTest));
-
-    // WHEN
-    List<PersonDto> actualList = personService.getByCity("city");
-
-    // THEN
-    assertThat(actualList).isEqualTo(List.of(personDto));
-    verify(personRepository, times(1)).findByCity("city");
-  }
-
-  @Test
-  void getPersonByCityWhenNotFoundTest() throws Exception {
-    // GIVEN
-    when(personRepository.findByCity(anyString())).thenReturn(Collections.emptyList());
-
-    // WHEN
-    assertThatThrownBy(() -> {
-      personService.getByCity("city9");
-    })
-
-            // THEN
-            .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("No residents found for city9");
-  }
-  
-  @Test
-  void getPersonByAddressTest() throws Exception {
-    // GIVEN
-    when(personRepository.findByAddress(anyString())).thenReturn(List.of(personTest));
-
-    // WHEN
-    List<PersonDto> actualList = personService.getByAddress("address");
-
-    // THEN
-    assertThat(actualList).isEqualTo(List.of(personDto));
-    verify(personRepository, times(1)).findByAddress("address");
-  }
-
-  @Test
-  void getPersonByAddressWhenNotFoundTest() throws Exception {
-    // GIVEN
-    when(personRepository.findByAddress(anyString())).thenReturn(Collections.emptyList());
-
-    // WHEN
-    assertThatThrownBy(() -> {
-      personService.getByAddress("address9");
-    })
-
-            // THEN
-            .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("No residents found living at address9");
-  }
   
   @Test
   void addPersonTest() throws Exception {
@@ -172,7 +116,7 @@ class PersonServiceTest {
     PersonDto actualperson = personService.add(personDto);
 
     // THEN
-    assertThat(actualperson).isEqualTo(personDto);
+    assertThat(actualperson).usingRecursiveComparison().isEqualTo(personDto);
     verify(personRepository, times(2)).findByName("firstName", "lastName");
     verify(personRepository, times(1)).add(personTest);
   }
@@ -225,7 +169,7 @@ class PersonServiceTest {
     PersonDto actualperson = personService.update(updatedPersonDto);
 
     // THEN
-    assertThat(actualperson).isEqualTo(updatedPersonDto);
+    assertThat(actualperson).usingRecursiveComparison().isEqualTo(updatedPersonDto);
     verify(personRepository, times(2)).findByName("firstName", "lastName");
     verify(personRepository, times(1)).update(updatedPerson);
   }
