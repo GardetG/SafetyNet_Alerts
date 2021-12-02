@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.safetynet.alerts.dto.MedicalRecordDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.MedicalRecord;
@@ -36,26 +37,33 @@ class MedicalRecordServiceTest {
 
   private MedicalRecord medicalRecordTest;
   private MedicalRecord medicalRecordTest2;
+  private MedicalRecordDto medicalRecordDto;
+  private MedicalRecordDto medicalRecordDto2;
 
   @BeforeEach
   void setUp() throws Exception {
     medicalRecordTest = new MedicalRecord("firstName", "lastName", LocalDate.ofYearDay(1980, 1),
             List.of("med1", "med2"), Collections.emptyList());
+    medicalRecordDto = new MedicalRecordDto("firstName", "lastName", LocalDate.ofYearDay(1980, 1),
+            List.of("med1", "med2"), Collections.emptyList());
     medicalRecordTest2 = new MedicalRecord("firstName2", "lastName2", LocalDate.ofYearDay(2000, 1),
             Collections.emptyList(), List.of("allg1"));
+    medicalRecordDto2 = new MedicalRecordDto("firstName2", "lastName2", 
+            LocalDate.ofYearDay(2000, 1), Collections.emptyList(), List.of("allg1"));
   }
 
   @Test
   void getAllMedicalRecordsTest() throws Exception {
     // GIVEN
-    List<MedicalRecord> expectedList = List.of(medicalRecordTest, medicalRecordTest2);
-    when(medicalRecordRepository.findAll()).thenReturn(expectedList);
+    when(medicalRecordRepository.findAll())
+            .thenReturn(List.of(medicalRecordTest, medicalRecordTest2));
 
     // WHEN
-    List<MedicalRecord> actualList = medicalRecordService.getAll();
+    List<MedicalRecordDto> actualList = medicalRecordService.getAll();
 
     // THEN
-    assertThat(actualList).isEqualTo(expectedList);
+    assertThat(actualList).usingRecursiveComparison()
+            .isEqualTo(List.of(medicalRecordDto, medicalRecordDto2));
     verify(medicalRecordRepository, times(1)).findAll();
   }
 
@@ -65,7 +73,7 @@ class MedicalRecordServiceTest {
     when(medicalRecordRepository.findAll()).thenReturn(Collections.emptyList());
 
     // WHEN
-    List<MedicalRecord> actualList = medicalRecordService.getAll();
+    List<MedicalRecordDto> actualList = medicalRecordService.getAll();
 
     // THEN
     assertThat(actualList).isNotNull().isEmpty();
@@ -79,10 +87,10 @@ class MedicalRecordServiceTest {
             .thenReturn(Optional.of(medicalRecordTest));
 
     // WHEN
-    MedicalRecord actualmedicalRecord = medicalRecordService.getByName("firstName", "lastName");
+    MedicalRecordDto actualmedicalRecord = medicalRecordService.getByName("firstName", "lastName");
 
     // THEN
-    assertThat(actualmedicalRecord).isEqualTo(medicalRecordTest);
+    assertThat(actualmedicalRecord).usingRecursiveComparison().isEqualTo(medicalRecordDto);
     verify(medicalRecordRepository, times(1)).findByName("firstName", "lastName");
   }
 
@@ -109,10 +117,10 @@ class MedicalRecordServiceTest {
     when(medicalRecordRepository.add(any(MedicalRecord.class))).thenReturn(true);
 
     // WHEN
-    MedicalRecord actualmedicalRecord = medicalRecordService.add(medicalRecordTest);
+    MedicalRecordDto actualmedicalRecord = medicalRecordService.add(medicalRecordDto);
 
     // THEN
-    assertThat(actualmedicalRecord).isEqualTo(medicalRecordTest);
+    assertThat(actualmedicalRecord).usingRecursiveComparison().isEqualTo(medicalRecordDto);
     verify(medicalRecordRepository, times(2)).findByName("firstName", "lastName");
     verify(medicalRecordRepository, times(1)).add(medicalRecordTest);
   }
@@ -125,7 +133,7 @@ class MedicalRecordServiceTest {
 
     // WHEN
     assertThatThrownBy(() -> {
-      medicalRecordService.add(medicalRecordTest);
+      medicalRecordService.add(medicalRecordDto);
     })
 
             // THEN
@@ -138,7 +146,7 @@ class MedicalRecordServiceTest {
   @Test
   void addInvalidMedicalRecordTest() throws Exception {
     // GIVEN
-    MedicalRecord invalidMedicalRecord = new MedicalRecord("", "lastName1", 
+    MedicalRecordDto invalidMedicalRecord = new MedicalRecordDto("", "lastName1", 
             LocalDate.ofYearDay(1980, 1), Collections.emptyList(), Collections.emptyList());
 
     // WHEN
@@ -156,16 +164,18 @@ class MedicalRecordServiceTest {
     // GIVEN
     MedicalRecord updatedMedicalRecord = new MedicalRecord("firstName", "lastName", 
             LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
+    MedicalRecordDto updatedMedicalRecordDto = new MedicalRecordDto("firstName", "lastName", 
+            LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
     when(medicalRecordRepository.findByName(anyString(), anyString()))
             .thenReturn(Optional.of(medicalRecordTest))
             .thenReturn(Optional.of(updatedMedicalRecord));
     when(medicalRecordRepository.update(any(MedicalRecord.class))).thenReturn(true);
 
     // WHEN
-    MedicalRecord actualmedicalRecord = medicalRecordService.update(updatedMedicalRecord);
+    MedicalRecordDto actualmedicalRecord = medicalRecordService.update(updatedMedicalRecordDto);
 
     // THEN
-    assertThat(actualmedicalRecord).isEqualTo(updatedMedicalRecord);
+    assertThat(actualmedicalRecord).usingRecursiveComparison().isEqualTo(updatedMedicalRecord);
     verify(medicalRecordRepository, times(2)).findByName("firstName", "lastName");
     verify(medicalRecordRepository, times(1)).update(updatedMedicalRecord);
   }
@@ -173,7 +183,7 @@ class MedicalRecordServiceTest {
   @Test
   void updateNotFoundMedicalRecordTest() throws Exception {
     // GIVEN
-    MedicalRecord updatedMedicalRecord = new MedicalRecord("firstName", "lastName", 
+    MedicalRecordDto updatedMedicalRecord = new MedicalRecordDto("firstName", "lastName", 
             LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
     when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty());
 
@@ -192,7 +202,7 @@ class MedicalRecordServiceTest {
   @Test
   void updateInvalidMedicalRecordTest() throws Exception {
     // GIVEN
-    MedicalRecord invalidMedicalRecord = new MedicalRecord("", "lastName1", 
+    MedicalRecordDto invalidMedicalRecord = new MedicalRecordDto("", "lastName1", 
             LocalDate.ofYearDay(1980, 1), Collections.emptyList(), Collections.emptyList());
 
     // WHEN

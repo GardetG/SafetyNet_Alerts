@@ -1,5 +1,6 @@
 package com.safetynet.alerts.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +34,8 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -49,6 +52,9 @@ class MedicalRecordControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
+  @Captor
+  ArgumentCaptor<MedicalRecordDto> medicalRecordCaptor;
+  
   @MockBean
   private MedicalRecordService medicalRecordService;
 
@@ -188,7 +194,9 @@ class MedicalRecordControllerTest {
                                     + " by this person."),
                         fieldWithPath("allergies")
                             .description("The list of all allergies of this person."))));
-    verify(medicalRecordService, times(1)).add(medicalRecordTest);
+    verify(medicalRecordService, times(1)).add(medicalRecordCaptor.capture());
+    assertThat(medicalRecordCaptor.getValue()).usingRecursiveComparison()
+            .isEqualTo(medicalRecordTest);
   }
 
   @Test
@@ -211,7 +219,9 @@ class MedicalRecordControllerTest {
             .andDo(document("postConflictMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(medicalRecordService, times(1)).add(medicalRecordTest);
+    verify(medicalRecordService, times(1)).add(medicalRecordCaptor.capture());
+    assertThat(medicalRecordCaptor.getValue()).usingRecursiveComparison()
+            .isEqualTo(medicalRecordTest);
   }
 
   @Test
@@ -264,7 +274,9 @@ class MedicalRecordControllerTest {
                                     + " by this person."),
                         fieldWithPath("allergies")
                             .description("The list of all allergies of this person."))));
-    verify(medicalRecordService, times(1)).update(medicalRecordTest);
+    verify(medicalRecordService, times(1)).update(medicalRecordCaptor.capture());
+    assertThat(medicalRecordCaptor.getValue()).usingRecursiveComparison()
+            .isEqualTo(medicalRecordTest);
   }
 
   @Test
@@ -287,7 +299,9 @@ class MedicalRecordControllerTest {
             .andDo(document("putNotFoundMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(medicalRecordService, times(1)).update(medicalRecordTest);
+    verify(medicalRecordService, times(1)).update(medicalRecordCaptor.capture());
+    assertThat(medicalRecordCaptor.getValue()).usingRecursiveComparison()
+          .isEqualTo(medicalRecordTest);
   }
 
   @Test
