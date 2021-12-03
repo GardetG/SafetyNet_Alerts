@@ -23,6 +23,8 @@ public class PersonServiceImpl implements PersonService {
   @Autowired
   PersonRepository personRepository;
 
+  private static final String NOT_FOUND = "%s %s not found";
+  
   /**
    * {@inheritDoc}
    */
@@ -39,7 +41,7 @@ public class PersonServiceImpl implements PersonService {
     
     Optional<Person> person = personRepository.findByName(firstName, lastName);
     if (person.isEmpty()) {
-      String error = String.format("%s %s not found", firstName, lastName);
+      String error = String.format(NOT_FOUND, firstName, lastName);
       throw new ResourceNotFoundException(error);
     }
     return PersonMapper.toDto(person.get());
@@ -79,7 +81,7 @@ public class PersonServiceImpl implements PersonService {
     Optional<Person> existingPerson = personRepository.findByName(person.getFirstName(),
             person.getLastName());
     if (existingPerson.isEmpty()) {
-      String error = String.format("%s %s not found", person.getFirstName(), person.getLastName());
+      String error = String.format(NOT_FOUND, person.getFirstName(), person.getLastName());
       throw new ResourceNotFoundException(error);
     }
 
@@ -100,7 +102,7 @@ public class PersonServiceImpl implements PersonService {
     
     Optional<Person> existingPerson = personRepository.findByName(firstName, lastName);
     if (existingPerson.isEmpty()) {
-      String error = String.format("%s %s not found", firstName, lastName);
+      String error = String.format(NOT_FOUND, firstName, lastName);
       throw new ResourceNotFoundException(error);
     }
 

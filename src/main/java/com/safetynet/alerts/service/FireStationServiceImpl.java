@@ -23,6 +23,8 @@ public class FireStationServiceImpl implements FireStationService {
   @Autowired
   FireStationRepository fireStationRepository;
 
+  private static final String NOT_FOUND = "%s mapping not found";
+  
   /**
    * {@inheritDoc}
    */
@@ -55,7 +57,7 @@ public class FireStationServiceImpl implements FireStationService {
     
     Optional<FireStation> fireStation = fireStationRepository.findByAddress(address);
     if (fireStation.isEmpty()) {
-      String error = String.format("%s mapping not found", address);
+      String error = String.format(NOT_FOUND, address);
       throw new ResourceNotFoundException(error);
     }
     
@@ -98,7 +100,7 @@ public class FireStationServiceImpl implements FireStationService {
     Optional<FireStation> existingFireStation = fireStationRepository
             .findByAddress(fireStation.getAddress());
     if (existingFireStation.isEmpty()) {
-      String error = String.format("%s mapping not found", fireStation.getAddress());
+      String error = String.format(NOT_FOUND, fireStation.getAddress());
       throw new ResourceNotFoundException(error);
     }
 
@@ -134,7 +136,7 @@ public class FireStationServiceImpl implements FireStationService {
     
     Optional<FireStation> existingFireStation = fireStationRepository.findByAddress(address);
     if (existingFireStation.isEmpty()) {
-      String error = String.format("%s mapping not found", address);
+      String error = String.format(NOT_FOUND, address);
       throw new ResourceNotFoundException(error);
     }
 

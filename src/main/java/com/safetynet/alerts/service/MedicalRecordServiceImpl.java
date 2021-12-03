@@ -22,6 +22,8 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
 
   @Autowired
   MedicalRecordRepository medicalRecordRepository;
+  
+  private static final String NOT_FOUND = "Medical record of %s %s not found";
 
   /**
    * {@inheritDoc}
@@ -40,7 +42,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     
     Optional<MedicalRecord> medicalRecord = medicalRecordRepository.findByName(firstName, lastName);
     if (medicalRecord.isEmpty()) {
-      String error = String.format("Medical record of %s %s not found", firstName, lastName);
+      String error = String.format(NOT_FOUND, firstName, lastName);
       throw new ResourceNotFoundException(error);
     }
     return MedicalRecordMapper.toDto(medicalRecord.get());
@@ -81,7 +83,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     Optional<MedicalRecord> existingMedicalRecord = medicalRecordRepository
             .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
     if (existingMedicalRecord.isEmpty()) {
-      String error = String.format("Medical record of %s %s not found", 
+      String error = String.format(NOT_FOUND, 
               medicalRecord.getFirstName(), medicalRecord.getLastName());
       throw new ResourceNotFoundException(error);
     }
@@ -103,7 +105,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     Optional<MedicalRecord> existingMedicalRecord = medicalRecordRepository
             .findByName(firstName, lastName);
     if (existingMedicalRecord.isEmpty()) {
-      String error = String.format("Medical record of %s %s not found", firstName, lastName);
+      String error = String.format(NOT_FOUND, firstName, lastName);
       throw new ResourceNotFoundException(error);
     }
 

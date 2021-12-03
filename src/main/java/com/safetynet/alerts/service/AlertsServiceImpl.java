@@ -12,8 +12,9 @@ import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.FireStationRepository;
 import com.safetynet.alerts.repository.MedicalRecordRepository;
 import com.safetynet.alerts.repository.PersonRepository;
+import com.safetynet.alerts.util.DtoType;
+import com.safetynet.alerts.util.PersonInfoDtoFactory;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,8 +102,7 @@ public class AlertsServiceImpl implements AlertsService {
     return List.of(personInfo.get()).stream()
             .map(person -> {
               Optional<MedicalRecord> medicalRecord = getAsssociateMedicalRecord(person);
-              return createPersonInfoDto(person, medicalRecord,
-                      List.of("address", "email", "age", "medical"));
+              return PersonInfoDtoFactory.makeDto(person, medicalRecord, DtoType.PERSONINFO);
             })
             .collect(Collectors.toList());
 
@@ -128,13 +128,13 @@ public class AlertsServiceImpl implements AlertsService {
     residents.forEach(person -> {
       Optional<MedicalRecord> medicalRecord = getAsssociateMedicalRecord(person);
       if (medicalRecord.isEmpty()) {
-        householdMembers.add(createPersonInfoDto(person, medicalRecord, List.of("age")));
+        householdMembers.add(PersonInfoDtoFactory.makeDto(person, medicalRecord, DtoType.AGE));
         return;
       }
       if (medicalRecord.get().isMinor()) {
-        children.add(createPersonInfoDto(person, medicalRecord, List.of("age")));
+        children.add(PersonInfoDtoFactory.makeDto(person, medicalRecord, DtoType.AGE));
       } else {
-        householdMembers.add(createPersonInfoDto(person, medicalRecord, Collections.emptyList()));
+        householdMembers.add(PersonInfoDtoFactory.makeDto(person, medicalRecord, DtoType.NAME));
       }
     });
 
@@ -155,7 +155,7 @@ public class AlertsServiceImpl implements AlertsService {
     List<PersonInfoDto> residentsList = personRepository.findByAddress(address).stream()
             .map(person -> {
               Optional<MedicalRecord> medicalRecord = getAsssociateMedicalRecord(person);
-              return createPersonInfoDto(person, medicalRecord, List.of("phone", "age", "medical"));
+              return PersonInfoDtoFactory.makeDto(person, medicalRecord, DtoType.ALERT);
             })
             .collect(Collectors.toList());
 
@@ -192,8 +192,7 @@ public class AlertsServiceImpl implements AlertsService {
               List<PersonInfoDto> residentsList = personRepository.findByAddress(address).stream()
                       .map(person -> {
                         Optional<MedicalRecord> medicalRecord = getAsssociateMedicalRecord(person);
-                        return createPersonInfoDto(person, medicalRecord,
-                                List.of("phone", "age", "medical"));
+                        return PersonInfoDtoFactory.makeDto(person, medicalRecord, DtoType.ALERT);
                       })
                       .collect(Collectors.toList());
               FloodHouseholdDto floodDto = new FloodHouseholdDto();
@@ -236,7 +235,8 @@ public class AlertsServiceImpl implements AlertsService {
 
     residents.forEach(person -> {
       Optional<MedicalRecord> medicalRecord = getAsssociateMedicalRecord(person);
-      residentsList.add(createPersonInfoDto(person, medicalRecord, List.of("address", "phone")));
+      residentsList.add(PersonInfoDtoFactory
+              .makeDto(person, medicalRecord, DtoType.STATIONCOVERAGE));
       if (medicalRecord.isEmpty()) {
         counter.put("unknow", counter.get("unknow") + 1);
       } else if (medicalRecord.get().isMinor()) {
@@ -265,46 +265,6 @@ public class AlertsServiceImpl implements AlertsService {
               person.getLastName());
     }
     return medicalRecord;
-  }
-
-  private PersonInfoDto createPersonInfoDto(Person person, Optional<MedicalRecord> medicalRecord,
-          List<String> args) {
-
-    PersonInfoDto personDto = new PersonInfoDto();
-    personDto.setFirstName(person.getFirstName());
-    personDto.setLastName(person.getLastName());
-    args.forEach(arg -> {
-      switch (arg) {
-        case "address":
-          personDto.setAddress(person.getAddress());
-          break;
-        case "phone":
-          personDto.setPhone(person.getPhone());
-          break;
-        case "email":
-          personDto.setEmail(person.getEmail());
-          break;
-        case "age":
-          if (medicalRecord.isPresent()) {
-            personDto.setAge(String.valueOf(medicalRecord.get().getAge()));
-            break;
-          }
-          personDto.setAge("Information not specified");
-          break;
-        case "medical":
-          if (medicalRecord.isPresent()) {
-            personDto.setMedications(medicalRecord.get().getMedications());
-            personDto.setAllergies(medicalRecord.get().getAllergies());
-            break;
-          }
-          personDto.setMedications(List.of("Information not specified"));
-          personDto.setAllergies(List.of("Information not specified"));
-          break;
-        default:
-          break;
-      }
-    });
-    return personDto;
   }
 
 }
