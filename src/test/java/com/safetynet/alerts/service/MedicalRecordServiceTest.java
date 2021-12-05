@@ -112,8 +112,6 @@ class MedicalRecordServiceTest {
   @Test
   void addMedicalRecordTest() throws Exception {
     // GIVEN
-    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty())
-            .thenReturn(Optional.of(medicalRecordTest));
     when(medicalRecordRepository.add(any(MedicalRecord.class))).thenReturn(true);
 
     // WHEN
@@ -121,16 +119,13 @@ class MedicalRecordServiceTest {
 
     // THEN
     assertThat(actualmedicalRecord).usingRecursiveComparison().isEqualTo(medicalRecordDto);
-    verify(medicalRecordRepository, times(2)).findByName("firstName", "lastName");
     verify(medicalRecordRepository, times(1)).add(medicalRecordTest);
   }
 
   @Test
   void addAlreadyExistingMedicalRecordTest() throws Exception {
     // GIVEN
-    when(medicalRecordRepository.findByName(anyString(), anyString()))
-            .thenReturn(Optional.of(medicalRecordTest));
-
+    when(medicalRecordRepository.add(any(MedicalRecord.class))).thenReturn(false);
     // WHEN
     assertThatThrownBy(() -> {
       medicalRecordService.add(medicalRecordDto);
@@ -139,8 +134,7 @@ class MedicalRecordServiceTest {
             // THEN
             .isInstanceOf(ResourceAlreadyExistsException.class)
             .hasMessageContaining("Medical record of firstName lastName already exists");
-    verify(medicalRecordRepository, times(1)).findByName("firstName", "lastName");
-    verify(medicalRecordRepository, times(0)).add(any(MedicalRecord.class));
+    verify(medicalRecordRepository, times(1)).add(medicalRecordTest);
   }
 
   @Test
@@ -166,9 +160,6 @@ class MedicalRecordServiceTest {
             LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
     MedicalRecordDto updatedMedicalRecordDto = new MedicalRecordDto("firstName", "lastName", 
             LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
-    when(medicalRecordRepository.findByName(anyString(), anyString()))
-            .thenReturn(Optional.of(medicalRecordTest))
-            .thenReturn(Optional.of(updatedMedicalRecord));
     when(medicalRecordRepository.update(any(MedicalRecord.class))).thenReturn(true);
 
     // WHEN
@@ -176,27 +167,27 @@ class MedicalRecordServiceTest {
 
     // THEN
     assertThat(actualmedicalRecord).usingRecursiveComparison().isEqualTo(updatedMedicalRecord);
-    verify(medicalRecordRepository, times(2)).findByName("firstName", "lastName");
     verify(medicalRecordRepository, times(1)).update(updatedMedicalRecord);
   }
 
   @Test
   void updateNotFoundMedicalRecordTest() throws Exception {
     // GIVEN
-    MedicalRecordDto updatedMedicalRecord = new MedicalRecordDto("firstName", "lastName", 
+    MedicalRecord updatedMedicalRecord = new MedicalRecord("firstName", "lastName", 
             LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
-    when(medicalRecordRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty());
+    MedicalRecordDto updatedMedicalRecordDto = new MedicalRecordDto("firstName", "lastName", 
+            LocalDate.ofYearDay(1980, 1), List.of("med1", "med2", "update"),  List.of("update"));
+    when(medicalRecordRepository.update(any(MedicalRecord.class))).thenReturn(false);
 
     // WHEN
     assertThatThrownBy(() -> {
-      medicalRecordService.update(updatedMedicalRecord);
+      medicalRecordService.update(updatedMedicalRecordDto);
     })
 
             // THEN
             .isInstanceOf(ResourceNotFoundException.class)
             .hasMessageContaining("Medical record of firstName lastName not found");
-    verify(medicalRecordRepository, times(1)).findByName("firstName", "lastName");
-    verify(medicalRecordRepository, times(0)).update(any(MedicalRecord.class));
+    verify(medicalRecordRepository, times(1)).update(updatedMedicalRecord);
   }
 
   @Test

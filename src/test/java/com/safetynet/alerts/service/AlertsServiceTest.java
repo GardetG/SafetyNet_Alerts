@@ -313,14 +313,14 @@ class AlertsServiceTest {
                       Collections.emptyList(), Collections.emptyList(), "000-000-0001", null),
               new PersonInfoDto("firstNameB", "lastName", null, "41",
                       List.of("med1", "med2"), Collections.emptyList(), "000-000-0001", null)),
-              "1");
+              "[1]");
     
     when(personRepository.findByAddress(anyString()))
           .thenReturn(List.of(childTest, parent1Test));
     when(medicalRecordRepository.findByName(anyString(), anyString()))
           .thenReturn(Optional.of(childRecordTest)).thenReturn(Optional.of(parent1RecordTest));
     when(fireStationRepository.findByAddress(anyString()))
-          .thenReturn(Optional.of(new FireStation(1, "address")));
+          .thenReturn(List.of(new FireStation(1, "address")));
 
     // WHEN
     FireAlertDto actualDto = alertsService.fireAlert("address");
@@ -346,7 +346,7 @@ class AlertsServiceTest {
           .thenReturn(List.of(childTest, parent1Test));
     when(medicalRecordRepository.findByName(anyString(), anyString()))
           .thenReturn(Optional.of(childRecordTest)).thenReturn(Optional.of(parent1RecordTest));
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.empty());
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(Collections.emptyList());
 
     // WHEN
     FireAlertDto actualDto = alertsService.fireAlert("address");
@@ -385,14 +385,14 @@ class AlertsServiceTest {
                     Collections.emptyList(), Collections.emptyList(), "000-000-0001", null),
             new PersonInfoDto("firstNameZ", "lastName", null, "Information not specified",
                     List.of("Information not specified"), List.of("Information not specified"),
-                    "", null)), "1");
+                    "", null)), "[1]");
     
     when(personRepository.findByAddress(anyString()))
           .thenReturn(List.of(childTest, parent2));
     when(medicalRecordRepository.findByName(anyString(), anyString()))
           .thenReturn(Optional.of(childRecordTest)).thenReturn(Optional.empty());
     when(fireStationRepository.findByAddress(anyString()))
-          .thenReturn(Optional.of(new FireStation(1, "address")));
+          .thenReturn(List.of(new FireStation(1, "address")));
 
     // WHEN
     FireAlertDto actualDto = alertsService.fireAlert("address");

@@ -279,7 +279,8 @@ class AlertsControllerTest {
   @Test
   void getChildAlertInvalidTest() throws Exception {
     // GIVEN
-    ChildAlertDto childAlertDto = new ChildAlertDto(); 
+    ChildAlertDto childAlertDto = new ChildAlertDto(
+            Collections.emptyList(), Collections.emptyList()); 
     when(alertsService.childAlert(anyString())).thenReturn(childAlertDto);
 
     // WHEN
@@ -341,7 +342,7 @@ class AlertsControllerTest {
   @Test
   void getFireAlertInvalidTest() throws Exception {
     // GIVEN
-    FireAlertDto fireAlertDto = new FireAlertDto(); 
+    FireAlertDto fireAlertDto = new FireAlertDto(Collections.emptyList(), null); 
     when(alertsService.fireAlert(anyString())).thenReturn(fireAlertDto);
 
     // WHEN
@@ -411,7 +412,7 @@ class AlertsControllerTest {
   @Test
   void getFloodAlertInvalidTest() throws Exception {
     // GIVEN
-    FloodHouseholdDto floodHouseholdDto = new FloodHouseholdDto(); 
+    FloodHouseholdDto floodHouseholdDto = new FloodHouseholdDto(null, Collections.emptyList()); 
     when(alertsService.floodAlert(anyList())).thenReturn(List.of(floodHouseholdDto));
 
     // WHEN
@@ -479,7 +480,8 @@ class AlertsControllerTest {
   @Test
   void getFireStationInvalidTest() throws Exception {
     // GIVEN
-    FireStationCoverageDto fireStationCoverageDto = new FireStationCoverageDto(); 
+    FireStationCoverageDto fireStationCoverageDto = new FireStationCoverageDto(
+            Collections.emptyList(), 0, 0, null); 
     when(alertsService.fireStationCoverage(anyInt())).thenReturn(fireStationCoverageDto);
 
     // WHEN

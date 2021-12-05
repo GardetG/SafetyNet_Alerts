@@ -79,8 +79,8 @@ class FireStationIntegrationTest {
     // Check that we can retrieve the updated fireStation
     mockMvc.perform(get("/fireStations/fireStation?address=1 Test St"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.address", is("1 Test St")))
-            .andExpect(jsonPath("$.station", is(9)));
+            .andExpect(jsonPath("$[0].address", is("1 Test St")))
+            .andExpect(jsonPath("$[0].station", is(9)));
   }
 
   @Test

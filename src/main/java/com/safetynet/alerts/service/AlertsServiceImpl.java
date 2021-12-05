@@ -51,7 +51,8 @@ public class AlertsServiceImpl implements AlertsService {
     // Fetch all resident of the city an retrieve email
     List<String> emailList = personRepository.findByCity(city).stream()
             .map(Person::getEmail)
-            .distinct().filter(email -> (email != null && !email.isBlank()))
+            .distinct()
+            .filter(email -> (email != null && !email.isBlank()))
             .collect(Collectors.toList());
 
     if (emailList.isEmpty()) {
@@ -69,11 +70,11 @@ public class AlertsServiceImpl implements AlertsService {
   public List<String> getPhoneAlert(int station) throws ResourceNotFoundException {
 
     // Fetch all addresses covered by this station
-    List<String> phoneList = fireStationRepository.findByStation(station)
-            .stream()
+    List<String> phoneList = fireStationRepository.findByStation(station).stream()
             .map(FireStation::getAddress)
             .flatMap(address -> personRepository.findByAddress(address).stream())
-            .map(Person::getPhone).distinct()
+            .map(Person::getPhone)
+            .distinct()
             .filter(phone -> (phone != null && !phone.isBlank()))
             .collect(Collectors.toList());
 
@@ -114,7 +115,7 @@ public class AlertsServiceImpl implements AlertsService {
   @Override
   public ChildAlertDto childAlert(String address) throws ResourceNotFoundException {
 
-    // Fetch resident at the address and map them with optional medical record
+    // Fetch resident at the address
     List<Person> residents = personRepository.findByAddress(address);
 
     if (residents.isEmpty()) {
@@ -125,6 +126,7 @@ public class AlertsServiceImpl implements AlertsService {
     List<PersonInfoDto> children = new ArrayList<>();
     List<PersonInfoDto> householdMembers = new ArrayList<>();
 
+    // Separate adult and minor and add to respective list
     residents.forEach(person -> {
       Optional<MedicalRecord> medicalRecord = getAsssociateMedicalRecord(person);
       if (medicalRecord.isEmpty()) {
@@ -138,9 +140,7 @@ public class AlertsServiceImpl implements AlertsService {
       }
     });
 
-    ChildAlertDto childAlertDto = new ChildAlertDto();
-    childAlertDto.setChildren(children);
-    childAlertDto.setHouseholdMembers(householdMembers);
+    ChildAlertDto childAlertDto = new ChildAlertDto(children, householdMembers);
 
     return childAlertDto;
   }
@@ -164,15 +164,17 @@ public class AlertsServiceImpl implements AlertsService {
       throw new ResourceNotFoundException(error);
     }
 
+    // Fetch station covering this address
     String station = "No station mapped for this address";
-    Optional<FireStation> fireStation = fireStationRepository.findByAddress(address);
-    if (fireStation.isPresent()) {
-      station = String.valueOf(fireStation.get().getStation());
+    List<FireStation> fireStations = fireStationRepository.findByAddress(address);
+    if (!fireStations.isEmpty()) {
+      station = fireStations.stream()
+              .map(FireStation::getStation)
+              .map(String::valueOf)
+              .collect(Collectors.toList()).toString();
     }
 
-    FireAlertDto fireAlertDto = new FireAlertDto();
-    fireAlertDto.setResidents(residentsList);
-    fireAlertDto.setStation(station);
+    FireAlertDto fireAlertDto = new FireAlertDto(residentsList, station);
 
     return fireAlertDto;
   }
@@ -184,9 +186,11 @@ public class AlertsServiceImpl implements AlertsService {
   public List<FloodHouseholdDto> floodAlert(List<Integer> stations)
           throws ResourceNotFoundException {
 
+    // Fetch addresses covered by the stations
     List<FloodHouseholdDto> floodlist = stations.stream()
             .flatMap(station -> fireStationRepository.findByStation(station).stream())
             .map(FireStation::getAddress)
+            .distinct()
             .map(address -> {
               // Fetch resident at the address and medical record data if it exists
               List<PersonInfoDto> residentsList = personRepository.findByAddress(address).stream()
@@ -195,9 +199,7 @@ public class AlertsServiceImpl implements AlertsService {
                         return PersonInfoDtoFactory.makeDto(person, medicalRecord, DtoType.ALERT);
                       })
                       .collect(Collectors.toList());
-              FloodHouseholdDto floodDto = new FloodHouseholdDto();
-              floodDto.setAddress(address);
-              floodDto.setResidents(residentsList);
+              FloodHouseholdDto floodDto = new FloodHouseholdDto(address, residentsList);
               return floodDto;
             }).filter(household -> !household.getResidents().isEmpty())
             .collect(Collectors.toList());
@@ -216,8 +218,9 @@ public class AlertsServiceImpl implements AlertsService {
   @Override
   public FireStationCoverageDto fireStationCoverage(int station) throws ResourceNotFoundException {
 
-    // Fetch all resident with optional medical record covered by station
+    // Fetch all resident covered by station
     List<Person> residents = fireStationRepository.findByStation(station).stream()
+            .distinct()
             .map(FireStation::getAddress)
             .flatMap(address -> personRepository.findByAddress(address).stream())
             .collect(Collectors.toList());
@@ -233,6 +236,7 @@ public class AlertsServiceImpl implements AlertsService {
     counter.put("adult", 0);
     List<PersonInfoDto> residentsList = new ArrayList<>();
 
+    // Fetch medical record for each resident and count adult and minor
     residents.forEach(person -> {
       Optional<MedicalRecord> medicalRecord = getAsssociateMedicalRecord(person);
       residentsList.add(PersonInfoDtoFactory
@@ -246,11 +250,8 @@ public class AlertsServiceImpl implements AlertsService {
       }
     });
 
-    FireStationCoverageDto fireStationCoverageDto = new FireStationCoverageDto();
-    fireStationCoverageDto.setResidents(residentsList);
-    fireStationCoverageDto.setChildrenCount(counter.get("children"));
-    fireStationCoverageDto.setAdultCount(counter.get("adult"));
-    fireStationCoverageDto.setUnderterminedAgeCount(
+    FireStationCoverageDto fireStationCoverageDto = new FireStationCoverageDto(
+            residentsList, counter.get("children"), counter.get("adult"), 
             counter.get("unknow") == 0 ? null : counter.get("unknow"));
     return fireStationCoverageDto;
   }

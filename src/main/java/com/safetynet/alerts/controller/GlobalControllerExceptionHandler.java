@@ -92,7 +92,7 @@ public class GlobalControllerExceptionHandler {
   @ExceptionHandler(ResourceAlreadyExistsException.class)
   public ResponseEntity<String> handleAlreadyExistsExceptions(ResourceAlreadyExistsException ex) {
     String error = ex.getMessage();
-    LOGGER.error("Can't find the resource : {}", error);
+    LOGGER.error("Ressource already exists : {}", error);
     return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
   }
 }

@@ -4,13 +4,13 @@ import com.safetynet.alerts.dto.MedicalRecordDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.MedicalRecordService;
-import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -92,11 +92,8 @@ public class MedicalRecordController {
             medicalRecord.getLastName());
     MedicalRecordDto createdMedicalRecord = medicalRecordService.add(medicalRecord);
 
-    URI uri = URI
-            .create("/medicalRecords/medicalRecord?firstName=" + createdMedicalRecord.getFirstName()
-                    + "&lastName=" + createdMedicalRecord.getLastName());
     LOGGER.info("Response: medical record created");
-    return ResponseEntity.created(uri).body(createdMedicalRecord);
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdMedicalRecord);
   }
 
   /**

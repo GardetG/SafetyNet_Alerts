@@ -165,14 +165,15 @@ class FireStationControllerTest {
   @Test
   void getFireStationByAddressTest() throws Exception {
     // GIVEN
-    when(fireStationService.getByAddress(anyString())).thenReturn(fireStationTest);
+    when(fireStationService.getByAddress(anyString())).thenReturn(List.of(fireStationTest));
 
     // WHEN
     mockMvc.perform(get("/fireStations/fireStation?address=address"))
 
             // THEN
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.address", is("address")))
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].address", is("address")))
             .andDo(document("getFireStationByAddress",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint()),
@@ -188,7 +189,7 @@ class FireStationControllerTest {
   @Test
   void getFireStationByAddressWithInvalidArgumentsTest() throws Exception {
     // GIVEN
-    when(fireStationService.getByAddress(anyString())).thenReturn(fireStationTest);
+    when(fireStationService.getByAddress(anyString())).thenReturn(List.of(fireStationTest));
 
     // WHEN
     mockMvc.perform(get("/fireStations/fireStation?address="))

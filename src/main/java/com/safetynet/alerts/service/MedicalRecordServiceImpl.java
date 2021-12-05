@@ -56,21 +56,15 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   public MedicalRecordDto add(@Valid MedicalRecordDto medicalRecord) 
           throws ResourceAlreadyExistsException {
   
-    Optional<MedicalRecord> existingMedicalRecord = medicalRecordRepository
-          .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
-
-    if (existingMedicalRecord.isPresent()) {
+    boolean isSucces = medicalRecordRepository.add(MedicalRecordMapper.toModel(medicalRecord));
+    
+    if (!isSucces) {
       String error = String.format("Medical record of %s %s already exists", 
               medicalRecord.getFirstName(), medicalRecord.getLastName());
       throw new ResourceAlreadyExistsException(error);
     }
-
-    medicalRecordRepository.add(MedicalRecordMapper.toModel(medicalRecord));
-    
-    MedicalRecord addedMedicalRecord = medicalRecordRepository
-            .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName()).get();
   
-    return MedicalRecordMapper.toDto(addedMedicalRecord);
+    return medicalRecord;
   }
 
   /**
@@ -80,20 +74,15 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
   public MedicalRecordDto update(@Valid MedicalRecordDto medicalRecord) 
           throws ResourceNotFoundException {
     
-    Optional<MedicalRecord> existingMedicalRecord = medicalRecordRepository
-            .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName());
-    if (existingMedicalRecord.isEmpty()) {
+    boolean isSuccess = medicalRecordRepository.update(MedicalRecordMapper.toModel(medicalRecord));
+    
+    if (!isSuccess) {
       String error = String.format(NOT_FOUND, 
               medicalRecord.getFirstName(), medicalRecord.getLastName());
       throw new ResourceNotFoundException(error);
     }
-
-    medicalRecordRepository.update(MedicalRecordMapper.toModel(medicalRecord));
     
-    MedicalRecord updatedMedicalRecord = medicalRecordRepository
-            .findByName(medicalRecord.getFirstName(), medicalRecord.getLastName()).get();
-    
-    return MedicalRecordMapper.toDto(updatedMedicalRecord);
+    return medicalRecord;
   }
 
   /**
@@ -109,8 +98,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
       throw new ResourceNotFoundException(error);
     }
 
-    medicalRecordRepository.delete(existingMedicalRecord.get());
-    
+    medicalRecordRepository.delete(existingMedicalRecord.get()); 
   }
 
 }

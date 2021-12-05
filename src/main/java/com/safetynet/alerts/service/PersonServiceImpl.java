@@ -54,22 +54,15 @@ public class PersonServiceImpl implements PersonService {
   @Override
   public PersonDto add(@Valid PersonDto person) throws ResourceAlreadyExistsException {
     
-    Optional<Person> existingPerson = personRepository.findByName(person.getFirstName(),
-            person.getLastName());
-
-    if (existingPerson.isPresent()) {
+    boolean isSuccess = personRepository.add(PersonMapper.toModel(person));
+    
+    if (!isSuccess) {
       String error = String.format("%s %s already exists", person.getFirstName(),
               person.getLastName());
       throw new ResourceAlreadyExistsException(error);
     }
-
-    personRepository.add(PersonMapper.toModel(person));
     
-    Person addedPerson = personRepository.findByName(
-            person.getFirstName(), person.getLastName()).get();
-    
-    return PersonMapper.toDto(addedPerson);
-    
+    return person;
   }
 
   /**
@@ -78,20 +71,14 @@ public class PersonServiceImpl implements PersonService {
   @Override
   public PersonDto update(@Valid PersonDto person) throws ResourceNotFoundException {
     
-    Optional<Person> existingPerson = personRepository.findByName(person.getFirstName(),
-            person.getLastName());
-    if (existingPerson.isEmpty()) {
+    boolean isSuccess = personRepository.update(PersonMapper.toModel(person));
+    
+    if (!isSuccess) {
       String error = String.format(NOT_FOUND, person.getFirstName(), person.getLastName());
       throw new ResourceNotFoundException(error);
     }
-
-    personRepository.update(PersonMapper.toModel(person));
     
-    Person updatedPerson = personRepository.findByName(
-            person.getFirstName(), person.getLastName()).get();
-    
-    return PersonMapper.toDto(updatedPerson);
-    
+    return person;
   }
 
   /**
@@ -107,7 +94,6 @@ public class PersonServiceImpl implements PersonService {
     }
 
     personRepository.delete(existingPerson.get());
-    
   }
 
 }

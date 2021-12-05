@@ -16,7 +16,6 @@ import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.repository.FireStationRepository;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import javax.validation.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -114,20 +113,20 @@ class FireStationServiceTest {
   void getFireStationByAddressTest() throws Exception {
     // GIVEN
     when(fireStationRepository.findByAddress(anyString()))
-            .thenReturn(Optional.of(fireStationTest));
+            .thenReturn(List.of(fireStationTest));
 
     // WHEN
-    FireStationDto actualFireStation = fireStationService.getByAddress("address");
+    List<FireStationDto> actualFireStation = fireStationService.getByAddress("address");
 
     // THEN
-    assertThat(actualFireStation).usingRecursiveComparison().isEqualTo(fireStationDto);
+    assertThat(actualFireStation).usingRecursiveComparison().isEqualTo(List.of(fireStationDto));
     verify(fireStationRepository, times(1)).findByAddress("address");
   }
 
   @Test
   void getFireStationByAddressWhenNotFoundTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.empty());
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(Collections.emptyList());
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -142,8 +141,6 @@ class FireStationServiceTest {
   @Test
   void addFireStationTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.empty())
-            .thenReturn(Optional.of(fireStationTest));
     when(fireStationRepository.add(any(FireStation.class))).thenReturn(true);
 
     // WHEN
@@ -151,14 +148,13 @@ class FireStationServiceTest {
 
     // THEN
     assertThat(actualfireStation).usingRecursiveComparison().isEqualTo(fireStationDto);
-    verify(fireStationRepository, times(2)).findByAddress("address");
     verify(fireStationRepository, times(1)).add(fireStationTest);
   }
 
   @Test
   void addAlreadyExistingFireStationTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.of(fireStationTest));
+    when(fireStationRepository.add(any(FireStation.class))).thenReturn(false);
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -168,8 +164,7 @@ class FireStationServiceTest {
             // THEN
             .isInstanceOf(ResourceAlreadyExistsException.class)
             .hasMessageContaining("address mapping for station 1 already exists");
-    verify(fireStationRepository, times(1)).findByAddress("address");
-    verify(fireStationRepository, times(0)).add(any(FireStation.class));
+    verify(fireStationRepository, times(1)).add(fireStationTest);
   }
 
   @Test
@@ -192,8 +187,6 @@ class FireStationServiceTest {
     // GIVEN
     FireStation updatedFireStation = new FireStation(9, "address");
     FireStationDto updatedFireStationDto = new FireStationDto(9, "address");
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.of(fireStationTest))
-            .thenReturn(Optional.of(updatedFireStation));
     when(fireStationRepository.update(any(FireStation.class))).thenReturn(true);
 
     // WHEN
@@ -201,16 +194,15 @@ class FireStationServiceTest {
 
     // THEN
     assertThat(actualfireStation).usingRecursiveComparison().isEqualTo(updatedFireStationDto);
-    verify(fireStationRepository, times(2)).findByAddress("address");
     verify(fireStationRepository, times(1)).update(updatedFireStation);
   }
 
   @Test
   void updateNotFoundFireStationTest() throws Exception {
     // GIVEN
+    FireStation updatedFireStation = new FireStation(9, "address9");
     FireStationDto updatedFireStationDto = new FireStationDto(9, "address9");
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.empty());
-
+    when(fireStationRepository.update(any(FireStation.class))).thenReturn(false);
     // WHEN
     assertThatThrownBy(() -> {
       fireStationService.update(updatedFireStationDto);
@@ -219,8 +211,7 @@ class FireStationServiceTest {
             // THEN
             .isInstanceOf(ResourceNotFoundException.class)
             .hasMessageContaining("address9 mapping not found");
-    verify(fireStationRepository, times(1)).findByAddress("address9");
-    verify(fireStationRepository, times(0)).update(any(FireStation.class));
+    verify(fireStationRepository, times(1)).update(updatedFireStation);
   }
 
   @Test
@@ -274,7 +265,7 @@ class FireStationServiceTest {
   @Test
   void deleteFireStationByAddressTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.of(fireStationTest));
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(List.of(fireStationTest));
 
     // WHEN
     fireStationService.deleteByAddress("address");
@@ -287,7 +278,7 @@ class FireStationServiceTest {
   @Test
   void deleteByAddressNotFoundFireStationTest() throws Exception {
     // GIVEN
-    when(fireStationRepository.findByAddress(anyString())).thenReturn(Optional.empty());
+    when(fireStationRepository.findByAddress(anyString())).thenReturn(Collections.emptyList());
 
     // WHEN
     assertThatThrownBy(() -> {

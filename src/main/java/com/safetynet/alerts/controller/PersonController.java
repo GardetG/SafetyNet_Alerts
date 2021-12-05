@@ -4,13 +4,13 @@ import com.safetynet.alerts.dto.PersonDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.PersonService;
-import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -88,11 +88,9 @@ public class PersonController {
 
     LOGGER.info("Request: Create person {} {}", person.getFirstName(), person.getLastName());
     PersonDto createdPerson = personService.add(person);
-
-    URI uri = URI.create("/persons/person?firstName=" + createdPerson.getFirstName() + "&lastName="
-            + createdPerson.getLastName());
+    
     LOGGER.info("Response: person created");
-    return ResponseEntity.created(uri).body(createdPerson);
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdPerson);
   }
   
   /**

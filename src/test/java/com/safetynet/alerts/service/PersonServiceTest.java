@@ -108,8 +108,6 @@ class PersonServiceTest {
   @Test
   void addPersonTest() throws Exception {
     // GIVEN
-    when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty())
-            .thenReturn(Optional.of(personTest));
     when(personRepository.add(any(Person.class))).thenReturn(true);
 
     // WHEN
@@ -117,14 +115,13 @@ class PersonServiceTest {
 
     // THEN
     assertThat(actualperson).usingRecursiveComparison().isEqualTo(personDto);
-    verify(personRepository, times(2)).findByName("firstName", "lastName");
     verify(personRepository, times(1)).add(personTest);
   }
 
   @Test
   void addAlreadyExistingPersonTest() throws Exception {
     // GIVEN
-    when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.of(personTest));
+    when(personRepository.add(any(Person.class))).thenReturn(false);
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -134,8 +131,7 @@ class PersonServiceTest {
             // THEN
             .isInstanceOf(ResourceAlreadyExistsException.class)
             .hasMessageContaining("firstName lastName already exists");
-    verify(personRepository, times(1)).findByName("firstName", "lastName");
-    verify(personRepository, times(0)).add(any(Person.class));
+    verify(personRepository, times(1)).add(personTest);
   }
 
   @Test
@@ -161,8 +157,6 @@ class PersonServiceTest {
             "000.000.0001", "updated@mail.fr");
     PersonDto updatedPersonDto = new PersonDto("firstName", "lastName", "updated", "updated", 
             "00001", "000.000.0001", "updated@mail.fr");
-    when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.of(personTest))
-            .thenReturn(Optional.of(updatedPerson));
     when(personRepository.update(any(Person.class))).thenReturn(true);
 
     // WHEN
@@ -170,16 +164,17 @@ class PersonServiceTest {
 
     // THEN
     assertThat(actualperson).usingRecursiveComparison().isEqualTo(updatedPersonDto);
-    verify(personRepository, times(2)).findByName("firstName", "lastName");
     verify(personRepository, times(1)).update(updatedPerson);
   }
 
   @Test
   void updateNotFoundPersonTest() throws Exception {
     // GIVEN
-    PersonDto updatedPersonDto = new PersonDto("firstName", "lastName", "updated", "updated",
+    Person updatedPerson = new Person("firstName", "lastName", "updated", "updated", "00001",
+            "000.000.0001", "updated@mail.fr");
+    PersonDto updatedPersonDto = new PersonDto("firstName", "lastName", "updated", "updated", 
             "00001", "000.000.0001", "updated@mail.fr");
-    when(personRepository.findByName(anyString(), anyString())).thenReturn(Optional.empty());
+    when(personRepository.update(any(Person.class))).thenReturn(false);
 
     // WHEN
     assertThatThrownBy(() -> {
@@ -189,8 +184,7 @@ class PersonServiceTest {
             // THEN
             .isInstanceOf(ResourceNotFoundException.class)
             .hasMessageContaining("firstName lastName not found");
-    verify(personRepository, times(1)).findByName("firstName", "lastName");
-    verify(personRepository, times(0)).update(any(Person.class));
+    verify(personRepository, times(1)).update(updatedPerson);
   }
 
   @Test

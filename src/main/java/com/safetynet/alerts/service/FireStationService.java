@@ -39,7 +39,7 @@ public interface FireStationService {
    * @return FireStation mapping for this address
    * @throws ResourceNotFoundException when mapping for this address is not found
    */
-  FireStationDto getByAddress(String address) throws ResourceNotFoundException;
+  List<FireStationDto> getByAddress(String address) throws ResourceNotFoundException;
   
   /**
    * Add a FireStation mapping if it doesn't already exists.

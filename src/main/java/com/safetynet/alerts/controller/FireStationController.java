@@ -4,8 +4,6 @@ import com.safetynet.alerts.dto.FireStationDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.FireStationService;
-import java.net.URI;
-import java.net.URLEncoder;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -13,6 +11,7 @@ import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -85,15 +84,15 @@ public class FireStationController {
    */
   
   @GetMapping("/fireStations/fireStation")
-  public ResponseEntity<FireStationDto> getFireStationByAddress(
+  public ResponseEntity<List<FireStationDto>> getFireStationByAddress(
           @RequestParam @NotBlank(message = "Address is mandatory") String address)
           throws ResourceNotFoundException {
     
     LOGGER.info("Request: Get fireStation mapping for {}", address);
-    FireStationDto fireStation = fireStationService.getByAddress(address);
+    List<FireStationDto> fireStations = fireStationService.getByAddress(address);
     
     LOGGER.info("Response: fireStation mapping sent");
-    return ResponseEntity.ok(fireStation);
+    return ResponseEntity.ok(fireStations);
     
   }
   
@@ -113,12 +112,9 @@ public class FireStationController {
     LOGGER.info("Request: Create {} mapping to station {}", 
             fireStation.getAddress(), fireStation.getStation());
     FireStationDto createdFireStation = fireStationService.add(fireStation);
-
-    String address = URLEncoder.encode(createdFireStation.getAddress(), 
-            java.nio.charset.StandardCharsets.UTF_8);
-    URI uri = URI.create("/fireStations/fireStation?address=" + address);
+    
     LOGGER.info("Response: fireStation mapping created");
-    return ResponseEntity.created(uri).body(createdFireStation);
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdFireStation);
   }
   
   /**
