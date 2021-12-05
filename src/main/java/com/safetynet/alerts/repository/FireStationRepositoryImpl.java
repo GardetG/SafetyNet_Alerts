@@ -3,7 +3,6 @@ package com.safetynet.alerts.repository;
 import com.safetynet.alerts.model.FireStation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
@@ -38,10 +37,10 @@ public class FireStationRepositoryImpl
    * {@inheritDoc}
    */
   @Override
-  public Optional<FireStation> findByAddress(String address) {
+  public List<FireStation> findByAddress(String address) {
     return fireStationsList.stream()
             .filter(fireStation -> (fireStation.getAddress().equals(address)))
-            .findFirst();
+            .collect(Collectors.toList());
   }
 
   /**
@@ -49,6 +48,10 @@ public class FireStationRepositoryImpl
    */
   @Override
   public boolean add(FireStation fireStation) {
+    if (fireStationsList.contains(fireStation)) {
+      return false;
+    }
+    
     return fireStationsList.add(fireStation);
   }
 
@@ -57,17 +60,15 @@ public class FireStationRepositoryImpl
    */
   @Override
   public boolean update(FireStation fireStation) {
-    FireStation existingFireStation = fireStationsList.stream()
-            .filter(fireStationElemnt -> 
-            (fireStationElemnt.getAddress().equals(fireStation.getAddress())))
-            .findFirst().orElse(null);
+    List<FireStation> existingMapping = findByAddress(fireStation.getAddress());
     
-    if (existingFireStation == null) {
+    if (existingMapping.isEmpty()) {
       return false;
     }
     
-    int index = fireStationsList.indexOf(existingFireStation);
-    fireStationsList.set(index, fireStation);
+    if (fireStationsList.add(fireStation)) {
+      existingMapping.forEach(mapping -> fireStationsList.remove(mapping));
+    }
     return true;
   }
 

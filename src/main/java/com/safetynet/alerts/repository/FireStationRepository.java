@@ -2,7 +2,6 @@ package com.safetynet.alerts.repository;
 
 import com.safetynet.alerts.model.FireStation;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -35,10 +34,10 @@ public interface FireStationRepository {
    * @param address of the mapping
    * @return FireStation mapping
    */
-  Optional<FireStation> findByAddress(String address);
+  List<FireStation> findByAddress(String address);
   
   /**
-   * Add a FireStation mapping to the repository.
+   * Add a FireStation mapping to the repository if it doesn't already exist.
    * 
 
    * @param fireStation mapping to add
@@ -47,7 +46,7 @@ public interface FireStationRepository {
   boolean add(FireStation fireStation);
 
   /**
-   * Update a FireStation mapping in the repository.
+   * Update a FireStation mapping in the repository if it exists.
    * 
 
    * @param fireStation mapping to update
@@ -56,7 +55,7 @@ public interface FireStationRepository {
   boolean update(FireStation fireStation);
   
   /**
-   * Delete a FireStation mapping in the repository.
+   * Delete a FireStation mapping in the repository if it exists.
    * 
 
    * @param fireStation mapping to delete

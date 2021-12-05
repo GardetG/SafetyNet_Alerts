@@ -59,6 +59,10 @@ public class PersonRepositoryImpl implements LoadableRepository<Person>, PersonR
    */
   @Override
   public boolean add(Person person) {
+    Optional<Person> existingPerson = findByName(person.getFirstName(), person.getLastName());
+    if (existingPerson.isPresent()) {
+      return false;
+    }
     return personsList.add(person);
   }
 
@@ -67,16 +71,13 @@ public class PersonRepositoryImpl implements LoadableRepository<Person>, PersonR
    */
   @Override
   public boolean update(Person person) {
-    Person existingPerson = personsList.stream()
-            .filter(personElemnt -> (personElemnt.getFirstName().equals(person.getFirstName())
-                    && (personElemnt.getLastName().equals(person.getLastName()))))
-            .findFirst().orElse(null);
+    Optional<Person> existingPerson = findByName(person.getFirstName(), person.getLastName());
     
-    if (existingPerson == null) {
+    if (existingPerson.isEmpty()) {
       return false;
     }
     
-    int index = personsList.indexOf(existingPerson);
+    int index = personsList.indexOf(existingPerson.get());
     personsList.set(index, person);
     return true;
   }

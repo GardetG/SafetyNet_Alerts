@@ -30,7 +30,7 @@ public interface MedicalRecordRepository {
   Optional<MedicalRecord> findByName(String firstName, String lastName);
   
   /**
-   * Add a MedicalRecord to the repository.
+   * Add a MedicalRecord to the repository if it doesn't already exist.
    * 
 
    * @param medicalRecord to add
@@ -39,7 +39,7 @@ public interface MedicalRecordRepository {
   boolean add(MedicalRecord medicalRecord);
 
   /**
-   * Update a MedicalRecord in the repository.
+   * Update a MedicalRecord in the repository if it exists.
    * 
 
    * @param medicalRecord to update
@@ -48,7 +48,7 @@ public interface MedicalRecordRepository {
   boolean update(MedicalRecord medicalRecord);
   
   /**
-   * Delete a MedicalRecord in the repository.
+   * Delete a MedicalRecord in the repository if it exists.
    * 
 
    * @param medicalRecord to delete

@@ -6,7 +6,6 @@ import com.safetynet.alerts.model.FireStation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ class FireStationRepositoryTest {
   void setUp() throws Exception {
     fireStationTest = new FireStation(1, "address");
     fireStationTest2 = new FireStation(1, "address2");
-    fireStationTest3 = new FireStation(2, "address3");
+    fireStationTest3 = new FireStation(2, "address2");
   }
 
   @Test
@@ -93,10 +92,12 @@ class FireStationRepositoryTest {
             fireStationTest, fireStationTest2, fireStationTest3));
 
     // WHEN
-    Optional<FireStation> actualFireStation = fireStationRepository.findByAddress("address");
+    List<FireStation> actualFireStations = fireStationRepository.findByAddress("address2");
 
     // THEN
-    assertThat(actualFireStation).contains(fireStationTest);
+    assertThat(actualFireStations)            
+            .containsOnly(fireStationTest2, fireStationTest3)
+            .hasSize(2);
   }
 
   @Test
@@ -106,10 +107,10 @@ class FireStationRepositoryTest {
             fireStationTest, fireStationTest2, fireStationTest3));
 
     // WHEN
-    Optional<FireStation> actualFireStation = fireStationRepository.findByAddress("address9");
+    List<FireStation> actualFireStations = fireStationRepository.findByAddress("address9");
 
     // THEN
-    assertThat(actualFireStation).isEmpty();
+    assertThat(actualFireStations).isEmpty();
   }
 
 
@@ -123,10 +124,26 @@ class FireStationRepositoryTest {
 
     // THEN
     assertThat(isSuccess).isTrue();
-    assertThat(fireStationRepository.findAll()).hasSize(2)
-            .containsExactly(fireStationTest, fireStationTest2);
+    assertThat(fireStationRepository.findAll())
+            .hasSize(2)
+            .containsOnly(fireStationTest, fireStationTest2);
   }
 
+  @Test
+  void addFireStationWhenAlreadyExistsTest() {
+    // GIVEN
+    fireStationRepository.setupRepository(new ArrayList<FireStation>(List.of(fireStationTest)));
+
+    // WHEN
+    boolean isSuccess = fireStationRepository.add(fireStationTest);
+
+    // THEN
+    assertThat(isSuccess).isFalse();
+    assertThat(fireStationRepository.findAll())
+            .hasSize(1)
+            .containsOnly(fireStationTest);
+  }
+  
   @Test
   void updateFireStationTest() {
     // GIVEN
@@ -141,14 +158,14 @@ class FireStationRepositoryTest {
     assertThat(isSuccess).isTrue();
     assertThat(fireStationRepository.findAll()).hasSize(2)
             .doesNotContain(fireStationTest)
-            .containsExactly(fireStationTestUpdated, fireStationTest2);
+            .containsOnly(fireStationTestUpdated, fireStationTest2);
   }
 
   @Test
   void updateNotFoundFireStationTest() {
     // GIVEN
     fireStationRepository.setupRepository(new ArrayList<FireStation>(List.of(fireStationTest2)));
-    FireStation fireStationTestUpdated = new FireStation(9, "address");
+    FireStation fireStationTestUpdated = new FireStation(9, "address9");
 
     // WHEN
     boolean isSuccess = fireStationRepository.update(fireStationTestUpdated);
@@ -157,7 +174,7 @@ class FireStationRepositoryTest {
     assertThat(isSuccess).isFalse();
     assertThat(fireStationRepository.findAll()).hasSize(1)
             .doesNotContain(fireStationTestUpdated)
-            .containsExactly(fireStationTest2);
+            .containsOnly(fireStationTest2);
   }
   
   @Test
@@ -173,7 +190,7 @@ class FireStationRepositoryTest {
     assertThat(isSuccess).isTrue();
     assertThat(fireStationRepository.findAll()).hasSize(1)
             .doesNotContain(fireStationTest)
-            .containsExactly(fireStationTest2);
+            .containsOnly(fireStationTest2);
   }
 
   @Test
@@ -188,7 +205,6 @@ class FireStationRepositoryTest {
     // THEN
     assertThat(isSuccess).isFalse();
     assertThat(fireStationRepository.findAll()).hasSize(1)
-            .containsExactly(fireStationTest2);
+            .containsOnly(fireStationTest2);
   }
-  
 }
