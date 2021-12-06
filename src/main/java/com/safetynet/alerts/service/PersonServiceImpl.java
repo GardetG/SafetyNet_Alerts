@@ -9,6 +9,8 @@ import com.safetynet.alerts.util.PersonMapper;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -20,10 +22,11 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class PersonServiceImpl implements PersonService {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(PersonServiceImpl.class);
+  private static final String NOT_FOUND = "%s %s not found";  
+  
   @Autowired
   PersonRepository personRepository;
-
-  private static final String NOT_FOUND = "%s %s not found";
   
   /**
    * {@inheritDoc}
@@ -42,6 +45,7 @@ public class PersonServiceImpl implements PersonService {
     Optional<Person> person = personRepository.findByName(firstName, lastName);
     if (person.isEmpty()) {
       String error = String.format(NOT_FOUND, firstName, lastName);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
     return PersonMapper.toDto(person.get());
@@ -59,6 +63,7 @@ public class PersonServiceImpl implements PersonService {
     if (!isSuccess) {
       String error = String.format("%s %s already exists", person.getFirstName(),
               person.getLastName());
+      LOGGER.error(error);
       throw new ResourceAlreadyExistsException(error);
     }
     
@@ -75,6 +80,7 @@ public class PersonServiceImpl implements PersonService {
     
     if (!isSuccess) {
       String error = String.format(NOT_FOUND, person.getFirstName(), person.getLastName());
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
     
@@ -90,6 +96,7 @@ public class PersonServiceImpl implements PersonService {
     Optional<Person> existingPerson = personRepository.findByName(firstName, lastName);
     if (existingPerson.isEmpty()) {
       String error = String.format(NOT_FOUND, firstName, lastName);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
 

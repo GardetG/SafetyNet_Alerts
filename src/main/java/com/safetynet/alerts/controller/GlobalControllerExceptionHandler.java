@@ -41,7 +41,7 @@ public class GlobalControllerExceptionHandler {
       String errorMessage = error.getMessage();
       errors.add(errorMessage);
     });
-    LOGGER.error("Can't process input : invalid parameter {}", errors);
+    LOGGER.error("Response : 400 invalid parameter {}", errors);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
   }
 
@@ -62,7 +62,7 @@ public class GlobalControllerExceptionHandler {
       String errorMessage = error.getDefaultMessage();
       errors.put(fieldName, errorMessage);
     });
-    LOGGER.error("Can't process input data : invalid ressource");
+    LOGGER.error("Response : 422 invalid DTO");
     return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
   }
 
@@ -77,7 +77,7 @@ public class GlobalControllerExceptionHandler {
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<String> handleNotFoundExceptions(ResourceNotFoundException ex) {
     String error = ex.getMessage();
-    LOGGER.error("Can't find the resource : {}", error);
+    LOGGER.error("Response : 404 {}", error);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
   }
 
@@ -92,7 +92,7 @@ public class GlobalControllerExceptionHandler {
   @ExceptionHandler(ResourceAlreadyExistsException.class)
   public ResponseEntity<String> handleAlreadyExistsExceptions(ResourceAlreadyExistsException ex) {
     String error = ex.getMessage();
-    LOGGER.error("Ressource already exists : {}", error);
+    LOGGER.error("Response: 409 {}", error);
     return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
   }
 }

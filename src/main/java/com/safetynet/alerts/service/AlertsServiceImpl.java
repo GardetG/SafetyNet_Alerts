@@ -42,6 +42,10 @@ public class AlertsServiceImpl implements AlertsService {
   @Autowired
   MedicalRecordRepository medicalRecordRepository;
 
+  private enum Count { 
+    UNKNOW, CHILD, ADULT 
+  }
+  
   /**
    * {@inheritDoc}
    */
@@ -57,6 +61,7 @@ public class AlertsServiceImpl implements AlertsService {
 
     if (emailList.isEmpty()) {
       String error = String.format("No resident emails found for %s", city);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
 
@@ -80,6 +85,7 @@ public class AlertsServiceImpl implements AlertsService {
 
     if (phoneList.isEmpty()) {
       String error = String.format("No resident phone number found for station %s", station);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
 
@@ -97,6 +103,7 @@ public class AlertsServiceImpl implements AlertsService {
     Optional<Person> personInfo = personRepository.findByName(firstName, lastName);
     if (personInfo.isEmpty()) {
       String error = String.format("%s %s not found", firstName, lastName);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
 
@@ -120,6 +127,7 @@ public class AlertsServiceImpl implements AlertsService {
 
     if (residents.isEmpty()) {
       String error = String.format("No residents found living at %s", address);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
 
@@ -131,6 +139,7 @@ public class AlertsServiceImpl implements AlertsService {
       Optional<MedicalRecord> medicalRecord = getAsssociateMedicalRecord(person);
       if (medicalRecord.isEmpty()) {
         householdMembers.add(PersonInfoDtoFactory.makeDto(person, medicalRecord, DtoType.AGE));
+        
         return;
       }
       if (medicalRecord.get().isMinor()) {
@@ -140,9 +149,7 @@ public class AlertsServiceImpl implements AlertsService {
       }
     });
 
-    ChildAlertDto childAlertDto = new ChildAlertDto(children, householdMembers);
-
-    return childAlertDto;
+    return new ChildAlertDto(children, householdMembers);
   }
 
   /**
@@ -161,6 +168,7 @@ public class AlertsServiceImpl implements AlertsService {
 
     if (residentsList.isEmpty()) {
       String error = String.format("No residents found living at %s", address);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
 
@@ -174,9 +182,7 @@ public class AlertsServiceImpl implements AlertsService {
               .collect(Collectors.toList()).toString();
     }
 
-    FireAlertDto fireAlertDto = new FireAlertDto(residentsList, station);
-
-    return fireAlertDto;
+    return new FireAlertDto(residentsList, station);
   }
 
   /**
@@ -199,13 +205,13 @@ public class AlertsServiceImpl implements AlertsService {
                         return PersonInfoDtoFactory.makeDto(person, medicalRecord, DtoType.ALERT);
                       })
                       .collect(Collectors.toList());
-              FloodHouseholdDto floodDto = new FloodHouseholdDto(address, residentsList);
-              return floodDto;
+              return new FloodHouseholdDto(address, residentsList);
             }).filter(household -> !household.getResidents().isEmpty())
             .collect(Collectors.toList());
 
     if (floodlist.isEmpty()) {
       String error = String.format("No residents covered found for stations %s", stations);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
 
@@ -227,13 +233,14 @@ public class AlertsServiceImpl implements AlertsService {
 
     if (residents.isEmpty()) {
       String error = String.format("No residents covered found for station %s", station);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
 
-    Map<String, Integer> counter = new HashMap<>();
-    counter.put("unknow", 0);
-    counter.put("children", 0);
-    counter.put("adult", 0);
+    Map<Count, Integer> counter = new HashMap<>();
+    counter.put(Count.UNKNOW, 0);
+    counter.put(Count.CHILD, 0);
+    counter.put(Count.ADULT, 0);
     List<PersonInfoDto> residentsList = new ArrayList<>();
 
     // Fetch medical record for each resident and count adult and minor
@@ -242,27 +249,24 @@ public class AlertsServiceImpl implements AlertsService {
       residentsList.add(PersonInfoDtoFactory
               .makeDto(person, medicalRecord, DtoType.STATIONCOVERAGE));
       if (medicalRecord.isEmpty()) {
-        counter.put("unknow", counter.get("unknow") + 1);
+        counter.put(Count.UNKNOW, counter.get(Count.UNKNOW) + 1);
       } else if (medicalRecord.get().isMinor()) {
-        counter.put("children", counter.get("children") + 1);
+        counter.put(Count.CHILD, counter.get(Count.CHILD) + 1);
       } else {
-        counter.put("adult", counter.get("adult") + 1);
+        counter.put(Count.ADULT, counter.get(Count.ADULT) + 1);
       }
     });
 
-    FireStationCoverageDto fireStationCoverageDto = new FireStationCoverageDto(
-            residentsList, counter.get("children"), counter.get("adult"), 
-            counter.get("unknow") == 0 ? null : counter.get("unknow"));
-    return fireStationCoverageDto;
+    return new FireStationCoverageDto(
+            residentsList, counter.get(Count.CHILD), counter.get(Count.ADULT), 
+            counter.get(Count.UNKNOW) == 0 ? null : counter.get(Count.UNKNOW));
   }
-
-
 
   private Optional<MedicalRecord> getAsssociateMedicalRecord(Person person) {
     Optional<MedicalRecord> medicalRecord = medicalRecordRepository
             .findByName(person.getFirstName(), person.getLastName());
     if (medicalRecord.isEmpty()) {
-      LOGGER.warn("Can't associate any medical record to {} {}", person.getFirstName(),
+      LOGGER.debug("Can't associate any medical record to {} {}", person.getFirstName(),
               person.getLastName());
     }
     return medicalRecord;

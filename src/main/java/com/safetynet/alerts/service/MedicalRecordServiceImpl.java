@@ -9,6 +9,8 @@ import com.safetynet.alerts.util.MedicalRecordMapper;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -20,10 +22,11 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class MedicalRecordServiceImpl implements MedicalRecordService {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(MedicalRecordServiceImpl.class);
+  private static final String NOT_FOUND = "Medical record of %s %s not found";
+  
   @Autowired
   MedicalRecordRepository medicalRecordRepository;
-  
-  private static final String NOT_FOUND = "Medical record of %s %s not found";
 
   /**
    * {@inheritDoc}
@@ -43,6 +46,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     Optional<MedicalRecord> medicalRecord = medicalRecordRepository.findByName(firstName, lastName);
     if (medicalRecord.isEmpty()) {
       String error = String.format(NOT_FOUND, firstName, lastName);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
     return MedicalRecordMapper.toDto(medicalRecord.get());
@@ -61,6 +65,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     if (!isSucces) {
       String error = String.format("Medical record of %s %s already exists", 
               medicalRecord.getFirstName(), medicalRecord.getLastName());
+      LOGGER.error(error);
       throw new ResourceAlreadyExistsException(error);
     }
   
@@ -79,6 +84,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
     if (!isSuccess) {
       String error = String.format(NOT_FOUND, 
               medicalRecord.getFirstName(), medicalRecord.getLastName());
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
     
@@ -95,6 +101,7 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
             .findByName(firstName, lastName);
     if (existingMedicalRecord.isEmpty()) {
       String error = String.format(NOT_FOUND, firstName, lastName);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
 

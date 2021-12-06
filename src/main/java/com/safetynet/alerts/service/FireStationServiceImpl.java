@@ -8,6 +8,8 @@ import com.safetynet.alerts.repository.FireStationRepository;
 import com.safetynet.alerts.util.FireStationMapper;
 import java.util.List;
 import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -19,11 +21,12 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class FireStationServiceImpl implements FireStationService {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(FireStationServiceImpl.class);
+  private static final String NOT_FOUND = "%s mapping not found";
+  
   @Autowired
   FireStationRepository fireStationRepository;
 
-  private static final String NOT_FOUND = "%s mapping not found";
-  
   /**
    * {@inheritDoc}
    */
@@ -41,6 +44,7 @@ public class FireStationServiceImpl implements FireStationService {
     List<FireStation> fireStations = fireStationRepository.findByStation(station);
     if (fireStations.isEmpty()) {
       String error = String.format("No addresses mapped for station %s found", station);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
     
@@ -57,6 +61,7 @@ public class FireStationServiceImpl implements FireStationService {
     List<FireStation> fireStation = fireStationRepository.findByAddress(address);
     if (fireStation.isEmpty()) {
       String error = String.format(NOT_FOUND, address);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
     
@@ -75,8 +80,8 @@ public class FireStationServiceImpl implements FireStationService {
     
     if (!isSuccess) {
       String error = String.format("%s mapping for station %s already exists", 
-              fireStation.getAddress(),
-              fireStation.getStation());
+              fireStation.getAddress(), fireStation.getStation());
+      LOGGER.error(error);
       throw new ResourceAlreadyExistsException(error);
     }
     
@@ -93,6 +98,7 @@ public class FireStationServiceImpl implements FireStationService {
     
     if (!isSuccess) {
       String error = String.format(NOT_FOUND, fireStation.getAddress());
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
     
@@ -108,6 +114,7 @@ public class FireStationServiceImpl implements FireStationService {
     List<FireStation> existingFireStationList = fireStationRepository.findByStation(station);
     if (existingFireStationList.isEmpty()) {
       String error = String.format("Station %s mapping not found", station);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
     
@@ -124,6 +131,7 @@ public class FireStationServiceImpl implements FireStationService {
     List<FireStation> existingFireStation = fireStationRepository.findByAddress(address);
     if (existingFireStation.isEmpty()) {
       String error = String.format(NOT_FOUND, address);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
 
