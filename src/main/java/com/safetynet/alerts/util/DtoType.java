@@ -3,7 +3,7 @@ package com.safetynet.alerts.util;
 import java.util.List;
 
 /**
- * Enum of the different type of PersonInfoDto and the field to map for each.
+ * Enumeration of the different type of PersonInfoDto and the field that it must include.
  */
 public enum DtoType {
   NAME(List.of("Name")),

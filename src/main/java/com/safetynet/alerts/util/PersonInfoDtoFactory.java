@@ -19,7 +19,7 @@ public class PersonInfoDtoFactory {
 
   /**
    * Create a PersonInfoDto according to person and medical record, and the type
-   * of DTO that we want.
+   * of DTO that must be return.
    * 
 
    * @param person for creating DTO

@@ -53,12 +53,12 @@ public class FireStationController {
   }
 
   /**
-   * Handle HTTP GET request on a fireStation mapping resource by id.
+   * Handle HTTP GET request on a fireStation mapping resource by station id.
    * 
 
    * @param id of the fireStation
-   * @return HTTP 200 Response with the fireStation
-   * @throws ResourceNotFoundException when mapping are not found for this fireStation
+   * @return HTTP 200 Response with the fireStation mapping
+   * @throws ResourceNotFoundException when no mapping found for this fireStation
    */
   
   @GetMapping("/firestations/{id}")
@@ -80,7 +80,7 @@ public class FireStationController {
 
    * @param address of the fireStation mapping
    * @return HTTP 200 Response with the fireStation mapping
-   * @throws ResourceNotFoundException when mapping is not found for this address
+   * @throws ResourceNotFoundException when no mapping found for this address
    */
   
   @GetMapping("/firestations/firestation")
@@ -144,7 +144,7 @@ public class FireStationController {
 
    * @param id of fireStation mapping to delete
    * @return HTTP 204
-   * @throws ResourceNotFoundException when mapping are not found for this fireStation
+   * @throws ResourceNotFoundException when no mapping no found for this fireStation
    */
   @DeleteMapping("/firestation/{id}")
   public ResponseEntity<Void> deleteFireStationById(
@@ -165,7 +165,7 @@ public class FireStationController {
 
    * @param address of fireStation mapping to delete
    * @return HTTP 204
-   * @throws ResourceNotFoundException when mapping is not found for this address
+   * @throws ResourceNotFoundException when no mapping found for this address
    */
   @DeleteMapping("/firestation")
   public ResponseEntity<Void> deleteFireStationbyAddress(

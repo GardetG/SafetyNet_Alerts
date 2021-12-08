@@ -94,7 +94,7 @@
 						</goals>
 						<configuration>
 							<sourceDirectory>src/doc</sourceDirectory>
-							<outputDirectory>${project.build.directory}/API_doc</outputDirectory>
+							<outputDirectory>${project.basedir}/docs/API</outputDirectory>
 							<backend>html</backend>
 							<doctype>book</doctype>
 						</configuration>

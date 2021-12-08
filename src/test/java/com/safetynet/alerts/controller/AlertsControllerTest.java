@@ -186,11 +186,11 @@ class AlertsControllerTest {
                     requestParameters(
                             parameterWithName("firstName").description(
                     "The firstName of the person."
-                    + "This parameter *must be greater than 0*.")
+                    + "This parameter *must not be blank*.")
                             .optional(),
                             parameterWithName("lastName").description(
                     "The lastName of the person."
-                    + "This parameter *must be greater than 0*.")
+                    + "This parameter *must not be blank*.")
                             .optional()
                         )));
     verify(alertsService, times(1)).getPersonInfo("firstName", "lastName");

@@ -9,7 +9,7 @@ include::{snippets}/getAllFireStation/http-request.adoc[]
 include::{snippets}/getAllFireStation/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, a list of all firestations mapping is sent:
 
 include::{snippets}/getAllFireStation/http-response.adoc[]
 
@@ -28,14 +28,14 @@ include::{snippets}/getFireStationById/request-parameters.adoc[]
 include::{snippets}/getFireStationById/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, the list of firestation mapping for this station is sent:
 
 include::{snippets}/getFireStationById/http-response.adoc[]
 
 ==== Error Response
 
 ===== Not Found
-When the medical record of this person can't be found, this response can be expected:
+When the mapping for this station can't be found, a response 404 can be expected:
 
 include::{snippets}/getNotFoundFireStationById/http-response.adoc[]
 
@@ -54,14 +54,14 @@ include::{snippets}/getFireStationByAddress/request-parameters.adoc[]
 include::{snippets}/getFireStationByAddress/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, the list of firestation mapping for this address is sent:
 
 include::{snippets}/getFireStationByAddress/http-response.adoc[]
 
 ==== Error Response
 
 ===== Not Found
-When the medical record of this person can't be found, this response can be expected:
+When the mapping for this address can't be found, a response 404 can be expected:
 
 include::{snippets}/getNotFoundFireStationByAddress/http-response.adoc[]
 
@@ -80,14 +80,14 @@ include::{snippets}/postFireStation/request-fields.adoc[]
 include::{snippets}/postFireStation/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, the created firestation mapping is sent back:
 
 include::{snippets}/postFireStation/http-response.adoc[]
 
 ==== Error Response
 
 ===== Already Exists
-When the medical record of this person already exists, this response can be expected:
+When the mapping between this station and address already exists, a response 409 can be expected:
 
 include::{snippets}/postConflictFireStation/http-response.adoc[]
 
@@ -106,14 +106,14 @@ include::{snippets}/putFireStation/request-fields.adoc[]
 include::{snippets}/putFireStation/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, the updated firestation mapping is sent back:
 
 include::{snippets}/putFireStation/http-response.adoc[]
 
 ==== Error Response
 
 ===== Not Found
-When the medical record to update can't be found, this response can be expected:
+When the mapping for this address can't be found, a response 404 can be expected:
 
 include::{snippets}/putNotFoundFireStation/http-response.adoc[]
 
@@ -132,14 +132,14 @@ include::{snippets}/deleteFireStationById/request-parameters.adoc[]
 include::{snippets}/deleteFireStationById/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, a response 204 can be expected:
 
 include::{snippets}/deleteFireStationById/http-response.adoc[]
 
 ==== Error Response
 
 ===== Not Found
-When the medical record to delete can't be found, this response can be expected:
+When mapping to delete for this station can't be found, a response 404 can be expected:
 
 include::{snippets}/deleteNotFoundFireStationById/http-response.adoc[]
 
@@ -158,13 +158,13 @@ include::{snippets}/deleteFireStationByAddress/request-parameters.adoc[]
 include::{snippets}/deleteFireStationByAddress/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, a response 204 can be expected:
 
 include::{snippets}/deleteFireStationByAddress/http-response.adoc[]
 
 ==== Error Response
 
 ===== Not Found
-When the medical record to delete can't be found, this response can be expected:
+When mapping to delete for this address can't be found, a response 404 can be expected:
 
 include::{snippets}/deleteNotFoundFireStationByAddress/http-response.adoc[]

@@ -8,7 +8,8 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
 
 /**
- * DTO for managing fireStation mapping informations.
+ * DTO for managing fireStation mapping informations with the address and the
+ * station mapped to it.
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,5 +21,5 @@ public class FireStationDto {
   private int station;
   @NotBlank(message = "Address is mandatory")
   private String address;
-  
+
 }

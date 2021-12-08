@@ -66,7 +66,7 @@ public class PersonController {
           @RequestParam @NotBlank(message = "LastName is mandatory") String lastName)
           throws ResourceNotFoundException {
     
-    LOGGER.info("Request: Get persons with parameters: {}, {}", firstName, lastName);
+    LOGGER.info("Request: Get person {} {}", firstName, lastName);
     PersonDto person = personService.getByName(firstName, lastName);
     
     LOGGER.info("Response: person sent");
@@ -127,7 +127,7 @@ public class PersonController {
           @RequestParam @NotBlank(message = "LastName is mandatory") String lastName)
           throws ResourceNotFoundException {
 
-    LOGGER.info("Request: Delete persons with parameters: {}, {}", firstName, lastName);
+    LOGGER.info("Request: Delete persons {} {}", firstName, lastName);
     personService.delete(firstName, lastName);
     
     LOGGER.info("Response: Person deleted");

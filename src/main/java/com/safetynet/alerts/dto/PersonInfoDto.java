@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * DTO for getting person information .
+ * DTO for getting person information for Alerts URL.
  */
 @AllArgsConstructor
 @NoArgsConstructor

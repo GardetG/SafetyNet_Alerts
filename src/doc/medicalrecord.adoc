@@ -9,7 +9,7 @@ include::{snippets}/getAllMedicalRecord/http-request.adoc[]
 include::{snippets}/getAllMedicalRecord/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, a list of all medical records is sent:
 
 include::{snippets}/getAllMedicalRecord/http-response.adoc[]
 
@@ -28,14 +28,14 @@ include::{snippets}/getMedicalRecord/request-parameters.adoc[]
 include::{snippets}/getMedicalRecord/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, the searched medical record is sent:
 
 include::{snippets}/getMedicalRecord/http-response.adoc[]
 
 ==== Error Response
 
 ===== Not Found
-When the medical record of this person can't be found, this response can be expected:
+When the medical record of this person can't be found, a response 404 can be expected:
 
 include::{snippets}/getNotFoundMedicalRecord/http-response.adoc[]
 
@@ -54,14 +54,14 @@ include::{snippets}/postMedicalRecord/request-fields.adoc[]
 include::{snippets}/postMedicalRecord/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, the created medical record is sent back:
 
 include::{snippets}/postMedicalRecord/http-response.adoc[]
 
 ==== Error Response
 
 ===== Already Exists
-When the medical record of this person already exists, this response can be expected:
+When the medical record of this person already exists, a response 409 can be expected:
 
 include::{snippets}/postConflictMedicalRecord/http-response.adoc[]
 
@@ -80,14 +80,14 @@ include::{snippets}/putMedicalRecord/request-fields.adoc[]
 include::{snippets}/putMedicalRecord/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, the updated medical record is sent back:
 
 include::{snippets}/putMedicalRecord/http-response.adoc[]
 
 ==== Error Response
 
 ===== Not Found
-When the medical record to update can't be found, this response can be expected:
+When the medical record to update can't be found, a response 404 can be expected:
 
 include::{snippets}/putNotFoundMedicalRecord/http-response.adoc[]
 
@@ -106,13 +106,13 @@ include::{snippets}/deleteMedicalRecord/request-parameters.adoc[]
 include::{snippets}/deleteMedicalRecord/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, a response 204 can be expected:
 
 include::{snippets}/deleteMedicalRecord/http-response.adoc[]
 
 ==== Error Response
 
 ===== Not Found
-When the medical record to delete can't be found, this response can be expected:
+When the medical record to delete can't be found, a response 404 can be expected:
 
 include::{snippets}/deleteNotFoundMedicalRecord/http-response.adoc[]

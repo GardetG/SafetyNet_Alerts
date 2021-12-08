@@ -1,7 +1,7 @@
 package com.safetynet.alerts.exception;
 
 /**
- * Exception thrown when looking for a not found resource.
+ * Exception thrown when trying to create an already existing resource.
  */
 public class ResourceAlreadyExistsException extends Exception {
 

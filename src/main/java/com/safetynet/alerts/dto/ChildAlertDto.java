@@ -3,17 +3,16 @@ package com.safetynet.alerts.dto;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
- * DTO for managing child alert informations.
+ * DTO for managing child alert informations with the list of the children and
+ * the list of the other household members.
  */
 @AllArgsConstructor
 @Getter
-@Setter
 public class ChildAlertDto {
 
   List<PersonInfoDto> children;
   List<PersonInfoDto> householdMembers;
-  
+
 }

@@ -124,12 +124,6 @@ public class AlertsServiceImpl implements AlertsService {
     // Fetch resident at the address
     List<Person> residents = personRepository.findByAddress(address);
 
-    if (residents.isEmpty()) {
-      String error = String.format("No residents found living at %s", address);
-      LOGGER.error(error);
-      throw new ResourceNotFoundException("");
-    }
-
     List<PersonInfoDto> children = new ArrayList<>();
     List<PersonInfoDto> householdMembers = new ArrayList<>();
 
@@ -147,7 +141,13 @@ public class AlertsServiceImpl implements AlertsService {
         householdMembers.add(PersonInfoDtoFactory.makeDto(person, medicalRecord, DtoType.NAME));
       }
     });
-
+    
+    if (children.isEmpty()) {
+      String error = String.format("No children found living at %s", address);
+      LOGGER.error(error);
+      throw new ResourceNotFoundException("");
+    }
+    
     return new ChildAlertDto(children, householdMembers);
   }
 

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
- * Class handling exceptions throw in Controllers and HTTP response.
+ * Class handling exceptions thrown by Service and HTTP response.
  */
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
@@ -41,7 +41,7 @@ public class GlobalControllerExceptionHandler {
       String errorMessage = error.getMessage();
       errors.add(errorMessage);
     });
-    LOGGER.error("Response : 400 invalid parameter {}", errors);
+    LOGGER.info("Response : 400 invalid parameter {}", errors);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
   }
 
@@ -62,13 +62,12 @@ public class GlobalControllerExceptionHandler {
       String errorMessage = error.getDefaultMessage();
       errors.put(fieldName, errorMessage);
     });
-    LOGGER.error("Response : 422 invalid DTO");
+    LOGGER.info("Response : 422 invalid DTO");
     return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errors);
   }
 
   /**
-   * Handle ResourceNotFoundException thrown when the looked for resource can't be
-   * found.
+   * Handle ResourceNotFoundException thrown when the resource can't be found.
    * 
 
    * @param ex instance of the exception
@@ -77,7 +76,7 @@ public class GlobalControllerExceptionHandler {
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<String> handleNotFoundExceptions(ResourceNotFoundException ex) {
     String error = ex.getMessage();
-    LOGGER.error("Response : 404 {}", error);
+    LOGGER.info("Response : 404 {}", error);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
   }
 
@@ -92,7 +91,7 @@ public class GlobalControllerExceptionHandler {
   @ExceptionHandler(ResourceAlreadyExistsException.class)
   public ResponseEntity<String> handleAlreadyExistsExceptions(ResourceAlreadyExistsException ex) {
     String error = ex.getMessage();
-    LOGGER.error("Response: 409 {}", error);
+    LOGGER.info("Response: 409 {}", error);
     return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
   }
 }

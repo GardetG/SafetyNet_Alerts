@@ -51,7 +51,7 @@ public class MedicalRecordController {
   }
 
   /**
-   * Handle HTTP GET request on a medical record resource by its firstName and
+   * Handle HTTP GET request on a medical record resource with the firstName and
    * lastName.
    * 
 
@@ -67,7 +67,7 @@ public class MedicalRecordController {
           @RequestParam @NotBlank(message = "LastName is mandatory") String lastName)
           throws ResourceNotFoundException {
 
-    LOGGER.info("Request: Get medical records with parameters: {}, {}", firstName, lastName);
+    LOGGER.info("Request: Get medical records of {}, {}", firstName, lastName);
     MedicalRecordDto medicalRecord = medicalRecordService.getByName(firstName, lastName);
 
     LOGGER.info("Response: medical record sent");
@@ -132,7 +132,7 @@ public class MedicalRecordController {
           @RequestParam @NotBlank(message = "LastName is mandatory") String lastName)
           throws ResourceNotFoundException {
 
-    LOGGER.info("Request: Delete medical records with parameters: {}, {}", firstName, lastName);
+    LOGGER.info("Request: Delete medical records of: {}, {}", firstName, lastName);
     medicalRecordService.delete(firstName, lastName);
     
     LOGGER.info("Response: Medical record deleted");

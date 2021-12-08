@@ -20,7 +20,7 @@ public interface AlertsService {
    * 
 
    * @param city of the residents
-   * @return list of emails
+   * @return list of email
    * @throws ResourceNotFoundException when no residents found for this city
    */
   List<String> getCommunityEmail(String city) throws ResourceNotFoundException;
@@ -38,7 +38,7 @@ public interface AlertsService {
   List<String> getPhoneAlert(int station) throws ResourceNotFoundException;
 
   /**
-   * Return person informations with address, age, and medical data.
+   * Return List of person informations with address, age, and medical data.
    * 
 
    * @param firstName of the person
@@ -56,7 +56,7 @@ public interface AlertsService {
 
    * @param address of the household
    * @return child alert information
-   * @throws ResourceNotFoundException when no residents found at this address
+   * @throws ResourceNotFoundException when no children found at this address
    */
   ChildAlertDto childAlert(String address) throws ResourceNotFoundException;
 

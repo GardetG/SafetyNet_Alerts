@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 /**
- * Class Implementation handling the retrieve of data from a json file.
+ * Class Implementation handling the retrieve of data from a json file into the repositories.
  */
 @Profile("!UnitTests")
 @Component
@@ -52,7 +52,7 @@ public class JsonLoader implements DataLoader, CommandLineRunner {
   }
 
   /**
-   * Load and deserialize the data from the json file locate by the given url.
+   * Load and deserialize the data from the json file locate by the given url into the repositories.
    */
   @Override
   public void load(String url) {

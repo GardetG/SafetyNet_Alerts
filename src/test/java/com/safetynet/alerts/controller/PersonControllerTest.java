@@ -188,7 +188,8 @@ class PersonControllerTest {
                             .description("The city of the person."
                                     + "This parameter *must no be blank*."),
                         fieldWithPath("zip")
-                            .description("The ZIP code."),
+                            .description("The ZIP code."
+                            + "This parameter *must no be blank*."),
                         fieldWithPath("phone")
                             .description("The phone number of the person."),
                         fieldWithPath("email")
@@ -270,7 +271,8 @@ class PersonControllerTest {
                             .description("The city of the person."
                                     + "This parameter *must no be blank*."),
                         fieldWithPath("zip")
-                            .description("The ZIP code."),
+                            .description("The ZIP code."
+                            + "This parameter *must no be blank*."),
                         fieldWithPath("phone")
                             .description("The phone number of the person."),
                         fieldWithPath("email")

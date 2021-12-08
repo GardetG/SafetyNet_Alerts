@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * DTO for managing persons information.
+ * DTO for managing persons information with its name and coordinates.
  */
 @AllArgsConstructor
 @NoArgsConstructor

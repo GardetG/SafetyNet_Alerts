@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * Controller Class SafetyNet Alerts URL.
+ * Controller Class for SafetyNet Alerts URL.
  */
 @Controller
 @Validated
@@ -33,23 +33,23 @@ public class AlertsController {
   AlertsService alertsService;
 
   /**
-   * Handle HTTP GET request on /communityEmail and return the residents' emails
+   * Handle HTTP GET request on /communityEmail and return the residents' email
    * list of the city.
    * 
 
    * @param city of the residents
-   * @return HTTP 200 Response with a list of emails
-   * @throws ResourceNotFoundException when no residents' emails found for the city
+   * @return HTTP 200 Response with a list of email
+   * @throws ResourceNotFoundException when no residents' email found for the city
    */
   @GetMapping("/communityEmail")
   public ResponseEntity<List<String>> getCommunityEmail(
           @RequestParam @NotBlank(message = "City is mandatory") String city)
           throws ResourceNotFoundException {
             
-    LOGGER.info("Request: Get community Emails for {}", city);
+    LOGGER.info("Request: Get community Email for {}", city);
     List<String> emailsList = alertsService.getCommunityEmail(city);
 
-    LOGGER.info("Response: Community Emails sent");
+    LOGGER.info("Response: Community Email sent");
     return ResponseEntity.ok(emailsList);
 
   }
@@ -61,7 +61,7 @@ public class AlertsController {
 
    * @param firestation id covering the residents
    * @return HTTP 200 Response with a list of phone numbers
-   * @throws ResourceNotFoundException when no residents' phone numbers found this station
+   * @throws ResourceNotFoundException when no residents' phone numbers found for this station
    */
   @GetMapping("/phoneAlert")
   public ResponseEntity<List<String>> getPhoneAlert(
@@ -69,23 +69,22 @@ public class AlertsController {
           int firestation)
           throws ResourceNotFoundException {
             
-    LOGGER.info("Request: Get phone alert for station {}", firestation);
+    LOGGER.info("Request: Get phone alert informations for station {}", firestation);
     List<String> emailsList = alertsService.getPhoneAlert(firestation);
 
-    LOGGER.info("Response: phone alert sent");
+    LOGGER.info("Response: phone alert information sent");
     return ResponseEntity.ok(emailsList);
 
   }
-  
   
   /**
    * Handle HTTP GET request on /personInfo and return list of person informations with
    * address, age, and medical data.
    * 
 
-   * @param firstName of the person
-   * @param lastName of the person
-   * @return HTTP 200 Response with a list persons informations
+   * @param firstName of the persons
+   * @param lastName of the persons
+   * @return HTTP 200 Response with a list persons with their informations
    * @throws ResourceNotFoundException when the person is not found
    */
   @GetMapping("/personInfo")
@@ -94,10 +93,10 @@ public class AlertsController {
           @RequestParam @NotBlank(message = "LastName is mandatory") String lastName)
           throws ResourceNotFoundException {
     
-    LOGGER.info("Request: Get persons info with parameters: {}, {}", firstName, lastName);
+    LOGGER.info("Request: Get {} {} informations", firstName, lastName);
     List<PersonInfoDto> personInfo = alertsService.getPersonInfo(firstName, lastName);
     
-    LOGGER.info("Response: person info sent");
+    LOGGER.info("Response: persons informations sent");
     return ResponseEntity.ok(personInfo);
 
   }
@@ -109,7 +108,7 @@ public class AlertsController {
 
    * @param address of the household
    * @return HTTP 200 Response with child alert informations
-   * @throws ResourceNotFoundException when no resident found at this address
+   * @throws ResourceNotFoundException when no children found at this address
    */
   @GetMapping("/childAlert")
   public ResponseEntity<ChildAlertDto> getChildAlert(
@@ -131,7 +130,7 @@ public class AlertsController {
 
    * @param address of the residents
    * @return HTTP 200 Response with fire alert informations
-   * @throws ResourceNotFoundException when no resident found at this address
+   * @throws ResourceNotFoundException when no residents found at this address
    */
   @GetMapping("/fire")
   public ResponseEntity<FireAlertDto> getFireAlert(
@@ -171,12 +170,12 @@ public class AlertsController {
   
   /**
    * Handle HTTP GET request on /firestation and return the residents covered by
-   * the station and children and adults count.
+   * the station with children and adults count.
    * 
 
    * @param stationNumber id covering the residents
    * @return HTTP 200 Response with firestation coverage informations.
-   * @throws ResourceNotFoundException when no residents found this station
+   * @throws ResourceNotFoundException when no residents found for this station
    */
   @GetMapping("/firestation")
   public ResponseEntity<FireStationCoverageDto> getFireStation(
@@ -184,10 +183,10 @@ public class AlertsController {
           int stationNumber)
           throws ResourceNotFoundException {
             
-    LOGGER.info("Request: Get station {} resident covered informations", stationNumber);
+    LOGGER.info("Request: Get station {} residents covered informations", stationNumber);
     FireStationCoverageDto coverageDto = alertsService.fireStationCoverage(stationNumber);
 
-    LOGGER.info("Response: resident covered informations sent");
+    LOGGER.info("Response: residents covered informations sent");
     return ResponseEntity.ok(coverageDto);
 
   }

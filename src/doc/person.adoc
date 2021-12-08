@@ -9,7 +9,7 @@ include::{snippets}/getAllPerson/http-request.adoc[]
 include::{snippets}/getAllPerson/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, a list of all persons is sent:
 
 include::{snippets}/getAllPerson/http-response.adoc[]
 
@@ -28,14 +28,14 @@ include::{snippets}/getPerson/request-parameters.adoc[]
 include::{snippets}/getPerson/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, the searched person is sent:
 
 include::{snippets}/getPerson/http-response.adoc[]
 
 ==== Error Response
 
 ===== Not Found
-When the person can't be found, this response can be expected:
+When the person can't be found, a response 404 can be expected:
 
 include::{snippets}/getNotFoundPerson/http-response.adoc[]
 
@@ -54,14 +54,14 @@ include::{snippets}/postPerson/request-fields.adoc[]
 include::{snippets}/postPerson/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, the created person is sent back:
 
 include::{snippets}/postPerson/http-response.adoc[]
 
 ==== Error Response
 
 ===== Already Exists
-When the person already exists, this response can be expected:
+When the person already exists, a response 409 can be expected:
 
 include::{snippets}/postConflictPerson/http-response.adoc[]
 
@@ -80,14 +80,14 @@ include::{snippets}/putPerson/request-fields.adoc[]
 include::{snippets}/putPerson/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, the updated person is sent back:
 
 include::{snippets}/putPerson/http-response.adoc[]
 
 ==== Error Response
 
 ===== Not Found
-When the person to update can't be found, this response can be expected:
+When the person to update can't be found, a response 404 can be expected:
 
 include::{snippets}/putNotFoundPerson/http-response.adoc[]
 
@@ -106,13 +106,13 @@ include::{snippets}/deletePerson/request-parameters.adoc[]
 include::{snippets}/deletePerson/curl-request.adoc[]
 
 ==== Succesful Response
-When making a successfull call to this API endpoint, this response can be expected:
+When making a successfull call to this API endpoint, a response 204 can be expected:
 
 include::{snippets}/deletePerson/http-response.adoc[]
 
 ==== Error Response
 
 ===== Not Found
-When the person to delete can't be found, this response can be expected:
+When the person to delete can't be found, a response 404 can be expected:
 
 include::{snippets}/deleteNotFoundPerson/http-response.adoc[]

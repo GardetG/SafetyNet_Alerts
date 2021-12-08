@@ -12,14 +12,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * DTO for managing medical records information.
+ * DTO for managing medical records information with the name of the person, its
+ * birthdate and medical data.
  */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class MedicalRecordDto {
-  
+
   @NotBlank(message = "Firstname is mandatory")
   private String firstName;
   @NotBlank(message = "Lastname is mandatory")

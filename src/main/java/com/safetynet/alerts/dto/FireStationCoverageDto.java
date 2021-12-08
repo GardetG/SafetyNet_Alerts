@@ -5,14 +5,14 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
- * DTO for managing firestation resident coverage informations.
+ * DTO for managing firestation resident coverage informations with the list of
+ * the residents covered and the count of children, adult, and undetermined age
+ * residents.
  */
 @AllArgsConstructor
 @Getter
-@Setter
 public class FireStationCoverageDto {
 
   private List<PersonInfoDto> residents;
@@ -20,5 +20,5 @@ public class FireStationCoverageDto {
   private int adultCount;
   @JsonInclude(Include.NON_NULL)
   private Integer underterminedAgeCount;
-  
+
 }

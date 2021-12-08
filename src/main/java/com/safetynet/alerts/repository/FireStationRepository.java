@@ -28,11 +28,11 @@ public interface FireStationRepository {
   List<FireStation> findByStation(int station);
   
   /**
-   * Find a FireStation mapping by an address.
+   * Find all FireStation mapping by an address.
    * 
 
    * @param address of the mapping
-   * @return FireStation mapping
+   * @return List of FireStation mapping
    */
   List<FireStation> findByAddress(String address);
   

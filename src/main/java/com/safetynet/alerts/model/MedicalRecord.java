@@ -15,8 +15,8 @@ import lombok.Setter;
 
 /**
  * Model Class of a medical record with the firstName and lastName of the
- * person, the birthdate and any medications or allergies. FirstName and
- * lastName are mandatory for the model to be valid.
+ * person, the birthdate and any medications or allergies. FirstName, lastName
+ * and birthdate are mandatory for the model to be valid.
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,10 +34,10 @@ public class MedicalRecord {
   private LocalDate birthdate;
   private List<String> medications;
   private List<String> allergies;
-  
+
   /**
-   * Calculate the age of the medical record owner or throw exception if 
-   * birthdate is invalid.
+   * Calculate the age of the medical record owner or throw exception if birthdate
+   * is invalid.
    * 
 
    * @return Age of the medical record owner
@@ -49,7 +49,7 @@ public class MedicalRecord {
     Period lifeTime = Period.between(birthdate, LocalDate.now());
     return lifeTime.getYears();
   }
-  
+
   /**
    * Check if the medical record owner is minor or not.
    * 
@@ -59,12 +59,12 @@ public class MedicalRecord {
   public boolean isMinor() {
     return (getAge() <= 18);
   }
-  
+
   @Override
   public int hashCode() {
     return Objects.hash(allergies, birthdate, firstName, lastName, medications);
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -82,7 +82,5 @@ public class MedicalRecord {
             && Objects.equals(lastName, other.lastName)
             && Objects.equals(medications, other.medications);
   }
-  
-  
-  
+
 }

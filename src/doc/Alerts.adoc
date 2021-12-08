@@ -19,7 +19,7 @@ include::{snippets}/GetFireStationAlert/http-response.adoc[]
 ==== Error Response
 
 ===== Not Found
-When no residents for this station can be found, this response can be expected:
+When no residents for this station can be found, a response 404 can be expected:
 
 include::{snippets}/GetFireStationAlertNotFound/http-response.adoc[]
 
@@ -45,7 +45,7 @@ include::{snippets}/GetChildAlert/http-response.adoc[]
 ==== Error Response
 
 ===== Not Found
-When no residents for the city can be found, this response can be expected:
+When no children at this address can be found, a response 404 can be expected:
 
 include::{snippets}/GetChildAlertNotFound/http-response.adoc[]
 
@@ -71,7 +71,7 @@ include::{snippets}/GetPhoneAlert/http-response.adoc[]
 ==== Error Response
 
 ===== Not Found
-When no residents for the city can be found, this response can be expected:
+When no residents covered by this station can be found, a response 404 can be expected:
 
 include::{snippets}/GetPhoneAlertNotFound/http-response.adoc[]
 
@@ -97,7 +97,7 @@ include::{snippets}/GetFireAlert/http-response.adoc[]
 ==== Error Response
 
 ===== Not Found
-When no residents at this address can be found, this response can be expected:
+When no residents at this address can be found, a response 404 can be expected:
 
 include::{snippets}/GetFireAlertNotFound/http-response.adoc[]
 
@@ -122,7 +122,7 @@ include::{snippets}/GetFloodAlert/http-response.adoc[]
 ==== Error Response
 
 ===== Not Found
-When no residents covered by the stations can be found, this response can be expected:
+When no residents covered by the stations can be found, a response 404 can be expected:
 
 include::{snippets}/GetFloodAlertNotFound/http-response.adoc[]
 
@@ -147,7 +147,7 @@ include::{snippets}/GetPersonInfo/http-response.adoc[]
 ==== Error Response
 
 ===== Not Found
-When no residents can be found, this response can be expected:
+When no such residents can be found, a response 404 can be expected:
 
 include::{snippets}/GetPersonInfoNotFound/http-response.adoc[]
 

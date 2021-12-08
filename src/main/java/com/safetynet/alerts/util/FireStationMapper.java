@@ -14,7 +14,6 @@ public class FireStationMapper {
     throw new IllegalStateException("Utility class");
   }
   
-  
   /**
    * Map FireStation into FireStationDto.
    * 
