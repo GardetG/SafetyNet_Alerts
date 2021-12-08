@@ -15,9 +15,8 @@ import com.safetynet.alerts.repository.PersonRepository;
 import com.safetynet.alerts.util.DtoType;
 import com.safetynet.alerts.util.PersonInfoDtoFactory;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -62,7 +61,7 @@ public class AlertsServiceImpl implements AlertsService {
     if (emailList.isEmpty()) {
       String error = String.format("No resident emails found for %s", city);
       LOGGER.error(error);
-      throw new ResourceNotFoundException(error);
+      throw new ResourceNotFoundException("");
     }
 
     return emailList;
@@ -86,7 +85,7 @@ public class AlertsServiceImpl implements AlertsService {
     if (phoneList.isEmpty()) {
       String error = String.format("No resident phone number found for station %s", station);
       LOGGER.error(error);
-      throw new ResourceNotFoundException(error);
+      throw new ResourceNotFoundException("");
     }
 
     return phoneList;
@@ -128,7 +127,7 @@ public class AlertsServiceImpl implements AlertsService {
     if (residents.isEmpty()) {
       String error = String.format("No residents found living at %s", address);
       LOGGER.error(error);
-      throw new ResourceNotFoundException(error);
+      throw new ResourceNotFoundException("");
     }
 
     List<PersonInfoDto> children = new ArrayList<>();
@@ -169,7 +168,7 @@ public class AlertsServiceImpl implements AlertsService {
     if (residentsList.isEmpty()) {
       String error = String.format("No residents found living at %s", address);
       LOGGER.error(error);
-      throw new ResourceNotFoundException(error);
+      throw new ResourceNotFoundException("");
     }
 
     // Fetch station covering this address
@@ -212,7 +211,7 @@ public class AlertsServiceImpl implements AlertsService {
     if (floodlist.isEmpty()) {
       String error = String.format("No residents covered found for stations %s", stations);
       LOGGER.error(error);
-      throw new ResourceNotFoundException(error);
+      throw new ResourceNotFoundException("");
     }
 
     return floodlist;
@@ -234,10 +233,10 @@ public class AlertsServiceImpl implements AlertsService {
     if (residents.isEmpty()) {
       String error = String.format("No residents covered found for station %s", station);
       LOGGER.error(error);
-      throw new ResourceNotFoundException(error);
+      throw new ResourceNotFoundException("");
     }
 
-    Map<Count, Integer> counter = new HashMap<>();
+    EnumMap<Count, Integer> counter = new EnumMap<>(Count.class);
     counter.put(Count.UNKNOW, 0);
     counter.put(Count.CHILD, 0);
     counter.put(Count.ADULT, 0);

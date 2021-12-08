@@ -118,8 +118,7 @@ class AlertsServiceTest {
     })
 
             // THEN
-            .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("No resident emails found for city9");
+            .isInstanceOf(ResourceNotFoundException.class);
   }
 
   @Test
@@ -174,8 +173,7 @@ class AlertsServiceTest {
     })
 
             // THEN
-            .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("No resident phone number found for station 9");
+            .isInstanceOf(ResourceNotFoundException.class);
     verify(fireStationRepository, times(1)).findByStation(9);
     verify(personRepository, times(0)).findByAddress(anyString());
   }
@@ -272,8 +270,7 @@ class AlertsServiceTest {
     })
 
             // THEN
-            .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("No residents found living at address9");
+            .isInstanceOf(ResourceNotFoundException.class);
     verify(personRepository, times(1)).findByAddress("address9");
     verify(medicalRecordRepository, times(0)).findByName(anyString(), anyString());
   }
@@ -369,8 +366,7 @@ class AlertsServiceTest {
     })
 
             // THEN
-            .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("No residents found living at address9");
+            .isInstanceOf(ResourceNotFoundException.class);
     verify(personRepository, times(1)).findByAddress("address9");
     verify(medicalRecordRepository, times(0)).findByName(anyString(), anyString());
   }
@@ -551,8 +547,7 @@ class AlertsServiceTest {
     })
 
             // THEN
-            .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("No residents covered found for stations [9, 10]");
+            .isInstanceOf(ResourceNotFoundException.class);
     verify(personRepository, times(1)).findByAddress("address9");
     verify(medicalRecordRepository, times(0)).findByName(anyString(), anyString());
   }
@@ -625,8 +620,7 @@ class AlertsServiceTest {
     })
 
             // THEN
-            .isInstanceOf(ResourceNotFoundException.class)
-            .hasMessageContaining("No residents covered found for station 9");
+            .isInstanceOf(ResourceNotFoundException.class);
     verify(personRepository, times(0)).findByAddress(anyString());
     verify(medicalRecordRepository, times(0)).findByName(anyString(), anyString());
     verify(fireStationRepository, times(1)).findByStation(9);
