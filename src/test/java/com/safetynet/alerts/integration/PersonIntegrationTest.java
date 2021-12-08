@@ -42,7 +42,8 @@ class PersonIntegrationTest {
   @Test
   void postPersonIntegrationTest() throws Exception {
     // GIVEN
-    PersonDto personTest = new PersonDto("firstNameZ", "lastNameZ", "address", "city", "", "", "");
+    PersonDto personTest = new PersonDto("firstNameZ", "lastNameZ", "address", "city", 
+            "00001", "", "");
 
     // WHEN
     mockMvc.perform(post("/person")
@@ -62,7 +63,8 @@ class PersonIntegrationTest {
   @Test
   void putPersonIntegrationTest() throws Exception {
     // GIVEN
-    PersonDto personTest = new PersonDto("firstNameA", "lastNameA", "update", "city", "", "", "");
+    PersonDto personTest = new PersonDto("firstNameA", "lastNameA", "update", "city", 
+            "00001", "", "");
 
     // WHEN
     mockMvc.perform(put("/person").contentType(MediaType.APPLICATION_JSON)

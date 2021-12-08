@@ -19,8 +19,11 @@ public class PersonDto {
   private String firstName;
   @NotBlank(message = "Lastname is mandatory")
   private String lastName;
+  @NotBlank(message = "Address is mandatory")
   private String address;
+  @NotBlank(message = "City is mandatory")
   private String city;
+  @NotBlank(message = "ZIP is mandatory")
   private String zip;
   private String phone;
   private String email;

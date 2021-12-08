@@ -46,7 +46,7 @@ class FireStationIntegrationTest {
     FireStationDto fireStationTest = new FireStationDto(1, "9 Test St");
 
     // WHEN
-    mockMvc.perform(post("/fireStation")
+    mockMvc.perform(post("/firestation")
             .contentType(MediaType.APPLICATION_JSON)
             .content(JsonParser.asString(fireStationTest)))
 
@@ -56,7 +56,7 @@ class FireStationIntegrationTest {
             .andExpect(jsonPath("$.address", is("9 Test St")))
             .andExpect(jsonPath("$.station", is(1)));
     // Check that a fireStation has been added
-    mockMvc.perform(get("/fireStations"))
+    mockMvc.perform(get("/firestations"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(4)));
   }
@@ -67,7 +67,7 @@ class FireStationIntegrationTest {
     FireStationDto fireStationTest = new FireStationDto(9, "1 Test St");
 
     // WHEN
-    mockMvc.perform(put("/fireStation")
+    mockMvc.perform(put("/firestation")
             .contentType(MediaType.APPLICATION_JSON)
             .content(JsonParser.asString(fireStationTest)))
 
@@ -77,7 +77,7 @@ class FireStationIntegrationTest {
             .andExpect(jsonPath("$.address", is("1 Test St")))
             .andExpect(jsonPath("$.station", is(9)));
     // Check that we can retrieve the updated fireStation
-    mockMvc.perform(get("/fireStations/fireStation?address=1 Test St"))
+    mockMvc.perform(get("/firestations/firestation?address=1 Test St"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].address", is("1 Test St")))
             .andExpect(jsonPath("$[0].station", is(9)));
@@ -88,13 +88,13 @@ class FireStationIntegrationTest {
     // GIVEN
 
     // WHEN
-    mockMvc.perform(delete("/fireStation?address=1 Test St"))
+    mockMvc.perform(delete("/firestation?address=1 Test St"))
 
             // THEN
             // Check response
             .andExpect(status().isNoContent());
     // Check that a fireStation has been removed
-    mockMvc.perform(get("/fireStations"))
+    mockMvc.perform(get("/firestations"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(2)));
   }
@@ -104,13 +104,13 @@ class FireStationIntegrationTest {
     // GIVEN
 
     // WHEN
-    mockMvc.perform(delete("/fireStation/2"))
+    mockMvc.perform(delete("/firestation/2"))
 
             // THEN
             // Check response
             .andExpect(status().isNoContent());
     // Check that a fireStation has been removed
-    mockMvc.perform(get("/fireStations"))
+    mockMvc.perform(get("/firestations"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(1)));
   }

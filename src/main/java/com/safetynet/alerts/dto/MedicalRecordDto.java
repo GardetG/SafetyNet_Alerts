@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.util.List;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +24,8 @@ public class MedicalRecordDto {
   private String firstName;
   @NotBlank(message = "Lastname is mandatory")
   private String lastName;
+  @Past
+  @NotNull(message = "Birthdate is mandatory")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
   private LocalDate birthdate;
   private List<String> medications;

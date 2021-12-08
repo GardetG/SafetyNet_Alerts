@@ -76,7 +76,7 @@ class FireStationControllerTest {
             fireStationTest, fireStationTest2, fireStationTest3));
 
     // WHEN
-    mockMvc.perform(get("/fireStations"))
+    mockMvc.perform(get("/firestations"))
 
             // THEN
             .andExpect(status().isOk())
@@ -95,7 +95,7 @@ class FireStationControllerTest {
     when(fireStationService.getAll()).thenReturn(Collections.emptyList());
 
     // WHEN
-    mockMvc.perform(get("/fireStations"))
+    mockMvc.perform(get("/firestations"))
 
             // THEN
             .andExpect(status().isOk())
@@ -110,7 +110,7 @@ class FireStationControllerTest {
             fireStationTest, fireStationTest2));
 
     // WHEN
-    mockMvc.perform(get("/fireStations/1"))
+    mockMvc.perform(get("/firestations/1"))
 
             // THEN
             .andExpect(status().isOk())
@@ -136,7 +136,7 @@ class FireStationControllerTest {
             fireStationTest, fireStationTest2));
 
     // WHEN
-    mockMvc.perform(get("/fireStations/0"))
+    mockMvc.perform(get("/firestations/0"))
 
             // THEN
             .andExpect(status().isBadRequest())
@@ -151,7 +151,7 @@ class FireStationControllerTest {
             new ResourceNotFoundException("Station 9 mapping not found"));
 
     // WHEN
-    mockMvc.perform(get("/fireStations/9"))
+    mockMvc.perform(get("/firestations/9"))
 
             // THEN
             .andExpect(status().isNotFound())
@@ -168,7 +168,7 @@ class FireStationControllerTest {
     when(fireStationService.getByAddress(anyString())).thenReturn(List.of(fireStationTest));
 
     // WHEN
-    mockMvc.perform(get("/fireStations/fireStation?address=address"))
+    mockMvc.perform(get("/firestations/firestation?address=address"))
 
             // THEN
             .andExpect(status().isOk())
@@ -192,7 +192,7 @@ class FireStationControllerTest {
     when(fireStationService.getByAddress(anyString())).thenReturn(List.of(fireStationTest));
 
     // WHEN
-    mockMvc.perform(get("/fireStations/fireStation?address="))
+    mockMvc.perform(get("/firestations/firestation?address="))
 
             // THEN
             .andExpect(status().isBadRequest())
@@ -207,7 +207,7 @@ class FireStationControllerTest {
             new ResourceNotFoundException("Address9 mapping not found"));
 
     // WHEN
-    mockMvc.perform(get("/fireStations/fireStation?address=address9"))
+    mockMvc.perform(get("/firestations/firestation?address=address9"))
 
             // THEN
             .andExpect(status().isNotFound())
@@ -224,7 +224,7 @@ class FireStationControllerTest {
     when(fireStationService.add(any(FireStationDto.class))).thenReturn(fireStationTest);
 
     // WHEN
-    mockMvc.perform(post("/fireStation")
+    mockMvc.perform(post("/firestation")
             .contentType(MediaType.APPLICATION_JSON)
             .content(JsonParser.asString(fireStationTest)))
 
@@ -256,7 +256,7 @@ class FireStationControllerTest {
             new ResourceAlreadyExistsException(error));
 
     // WHEN
-    mockMvc.perform(post("/fireStation")
+    mockMvc.perform(post("/firestation")
             .contentType(MediaType.APPLICATION_JSON)
             .content(JsonParser.asString(fireStationTest)))
 
@@ -276,7 +276,7 @@ class FireStationControllerTest {
     FireStationDto invalidFireStation = new FireStationDto(1, "");
 
     // WHEN
-    mockMvc.perform(post("/fireStation")
+    mockMvc.perform(post("/firestation")
             .contentType(MediaType.APPLICATION_JSON)
             .content(JsonParser.asString(invalidFireStation)))
 
@@ -292,7 +292,7 @@ class FireStationControllerTest {
     when(fireStationService.update(any(FireStationDto.class))).thenReturn(fireStationTest);
 
     // WHEN
-    mockMvc.perform(put("/fireStation")
+    mockMvc.perform(put("/firestation")
             .contentType(MediaType.APPLICATION_JSON)
             .content(JsonParser.asString(fireStationTest)))
 
@@ -323,7 +323,7 @@ class FireStationControllerTest {
             new ResourceNotFoundException(error));
 
     // WHEN
-    mockMvc.perform(put("/fireStation")
+    mockMvc.perform(put("/firestation")
             .contentType(MediaType.APPLICATION_JSON)
             .content(JsonParser.asString(fireStationTest)))
 
@@ -343,7 +343,7 @@ class FireStationControllerTest {
     FireStationDto invalidFireStation = new FireStationDto(1, "");
 
     // WHEN
-    mockMvc.perform(put("/fireStation")
+    mockMvc.perform(put("/firestation")
             .contentType(MediaType.APPLICATION_JSON)
             .content(JsonParser.asString(invalidFireStation)))
 
@@ -357,7 +357,7 @@ class FireStationControllerTest {
     // GIVEN
 
     // WHEN
-    mockMvc.perform(delete("/fireStation/1"))
+    mockMvc.perform(delete("/firestation/1"))
 
             // THEN
             .andExpect(status().isNoContent())
@@ -382,7 +382,7 @@ class FireStationControllerTest {
 
 
     // WHEN
-    mockMvc.perform(delete("/fireStation/9"))
+    mockMvc.perform(delete("/firestation/9"))
 
             // THEN
             .andExpect(status().isNotFound())
@@ -398,7 +398,7 @@ class FireStationControllerTest {
     // GIVEN
 
     // WHEN
-    mockMvc.perform(delete("/fireStation/0"))
+    mockMvc.perform(delete("/firestation/0"))
 
             // THEN
             .andExpect(status().isBadRequest())
@@ -411,7 +411,7 @@ class FireStationControllerTest {
     // GIVEN
 
     // WHEN
-    mockMvc.perform(delete("/fireStation?address=address"))
+    mockMvc.perform(delete("/firestation?address=address"))
 
             // THEN
             .andExpect(status().isNoContent())
@@ -436,7 +436,7 @@ class FireStationControllerTest {
 
 
     // WHEN
-    mockMvc.perform(delete("/fireStation?address=address9"))
+    mockMvc.perform(delete("/firestation?address=address9"))
 
             // THEN
             .andExpect(status().isNotFound())
@@ -452,7 +452,7 @@ class FireStationControllerTest {
     // GIVEN
 
     // WHEN
-    mockMvc.perform(delete("/fireStation?address="))
+    mockMvc.perform(delete("/firestation?address="))
 
             // THEN
             .andExpect(status().isBadRequest())
