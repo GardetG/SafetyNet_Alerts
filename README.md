@@ -1,9 +1,14 @@
 # SafetyNet Alerts API
 With SafetyNet Alerts, our goal is to to develop an application which will help first aid to be better prepared and handle any situation by providing the information they need to accomplish their mission.
 
+## Documentation
+
+- Complete [documention](https://gardetg.github.io/SafetyNet_Alerts/API/) of the API and endpoints
+- The [JavaDoc](https://gardetg.github.io/SafetyNet_Alerts)
+
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Prerequisities
 
@@ -26,5 +31,13 @@ The API is up and running, ready to receive and respond to requests.
 
 ### Testing API
 
-To run the tests from maven, go to the folder that contains the pom.xml file and execute the below command:  
+- To run the unit tests from maven, execute the below command in the folder containing the pom.xml file:  
 `mvn test`
+
+- To run the integration tests from maven, execute the below command in the folder containing the pom.xml file:  
+`mvn verify`
+
+- To consult the testing and coverage reports, execute the below command in the folder containing the pom.xml file:  
+`mvn site`
+
+Access to the website in `target/site` to consult to Jacoco coverage report, Surefire testing report and Spotbugs report.
