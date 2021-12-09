@@ -26,6 +26,7 @@ public class Person {
   private String address;
   @NotBlank(message = "City is mandatory")
   private String city;
+  @NotBlank(message = "ZIP is mandatory")
   private String zip;
   private String phone;
   private String email;

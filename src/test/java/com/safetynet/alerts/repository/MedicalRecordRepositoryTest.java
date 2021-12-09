@@ -109,10 +109,27 @@ class MedicalRecordRepositoryTest {
 
     // THEN
     assertThat(isSuccess).isTrue();
-    assertThat(medicalRecordRepository.findAll()).hasSize(2)
-            .containsExactly(medicalRecordTest, medicalRecordTest2);
+    assertThat(medicalRecordRepository.findAll())
+            .hasSize(2)
+            .containsOnly(medicalRecordTest, medicalRecordTest2);
   }
 
+  @Test
+  void addMedicalRecordWhenAlreadyExistsTest() {
+    // GIVEN
+    medicalRecordRepository.setupRepository(new ArrayList<MedicalRecord>(
+            List.of(medicalRecordTest)));
+
+    // WHEN
+    boolean isSuccess = medicalRecordRepository.add(medicalRecordTest);
+
+    // THEN
+    assertThat(isSuccess).isFalse();
+    assertThat(medicalRecordRepository.findAll())
+            .hasSize(1)
+            .containsOnly(medicalRecordTest);
+  }
+  
   @Test
   void updateMedicalRecordTest() {
     // GIVEN
@@ -128,7 +145,7 @@ class MedicalRecordRepositoryTest {
     assertThat(isSuccess).isTrue();
     assertThat(medicalRecordRepository.findAll()).hasSize(2)
             .doesNotContain(medicalRecordTest)
-            .containsExactly(updatedMedicalRecord, medicalRecordTest2);
+            .containsOnly(updatedMedicalRecord, medicalRecordTest2);
   }
 
   @Test
@@ -146,7 +163,7 @@ class MedicalRecordRepositoryTest {
     assertThat(isSuccess).isFalse();
     assertThat(medicalRecordRepository.findAll()).hasSize(1)
             .doesNotContain(updatedMedicalRecord)
-            .containsExactly(medicalRecordTest2);
+            .containsOnly(medicalRecordTest2);
   }
   
   @Test
@@ -162,7 +179,7 @@ class MedicalRecordRepositoryTest {
     assertThat(isSuccess).isTrue();
     assertThat(medicalRecordRepository.findAll()).hasSize(1)
             .doesNotContain(medicalRecordTest)
-            .containsExactly(medicalRecordTest2);
+            .containsOnly(medicalRecordTest2);
   }
 
   @Test
@@ -177,7 +194,7 @@ class MedicalRecordRepositoryTest {
     // THEN
     assertThat(isSuccess).isFalse();
     assertThat(medicalRecordRepository.findAll()).hasSize(1)
-            .containsExactly(medicalRecordTest2);
+            .containsOnly(medicalRecordTest2);
   }
   
   

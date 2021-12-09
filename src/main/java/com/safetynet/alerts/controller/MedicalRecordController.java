@@ -1,17 +1,16 @@
 package com.safetynet.alerts.controller;
 
 import com.safetynet.alerts.dto.MedicalRecordDto;
-import com.safetynet.alerts.dto.MedicalRecordMapper;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.service.MedicalRecordService;
-import java.net.URI;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
@@ -44,8 +43,7 @@ public class MedicalRecordController {
   public ResponseEntity<List<MedicalRecordDto>> getAllMedicalRecords() {
 
     LOGGER.info("Request: Get all medical records");
-    List<MedicalRecordDto> allMedicalRecords = MedicalRecordMapper
-            .toDto(medicalRecordService.getAll());
+    List<MedicalRecordDto> allMedicalRecords = medicalRecordService.getAll();
 
     LOGGER.info("Response: List of all medical records sent");
     return ResponseEntity.ok(allMedicalRecords);
@@ -70,8 +68,7 @@ public class MedicalRecordController {
           throws ResourceNotFoundException {
 
     LOGGER.info("Request: Get medical records with parameters: {}, {}", firstName, lastName);
-    MedicalRecordDto medicalRecord = MedicalRecordMapper
-            .toDto(medicalRecordService.getByName(firstName, lastName));
+    MedicalRecordDto medicalRecord = medicalRecordService.getByName(firstName, lastName);
 
     LOGGER.info("Response: medical record sent");
     return ResponseEntity.ok(medicalRecord);
@@ -93,14 +90,10 @@ public class MedicalRecordController {
 
     LOGGER.info("Request: Create medical record of {} {}", medicalRecord.getFirstName(),
             medicalRecord.getLastName());
-    MedicalRecordDto createdMedicalRecord = MedicalRecordMapper
-            .toDto(medicalRecordService.add(MedicalRecordMapper.toModel(medicalRecord)));
+    MedicalRecordDto createdMedicalRecord = medicalRecordService.add(medicalRecord);
 
-    URI uri = URI
-            .create("/medicalRecords/medicalRecord?firstName=" + createdMedicalRecord.getFirstName()
-                    + "&lastName=" + createdMedicalRecord.getLastName());
     LOGGER.info("Response: medical record created");
-    return ResponseEntity.created(uri).body(createdMedicalRecord);
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdMedicalRecord);
   }
 
   /**
@@ -118,8 +111,7 @@ public class MedicalRecordController {
 
     LOGGER.info("Request: Update medical record of {} {}", medicalRecord.getFirstName(),
             medicalRecord.getLastName());
-    MedicalRecordDto updatedMedicalRecord = MedicalRecordMapper
-            .toDto(medicalRecordService.update(MedicalRecordMapper.toModel(medicalRecord)));
+    MedicalRecordDto updatedMedicalRecord = medicalRecordService.update(medicalRecord);
 
     LOGGER.info("Response: Medical record updated");
     return ResponseEntity.ok(updatedMedicalRecord);

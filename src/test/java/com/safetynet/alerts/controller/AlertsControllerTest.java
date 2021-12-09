@@ -76,14 +76,14 @@ class AlertsControllerTest {
   void getCommunityEmailNotFoundTest() throws Exception {
     // GIVEN
     when(alertsService.getCommunityEmail(anyString())).thenThrow(
-            new ResourceNotFoundException("No residents for city found"));
+            new ResourceNotFoundException(""));
 
     // WHEN
     mockMvc.perform(get("/communityEmail?city=city"))
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("No residents for city found")))
+            .andExpect(jsonPath("$").doesNotExist())
             .andDo(document("GetCommunityEmailNotFound",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
@@ -135,14 +135,14 @@ class AlertsControllerTest {
   void getPhoneAlertFoundTest() throws Exception {
     // GIVEN
     when(alertsService.getPhoneAlert(anyInt())).thenThrow(
-            new ResourceNotFoundException("No addresses mapped for station 9 found"));
+            new ResourceNotFoundException(""));
 
     // WHEN
     mockMvc.perform(get("/phoneAlert?firestation=9"))
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("No addresses mapped for station 9 found")))
+            .andExpect(jsonPath("$").doesNotExist())
             .andDo(document("GetPhoneAlertNotFound",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
@@ -200,14 +200,14 @@ class AlertsControllerTest {
   void getPersonInfoNotFoundTest() throws Exception {
     // GIVEN
     when(alertsService.getPersonInfo(anyString(), anyString())).thenThrow(
-            new ResourceNotFoundException("firstName lastName not found"));
+            new ResourceNotFoundException(""));
 
     // WHEN
     mockMvc.perform(get("/personInfo?firstName=firstName9&lastName=lastName"))
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("firstName lastName not found")))
+            .andExpect(jsonPath("$").doesNotExist())
             .andDo(document("GetPersonInfoNotFound",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
@@ -262,14 +262,14 @@ class AlertsControllerTest {
   void getChildAlertNotFoundTest() throws Exception {
     // GIVEN
     when(alertsService.childAlert(anyString())).thenThrow(
-            new ResourceNotFoundException("No residents found living at address"));
+            new ResourceNotFoundException(""));
 
     // WHEN
     mockMvc.perform(get("/childAlert?address=address"))
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("No residents found living at address")))
+            .andExpect(jsonPath("$").doesNotExist())
             .andDo(document("GetChildAlertNotFound",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
@@ -279,7 +279,8 @@ class AlertsControllerTest {
   @Test
   void getChildAlertInvalidTest() throws Exception {
     // GIVEN
-    ChildAlertDto childAlertDto = new ChildAlertDto(); 
+    ChildAlertDto childAlertDto = new ChildAlertDto(
+            Collections.emptyList(), Collections.emptyList()); 
     when(alertsService.childAlert(anyString())).thenReturn(childAlertDto);
 
     // WHEN
@@ -324,14 +325,14 @@ class AlertsControllerTest {
   void getFireAlertNotFoundTest() throws Exception {
     // GIVEN
     when(alertsService.fireAlert(anyString())).thenThrow(
-            new ResourceNotFoundException("No residents found living at address"));
+            new ResourceNotFoundException(""));
 
     // WHEN
     mockMvc.perform(get("/fire?address=address"))
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("No residents found living at address")))
+            .andExpect(jsonPath("$").doesNotExist())
             .andDo(document("GetFireAlertNotFound",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
@@ -341,7 +342,7 @@ class AlertsControllerTest {
   @Test
   void getFireAlertInvalidTest() throws Exception {
     // GIVEN
-    FireAlertDto fireAlertDto = new FireAlertDto(); 
+    FireAlertDto fireAlertDto = new FireAlertDto(Collections.emptyList(), null); 
     when(alertsService.fireAlert(anyString())).thenReturn(fireAlertDto);
 
     // WHEN
@@ -394,14 +395,14 @@ class AlertsControllerTest {
   void getFloodAlertNotFoundTest() throws Exception {
     // GIVEN
     when(alertsService.floodAlert(anyList())).thenThrow(
-            new ResourceNotFoundException("No addresses mapped for stations 9,10 found"));
+            new ResourceNotFoundException(""));
 
     // WHEN
     mockMvc.perform(get("/flood/stations?stations=9,10"))
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("No addresses mapped for stations 9,10 found")))
+            .andExpect(jsonPath("$").doesNotExist())
             .andDo(document("GetFloodAlertNotFound",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
@@ -411,7 +412,7 @@ class AlertsControllerTest {
   @Test
   void getFloodAlertInvalidTest() throws Exception {
     // GIVEN
-    FloodHouseholdDto floodHouseholdDto = new FloodHouseholdDto(); 
+    FloodHouseholdDto floodHouseholdDto = new FloodHouseholdDto(null, Collections.emptyList()); 
     when(alertsService.floodAlert(anyList())).thenReturn(List.of(floodHouseholdDto));
 
     // WHEN
@@ -462,14 +463,14 @@ class AlertsControllerTest {
   void getFireStationNotFoundTest() throws Exception {
     // GIVEN
     when(alertsService.fireStationCoverage(anyInt())).thenThrow(
-            new ResourceNotFoundException("No addresses mapped for stations 9"));
+            new ResourceNotFoundException(""));
 
     // WHEN
     mockMvc.perform(get("/firestation?stationNumber=9"))
 
             // THEN
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$", is("No addresses mapped for stations 9")))
+            .andExpect(jsonPath("$").doesNotExist())
             .andDo(document("GetFireStationAlertNotFound",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
@@ -479,7 +480,8 @@ class AlertsControllerTest {
   @Test
   void getFireStationInvalidTest() throws Exception {
     // GIVEN
-    FireStationCoverageDto fireStationCoverageDto = new FireStationCoverageDto(); 
+    FireStationCoverageDto fireStationCoverageDto = new FireStationCoverageDto(
+            Collections.emptyList(), 0, 0, null); 
     when(alertsService.fireStationCoverage(anyInt())).thenReturn(fireStationCoverageDto);
 
     // WHEN

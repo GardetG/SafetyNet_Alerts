@@ -1,12 +1,16 @@
 package com.safetynet.alerts.service;
 
+import com.safetynet.alerts.dto.PersonDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.PersonRepository;
+import com.safetynet.alerts.util.PersonMapper;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -18,58 +22,33 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class PersonServiceImpl implements PersonService {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(PersonServiceImpl.class);
+  private static final String NOT_FOUND = "%s %s not found";  
+  
   @Autowired
   PersonRepository personRepository;
-
+  
   /**
    * {@inheritDoc}
    */
   @Override
-  public List<Person> getAll() {
-    return personRepository.findAll();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<Person> getByCity(String city) throws ResourceNotFoundException {
-    
-    List<Person> personList = personRepository.findByCity(city);
-    if (personList.isEmpty()) {
-      String error = String.format("No residents found for %s", city);
-      throw new ResourceNotFoundException(error);
-    }
-    return personList;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<Person> getByAddress(String address) throws ResourceNotFoundException {
-    
-    List<Person> personList = personRepository.findByAddress(address);
-    if (personList.isEmpty()) {
-      String error = String.format("No residents found living at %s", address);
-      throw new ResourceNotFoundException(error);
-    }
-    return personList;
-    
+  public List<PersonDto> getAll() {
+    return PersonMapper.toDto(personRepository.findAll());
   }
   
   /**
    * {@inheritDoc}
    */
   @Override
-  public Person getByName(String firstName, String lastName) throws ResourceNotFoundException {
+  public PersonDto getByName(String firstName, String lastName) throws ResourceNotFoundException {
     
     Optional<Person> person = personRepository.findByName(firstName, lastName);
     if (person.isEmpty()) {
-      String error = String.format("%s %s not found", firstName, lastName);
+      String error = String.format(NOT_FOUND, firstName, lastName);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
-    return person.get();
+    return PersonMapper.toDto(person.get());
     
   }
 
@@ -77,38 +56,35 @@ public class PersonServiceImpl implements PersonService {
    * {@inheritDoc}
    */
   @Override
-  public Person add(@Valid Person person) throws ResourceAlreadyExistsException {
+  public PersonDto add(@Valid PersonDto person) throws ResourceAlreadyExistsException {
     
-    Optional<Person> existingPerson = personRepository.findByName(person.getFirstName(),
-            person.getLastName());
-
-    if (existingPerson.isPresent()) {
+    boolean isSuccess = personRepository.add(PersonMapper.toModel(person));
+    
+    if (!isSuccess) {
       String error = String.format("%s %s already exists", person.getFirstName(),
               person.getLastName());
+      LOGGER.error(error);
       throw new ResourceAlreadyExistsException(error);
     }
-
-    personRepository.add(person);
-    return personRepository.findByName(person.getFirstName(), person.getLastName()).get();
     
+    return person;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Person update(@Valid Person person) throws ResourceNotFoundException {
+  public PersonDto update(@Valid PersonDto person) throws ResourceNotFoundException {
     
-    Optional<Person> existingPerson = personRepository.findByName(person.getFirstName(),
-            person.getLastName());
-    if (existingPerson.isEmpty()) {
-      String error = String.format("%s %s not found", person.getFirstName(), person.getLastName());
+    boolean isSuccess = personRepository.update(PersonMapper.toModel(person));
+    
+    if (!isSuccess) {
+      String error = String.format(NOT_FOUND, person.getFirstName(), person.getLastName());
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
-
-    personRepository.update(person);
-    return personRepository.findByName(person.getFirstName(), person.getLastName()).get();
     
+    return person;
   }
 
   /**
@@ -119,12 +95,12 @@ public class PersonServiceImpl implements PersonService {
     
     Optional<Person> existingPerson = personRepository.findByName(firstName, lastName);
     if (existingPerson.isEmpty()) {
-      String error = String.format("%s %s not found", firstName, lastName);
+      String error = String.format(NOT_FOUND, firstName, lastName);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
 
     personRepository.delete(existingPerson.get());
-    
   }
 
 }

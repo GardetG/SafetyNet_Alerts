@@ -1,5 +1,6 @@
 package com.safetynet.alerts.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,10 +25,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.safetynet.alerts.dto.MedicalRecordDto;
-import com.safetynet.alerts.dto.MedicalRecordMapper;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
-import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.service.MedicalRecordService;
 import com.safetynet.alerts.util.JsonParser;
 import java.time.LocalDate;
@@ -35,6 +34,8 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -51,18 +52,21 @@ class MedicalRecordControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
+  @Captor
+  ArgumentCaptor<MedicalRecordDto> medicalRecordCaptor;
+  
   @MockBean
   private MedicalRecordService medicalRecordService;
 
-  private MedicalRecord medicalRecordTest;
-  private MedicalRecord medicalRecordTest2;
+  private MedicalRecordDto medicalRecordTest;
+  private MedicalRecordDto medicalRecordTest2;
 
   @BeforeEach
   void setUp() throws Exception {
-    medicalRecordTest = new MedicalRecord("firstName", "lastName", LocalDate.ofYearDay(1980, 1),
+    medicalRecordTest = new MedicalRecordDto("firstName", "lastName", LocalDate.ofYearDay(1980, 1),
             List.of("med1", "med2"), Collections.emptyList());
-    medicalRecordTest2 = new MedicalRecord("firstName2", "lastName2", LocalDate.ofYearDay(2000, 1),
-            Collections.emptyList(), List.of("allg1"));
+    medicalRecordTest2 = new MedicalRecordDto("firstName2", "lastName2", 
+            LocalDate.ofYearDay(2000, 1), Collections.emptyList(), List.of("allg1"));
   }
 
   @Test
@@ -160,13 +164,12 @@ class MedicalRecordControllerTest {
   @Test
   void postMedicalRecordTest() throws Exception {
     // GIVEN
-    MedicalRecordDto medicalRecordDto = MedicalRecordMapper.toDto(medicalRecordTest);
-    when(medicalRecordService.add(any(MedicalRecord.class))).thenReturn(medicalRecordTest);
+    when(medicalRecordService.add(any(MedicalRecordDto.class))).thenReturn(medicalRecordTest);
 
     // WHEN
     mockMvc.perform(post("/medicalRecord")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(medicalRecordDto)))
+            .content(JsonParser.asString(medicalRecordTest)))
 
             // THEN
             .andExpect(status().isCreated())
@@ -191,7 +194,9 @@ class MedicalRecordControllerTest {
                                     + " by this person."),
                         fieldWithPath("allergies")
                             .description("The list of all allergies of this person."))));
-    verify(medicalRecordService, times(1)).add(medicalRecordTest);
+    verify(medicalRecordService, times(1)).add(medicalRecordCaptor.capture());
+    assertThat(medicalRecordCaptor.getValue()).usingRecursiveComparison()
+            .isEqualTo(medicalRecordTest);
   }
 
   @Test
@@ -200,7 +205,7 @@ class MedicalRecordControllerTest {
     String error = String.format("Medical record of %s %s already exists", 
             medicalRecordTest.getFirstName(),
             medicalRecordTest.getLastName());
-    when(medicalRecordService.add(any(MedicalRecord.class))).thenThrow(
+    when(medicalRecordService.add(any(MedicalRecordDto.class))).thenThrow(
             new ResourceAlreadyExistsException(error));
 
     // WHEN
@@ -214,7 +219,9 @@ class MedicalRecordControllerTest {
             .andDo(document("postConflictMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(medicalRecordService, times(1)).add(medicalRecordTest);
+    verify(medicalRecordService, times(1)).add(medicalRecordCaptor.capture());
+    assertThat(medicalRecordCaptor.getValue()).usingRecursiveComparison()
+            .isEqualTo(medicalRecordTest);
   }
 
   @Test
@@ -231,19 +238,18 @@ class MedicalRecordControllerTest {
             // THEN
             .andExpect(status().isUnprocessableEntity())
             .andExpect(jsonPath("$.firstName", is("Firstname is mandatory")));
-    verify(medicalRecordService, times(0)).add(any(MedicalRecord.class));
+    verify(medicalRecordService, times(0)).add(any(MedicalRecordDto.class));
   }
   
   @Test
   void putMedicalRecordTest() throws Exception {
     // GIVEN
-    MedicalRecordDto medicalRecordDto = MedicalRecordMapper.toDto(medicalRecordTest);
-    when(medicalRecordService.update(any(MedicalRecord.class))).thenReturn(medicalRecordTest);
+    when(medicalRecordService.update(any(MedicalRecordDto.class))).thenReturn(medicalRecordTest);
 
     // WHEN
     mockMvc.perform(put("/medicalRecord")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonParser.asString(medicalRecordDto)))
+            .content(JsonParser.asString(medicalRecordTest)))
 
             // THEN
             .andExpect(status().isOk())
@@ -268,7 +274,9 @@ class MedicalRecordControllerTest {
                                     + " by this person."),
                         fieldWithPath("allergies")
                             .description("The list of all allergies of this person."))));
-    verify(medicalRecordService, times(1)).update(medicalRecordTest);
+    verify(medicalRecordService, times(1)).update(medicalRecordCaptor.capture());
+    assertThat(medicalRecordCaptor.getValue()).usingRecursiveComparison()
+            .isEqualTo(medicalRecordTest);
   }
 
   @Test
@@ -277,7 +285,7 @@ class MedicalRecordControllerTest {
     String error = String.format("Medical record of %s %s not found", 
             medicalRecordTest.getFirstName(),
             medicalRecordTest.getLastName());
-    when(medicalRecordService.update(any(MedicalRecord.class))).thenThrow(
+    when(medicalRecordService.update(any(MedicalRecordDto.class))).thenThrow(
             new ResourceNotFoundException(error));
 
     // WHEN
@@ -291,7 +299,9 @@ class MedicalRecordControllerTest {
             .andDo(document("putNotFoundMedicalRecord",
                     preprocessRequest(prettyPrint()), 
                     preprocessResponse(prettyPrint())));
-    verify(medicalRecordService, times(1)).update(medicalRecordTest);
+    verify(medicalRecordService, times(1)).update(medicalRecordCaptor.capture());
+    assertThat(medicalRecordCaptor.getValue()).usingRecursiveComparison()
+          .isEqualTo(medicalRecordTest);
   }
 
   @Test

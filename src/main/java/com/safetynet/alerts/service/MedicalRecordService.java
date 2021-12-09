@@ -1,8 +1,8 @@
 package com.safetynet.alerts.service;
 
+import com.safetynet.alerts.dto.MedicalRecordDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
-import com.safetynet.alerts.model.MedicalRecord;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public interface MedicalRecordService {
 
    * @return list of MedicalRecord
    */
-  List<MedicalRecord> getAll(); 
+  List<MedicalRecordDto> getAll(); 
 
   /**
    * Get a MedicalRecord by name.
@@ -30,7 +30,7 @@ public interface MedicalRecordService {
    * @return MedicalRecord
    * @throws ResourceNotFoundException when the MedicalRecord doesn't exists
    */
-  MedicalRecord getByName(String firstName, String lastName) throws ResourceNotFoundException;
+  MedicalRecordDto getByName(String firstName, String lastName) throws ResourceNotFoundException;
   
   /**
    * Add a MedicalRecord if it doesn't already exists.
@@ -40,7 +40,7 @@ public interface MedicalRecordService {
    * @return MedicalRecord added
    * @throws ResourceAlreadyExistsException when MedicalRecord already exists
    */
-  MedicalRecord add(@Valid MedicalRecord medicalRecord) throws ResourceAlreadyExistsException;
+  MedicalRecordDto add(@Valid MedicalRecordDto medicalRecord) throws ResourceAlreadyExistsException;
 
   /**
    * Update a MedicalRecord if it already exists.
@@ -50,7 +50,7 @@ public interface MedicalRecordService {
    * @return MedicalRecord updated
    * @throws ResourceNotFoundException when the MedicalRecord doesn't exists
    */
-  MedicalRecord update(@Valid MedicalRecord medicalRecord) throws ResourceNotFoundException;
+  MedicalRecordDto update(@Valid MedicalRecordDto medicalRecord) throws ResourceNotFoundException;
   
   /**
    * Delete a MedicalRecord by its name.

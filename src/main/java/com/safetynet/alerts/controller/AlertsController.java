@@ -97,7 +97,7 @@ public class AlertsController {
     LOGGER.info("Request: Get persons info with parameters: {}, {}", firstName, lastName);
     List<PersonInfoDto> personInfo = alertsService.getPersonInfo(firstName, lastName);
     
-    LOGGER.info("Response: person sent");
+    LOGGER.info("Response: person info sent");
     return ResponseEntity.ok(personInfo);
 
   }
@@ -138,7 +138,7 @@ public class AlertsController {
           @RequestParam @NotBlank(message = "Address is mandatory") String address)
           throws ResourceNotFoundException {
     
-    LOGGER.info("Request: Get fire alert information at {}", address);
+    LOGGER.info("Request: Get fire alert informations at {}", address);
     FireAlertDto fireAlertDto = alertsService.fireAlert(address);
     
     LOGGER.info("Response: fire alert informations sent");
@@ -161,7 +161,7 @@ public class AlertsController {
           @RequestParam @NotEmpty(message = "Stations list is mandatory") List<Integer> stations)
           throws ResourceNotFoundException {
     
-    LOGGER.info("Request: Get flood alert information for stations {}", stations);
+    LOGGER.info("Request: Get flood alert informations for stations {}", stations);
     List<FloodHouseholdDto> floodListDto = alertsService.floodAlert(stations);
     
     LOGGER.info("Response: Flood alert informations sent");
@@ -184,10 +184,10 @@ public class AlertsController {
           int stationNumber)
           throws ResourceNotFoundException {
             
-    LOGGER.info("Request: Get station {} resident coverage", stationNumber);
+    LOGGER.info("Request: Get station {} resident covered informations", stationNumber);
     FireStationCoverageDto coverageDto = alertsService.fireStationCoverage(stationNumber);
 
-    LOGGER.info("Response: phone alert sent");
+    LOGGER.info("Response: resident covered informations sent");
     return ResponseEntity.ok(coverageDto);
 
   }

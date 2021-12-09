@@ -1,12 +1,15 @@
 package com.safetynet.alerts.service;
 
+import com.safetynet.alerts.dto.FireStationDto;
 import com.safetynet.alerts.exception.ResourceAlreadyExistsException;
 import com.safetynet.alerts.exception.ResourceNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.repository.FireStationRepository;
+import com.safetynet.alerts.util.FireStationMapper;
 import java.util.List;
-import java.util.Optional;
 import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +21,9 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class FireStationServiceImpl implements FireStationService {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(FireStationServiceImpl.class);
+  private static final String NOT_FOUND = "%s mapping not found";
+  
   @Autowired
   FireStationRepository fireStationRepository;
 
@@ -25,23 +31,24 @@ public class FireStationServiceImpl implements FireStationService {
    * {@inheritDoc}
    */
   @Override
-  public List<FireStation> getAll() {
-    return fireStationRepository.findAll();
+  public List<FireStationDto> getAll() {
+    return FireStationMapper.toDto(fireStationRepository.findAll());
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public List<FireStation> getByStation(int station) throws ResourceNotFoundException {
+  public List<FireStationDto> getByStation(int station) throws ResourceNotFoundException {
     
     List<FireStation> fireStations = fireStationRepository.findByStation(station);
     if (fireStations.isEmpty()) {
       String error = String.format("No addresses mapped for station %s found", station);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
     
-    return fireStations;
+    return FireStationMapper.toDto(fireStations);
     
   }
 
@@ -49,15 +56,16 @@ public class FireStationServiceImpl implements FireStationService {
    * {@inheritDoc}
    */
   @Override
-  public FireStation getByAddress(String address) throws ResourceNotFoundException {
+  public List<FireStationDto> getByAddress(String address) throws ResourceNotFoundException {
     
-    Optional<FireStation> fireStation = fireStationRepository.findByAddress(address);
+    List<FireStation> fireStation = fireStationRepository.findByAddress(address);
     if (fireStation.isEmpty()) {
-      String error = String.format("%s mapping not found", address);
+      String error = String.format(NOT_FOUND, address);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
     
-    return fireStation.get();
+    return FireStationMapper.toDto(fireStation);
     
   }
 
@@ -65,39 +73,36 @@ public class FireStationServiceImpl implements FireStationService {
    * {@inheritDoc}
    */
   @Override
-  public FireStation add(@Valid FireStation fireStation) throws ResourceAlreadyExistsException {
+  public FireStationDto add(@Valid FireStationDto fireStation) 
+          throws ResourceAlreadyExistsException {
     
-    Optional<FireStation> existingFireStation = fireStationRepository
-            .findByAddress(fireStation.getAddress());
-
-    if (existingFireStation.isPresent()) {
+    boolean isSuccess = fireStationRepository.add(FireStationMapper.toModel(fireStation));
+    
+    if (!isSuccess) {
       String error = String.format("%s mapping for station %s already exists", 
-              fireStation.getAddress(),
-              fireStation.getStation());
+              fireStation.getAddress(), fireStation.getStation());
+      LOGGER.error(error);
       throw new ResourceAlreadyExistsException(error);
     }
-
-    fireStationRepository.add(fireStation);
-    return fireStationRepository.findByAddress(fireStation.getAddress()).get();
     
+    return fireStation;
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public FireStation update(@Valid FireStation fireStation) throws ResourceNotFoundException {
+  public FireStationDto update(@Valid FireStationDto fireStation) throws ResourceNotFoundException {
     
-    Optional<FireStation> existingFireStation = fireStationRepository
-            .findByAddress(fireStation.getAddress());
-    if (existingFireStation.isEmpty()) {
-      String error = String.format("%s mapping not found", fireStation.getAddress());
+    boolean isSuccess = fireStationRepository.update(FireStationMapper.toModel(fireStation));
+    
+    if (!isSuccess) {
+      String error = String.format(NOT_FOUND, fireStation.getAddress());
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
-
-    fireStationRepository.update(fireStation);
-    return fireStationRepository.findByAddress(fireStation.getAddress()).get();
     
+    return fireStation;    
   }
 
   /**
@@ -109,6 +114,7 @@ public class FireStationServiceImpl implements FireStationService {
     List<FireStation> existingFireStationList = fireStationRepository.findByStation(station);
     if (existingFireStationList.isEmpty()) {
       String error = String.format("Station %s mapping not found", station);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
     
@@ -122,13 +128,14 @@ public class FireStationServiceImpl implements FireStationService {
   @Override
   public void deleteByAddress(String address) throws ResourceNotFoundException {
     
-    Optional<FireStation> existingFireStation = fireStationRepository.findByAddress(address);
+    List<FireStation> existingFireStation = fireStationRepository.findByAddress(address);
     if (existingFireStation.isEmpty()) {
-      String error = String.format("%s mapping not found", address);
+      String error = String.format(NOT_FOUND, address);
+      LOGGER.error(error);
       throw new ResourceNotFoundException(error);
     }
 
-    fireStationRepository.delete(existingFireStation.get());
+    existingFireStation.forEach(station -> fireStationRepository.delete(station));
   }
 
 }

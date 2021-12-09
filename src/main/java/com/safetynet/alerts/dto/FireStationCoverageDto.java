@@ -5,14 +5,12 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * DTO for managing firestation resident coverage informations.
  */
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public class FireStationCoverageDto {

@@ -39,6 +39,13 @@ public class MedicalRecordRepositoryImpl
    */
   @Override
   public boolean add(MedicalRecord medicalRecord) {
+    Optional<MedicalRecord> existingMedicalRecord = findByName(medicalRecord.getFirstName(),
+            medicalRecord.getLastName());
+    
+    if (existingMedicalRecord.isPresent()) {
+      return false;
+    }
+    
     return medicalRecordsList.add(medicalRecord);
   }
 
@@ -47,17 +54,14 @@ public class MedicalRecordRepositoryImpl
    */
   @Override
   public boolean update(MedicalRecord medicalRecord) {
-    MedicalRecord existingMedicalRecord = medicalRecordsList.stream()
-            .filter(medicalRecordElemnt -> 
-                    (medicalRecordElemnt.getFirstName().equals(medicalRecord.getFirstName())
-                    && (medicalRecordElemnt.getLastName().equals(medicalRecord.getLastName()))))
-            .findFirst().orElse(null);
+    Optional<MedicalRecord> existingMedicalRecord = findByName(medicalRecord.getFirstName(),
+            medicalRecord.getLastName());
     
-    if (existingMedicalRecord == null) {
+    if (existingMedicalRecord.isEmpty()) {
       return false;
     }
     
-    int index = medicalRecordsList.indexOf(existingMedicalRecord);
+    int index = medicalRecordsList.indexOf(existingMedicalRecord.get());
     medicalRecordsList.set(index, medicalRecord);
     return true;
   }

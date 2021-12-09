@@ -48,7 +48,7 @@ public interface PersonRepository {
   Optional<Person> findByName(String firstName, String lastName);
   
   /**
-   * Add a Person to the repository.
+   * Add a Person to the repository if it doesn't already exist.
    * 
 
    * @param person to add
@@ -57,7 +57,7 @@ public interface PersonRepository {
   boolean add(Person person);
 
   /**
-   * Update a Person in the repository.
+   * Update a Person in the repository if it exists.
    * 
 
    * @param person to update
@@ -66,7 +66,7 @@ public interface PersonRepository {
   boolean update(Person person);
   
   /**
-   * Delete a Person in the repository.
+   * Delete a Person in the repository if it exists.
    * 
 
    * @param person to delete

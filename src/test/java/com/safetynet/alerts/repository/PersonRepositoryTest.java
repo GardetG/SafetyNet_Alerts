@@ -153,7 +153,22 @@ class PersonRepositoryTest {
     // THEN
     assertThat(isSuccess).isTrue();
     assertThat(personRepository.findAll()).hasSize(2)
-            .containsExactly(personTest, personTest2);
+            .containsOnly(personTest, personTest2);
+  }
+  
+  @Test
+  void addPersonWhenAlreadyExistsTest() {
+    // GIVEN
+    personRepository.setupRepository(new ArrayList<Person>(List.of(personTest)));
+
+    // WHEN
+    boolean isSuccess = personRepository.add(personTest);
+
+    // THEN
+    assertThat(isSuccess).isFalse();
+    assertThat(personRepository.findAll())
+            .hasSize(1)
+            .containsOnly(personTest);
   }
 
   @Test
@@ -170,7 +185,7 @@ class PersonRepositoryTest {
     assertThat(isSuccess).isTrue();
     assertThat(personRepository.findAll()).hasSize(2)
             .doesNotContain(personTest)
-            .containsExactly(personTestUpdated, personTest2);
+            .containsOnly(personTestUpdated, personTest2);
   }
 
   @Test
@@ -187,7 +202,7 @@ class PersonRepositoryTest {
     assertThat(isSuccess).isFalse();
     assertThat(personRepository.findAll()).hasSize(1)
             .doesNotContain(personTestUpdated)
-            .containsExactly(personTest2);
+            .containsOnly(personTest2);
   }
 
   @Test
@@ -202,7 +217,7 @@ class PersonRepositoryTest {
     assertThat(isSuccess).isTrue();
     assertThat(personRepository.findAll()).hasSize(1)
             .doesNotContain(personTest)
-            .containsExactly(personTest2);
+            .containsOnly(personTest2);
   }
 
   @Test
@@ -216,7 +231,7 @@ class PersonRepositoryTest {
     // THEN
     assertThat(isSuccess).isFalse();
     assertThat(personRepository.findAll()).hasSize(1)
-            .containsExactly(personTest2);
+            .containsOnly(personTest2);
   }
   
 }

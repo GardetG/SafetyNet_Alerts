@@ -40,6 +40,10 @@ public class JsonLoader implements DataLoader, CommandLineRunner {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JsonLoader.class);
 
+  /**
+   * Call at application start the loading of data from the JSON file indicate in 
+   * properties.
+   */
   @Override
   public void run(String... args) throws Exception {
 
@@ -47,6 +51,9 @@ public class JsonLoader implements DataLoader, CommandLineRunner {
 
   }
 
+  /**
+   * Load and deserialize the data from the json file locate by the given url.
+   */
   @Override
   public void load(String url) {
     LOGGER.info("Attempt to load : {}", url);
@@ -70,6 +77,17 @@ public class JsonLoader implements DataLoader, CommandLineRunner {
     }
   }
 
+  /**
+   * Parse the data under the child node key from the given main node and deserialize
+   * into a list according to the give TypeReference.
+   * 
+
+   * @param <T> Type of the deserialized resource
+   * @param node source node of the data
+   * @param key child node to parse
+   * @param type for deserializing
+   * @return List of resource deserialized
+   */
   private <T> List<T> loadRessources(JsonNode node, String key, TypeReference<List<T>> type) {
     ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
     JsonNode ressourceNode = node.get(key);
